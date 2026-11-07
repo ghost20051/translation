@@ -12,7 +12,7 @@
 
   // one shaped tone: attack/decay envelope, optional pitch glide
   function tone(c, out, o) {
-    var osc = c.createOscillator(), g = c.createGain(), t0 = o.at || 0, dur = o.dur || 0.15, peak = o.vol == null ? 0.5 : o.vol;
+    var osc = c.createOscillator(), g = c.createGain(), t0 = c.currentTime + (o.at || 0), dur = o.dur || 0.15, peak = o.vol == null ? 0.5 : o.vol;
     osc.type = o.type || 'sine';
     osc.frequency.setValueAtTime(o.f, t0);
     if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
@@ -26,7 +26,7 @@
   function noise(c, out, o) {
     var len = Math.max(1, Math.floor(c.sampleRate * o.dur)), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
     for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1);
-    var src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), t0 = o.at || 0;
+    var src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), t0 = c.currentTime + (o.at || 0);
     src.buffer = buf; f.type = o.filter || 'bandpass'; f.frequency.setValueAtTime(o.f, t0);
     if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t0 + o.dur);
     g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(o.vol || 0.3, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + o.dur);
@@ -96,15 +96,18 @@
   }
 
   // Render a sound without speakers (used by tests): returns its peak level and length in seconds.
-  function measure(name) {
+  // delay > 0 starts the sound part-way through the timeline, like a real page that has been open for a while.
+  function measure(name, delay) {
     var OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
     if (!OC || !R[name]) return Promise.resolve(null);
-    var oc = new OC(1, 44100 * 2, 44100), g = oc.createGain(); g.gain.value = MASTER; g.connect(oc.destination);
-    R[name](oc, g);
-    return oc.startRendering().then(function (buf) {
+    var oc = new OC(1, 44100 * 3, 44100), g = oc.createGain(); g.gain.value = MASTER; g.connect(oc.destination);
+    var from = Math.floor((delay || 0) * 44100);
+    var run = delay ? oc.suspend(delay).then(function () { R[name](oc, g); oc.resume(); }) : (R[name](oc, g), null);
+    var render = oc.startRendering();
+    return render.then(function (buf) {
       var d = buf.getChannelData(0), peak = 0, end = 0;
-      for (var i = 0; i < d.length; i++) { var a = Math.abs(d[i]); if (a > peak) peak = a; if (a > 0.002) end = i; }
-      return { peak: peak, seconds: end / 44100 };
+      for (var i = from; i < d.length; i++) { var a = Math.abs(d[i]); if (a > peak) peak = a; if (a > 0.002) end = i; }
+      return { peak: peak, seconds: Math.max(0, end - from) / 44100 };
     });
   }
 

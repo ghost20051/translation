@@ -1,5 +1,5 @@
 /* Offline cache. Only caches this site's own files; no network calls to anywhere else. */
-var CACHE = 'unrev-v10';
+var CACHE = 'unrev-v11';
 var FILES = [
   './', 'index.html', 'manifest.webmanifest', 'icon.svg', 'css/style.css',
   'js/data/terms.js', 'js/data/questions.js', 'js/data/answer-keys.js', 'js/data/resources.js', 'js/data/lessons.js', 'js/data/tourist/terms.js', 'js/data/tourist/content.js', 'js/data/tourist/reading.js', 'js/data/tourist/definitions.js', 'js/data/tourist/help.js', 'js/subjects.js', 'js/i18n.js', 'js/i18n-ui.js', 'js/icons.js', 'js/check.js', 'js/storage.js',
