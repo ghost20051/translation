@@ -7,6 +7,8 @@
   var T = UN.T = UN.T || {};
 
   var HELP = {
+    'Street': ['طريق داخل المدينة تقع عليه المباني. الكتاب يترجمها "سكة"، لكن الأشيع في العربية "شارع".', 'A road inside a town with buildings along it.'],
+    'Track': ['مسار أو سكة، مثل سكة القطار أو مضمار الجري.', 'A path or rail line, such as a railway track or a running track.'],
     'Heterogeneity': ['الخدمة السياحية لا تكون متماثلة: مستواها يختلف من مرة لأخرى ومن موظف لآخر (عكس السلعة التي تتشابه كل قطعة منها). المقصود "عدم التجانس" أو "التباين".', 'Services are never exactly the same: quality changes from one time, place or staff member to another.'],
     'Special tourism': ['سياحة لها هدف أو هواية محددة، مثل الغوص أو مراقبة الطيور أو التصوير.', 'Tourism built around one special interest, such as diving, bird watching or photography.'],
     'Active tourism': ['سياحة فيها حركة ونشاط بدني، مثل المشي والتسلق وركوب الدراجات.', 'Tourism with physical activity, such as walking, climbing or cycling.'],
@@ -149,6 +151,19 @@
     'Day visit': ['زيارة مكان ما والعودة في نفس اليوم دون مبيت.', 'Visiting a place and returning the same day without staying overnight.']
   };
 
-  (T.terms || []).forEach(function (t) { var h = HELP[t.en]; if (h) t.help = { ar: h[0], en: h[1] }; });
+  // Our own wording, offered next to the book's Arabic where the book's translation is unclear or unusual.
+  // Shown as a suggestion and also accepted when typing; the book's Arabic stays the main answer.
+  var SUGGEST = {
+    'Heterogeneity': 'عدم التجانس', 'Active tourism': 'السياحة النشطة', 'Agritourism': 'السياحة الزراعية', 'Street': 'شارع',
+    'Cruiser': 'سفينة سياحية', 'Awareness campaign': 'حملة توعية', 'Gala dinner': 'عشاء رسمي فاخر',
+    'Gastronomy': 'فن الطهي وتذوق الطعام', 'Paid rooms occupied': 'الغرف المشغولة المدفوعة', 'Guest profile': 'بيانات النزيل',
+    'Concierge': 'موظف خدمة النزلاء', 'Busboy': 'مساعد النادل', 'Occupancy': 'نسبة الإشغال', 'Honeymooner': 'عروسان في شهر العسل',
+    'Tourist insurance': 'التأمين السياحي', 'Active map': 'خريطة محدّثة', 'Ferry flight': 'رحلة نقل طائرة بدون ركاب'
+  };
+  (T.terms || []).forEach(function (t) {
+    var h = HELP[t.en]; if (h) t.help = { ar: h[0], en: h[1] };
+    var g = SUGGEST[t.en];
+    if (g) { t.help = t.help || { ar: '', en: '' }; t.help.suggest = g; if (t.ar.indexOf(g) === -1) t.ar.push(g); }
+  });
   T.helpCount = Object.keys(HELP).length;
 })();

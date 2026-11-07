@@ -346,7 +346,10 @@
     var btn = h('button', { type: 'button', class: 'dbtn', 'aria-pressed': 'false' }, ic('lightbulb'), t('def.explain'));
     btn.onclick = function () {
       on = !on; btn.setAttribute('aria-pressed', String(on)); btn.classList.toggle('on', on); body.textContent = '';
-      if (on) body.appendChild(h('div', { class: 'dpart simple' }, h('small', { class: 'dlbl' }, t('def.explainLbl')), h('div', { class: 'dtext' }, L(it.help.ar, 'ar')), h('div', { class: 'dtext dtr' }, L(it.help.en, 'en'))));
+      if (on) {
+        if (it.help.ar) body.appendChild(h('div', { class: 'dpart simple' }, h('small', { class: 'dlbl' }, t('def.explainLbl')), h('div', { class: 'dtext' }, L(it.help.ar, 'ar')), h('div', { class: 'dtext dtr' }, L(it.help.en, 'en'))));
+        if (it.help.suggest) body.appendChild(h('div', { class: 'dpart tr' }, h('small', { class: 'dlbl' }, t('def.suggest')), h('div', { class: 'dtext' }, L(it.help.suggest, 'ar'))));
+      }
     };
     box.appendChild(body); box.appendChild(h('div', { class: 'dbtns' }, btn));
     return box;
