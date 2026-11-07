@@ -6,7 +6,7 @@ global.window = global;
 global.UN = {};
 const mem = {};
 global.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
-['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
+['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
   .forEach(f => require(path.join('..', 'js', f + '.js')));
 
 let n = 0;

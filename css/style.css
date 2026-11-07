@@ -279,3 +279,4 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .term.withdef { flex-wrap: wrap; }
 .vrow .defbox { flex-basis: 100%; grid-column: 1 / -1; } .vdef { flex: 1; min-width: 0; }
 .terms .term.defrow, .terms .term.withdef { grid-column: 1 / -1; }
+.prow .defbox, .vrow .defbox { grid-column: 1 / -1; }

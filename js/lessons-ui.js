@@ -62,7 +62,7 @@
     var box = h('div', { class: 'lstep' }), list = h('div', { class: 'plist' });
     st.ids.forEach(function (id, i) {
       var it = UN.itemsById[id];
-      list.appendChild(h('div', { class: 'prow card', style: delay(i) }, h('div', { class: 'pen' }, L(it.en, 'en'), ui.speakBtn(it.en)), ic('chevron-right', 'flip'), h('div', { class: 'par' }, L(it.arShow, 'ar'))));
+      list.appendChild(h('div', { class: 'prow card', style: delay(i) }, h('div', { class: 'pen' }, L(it.en, 'en'), ui.speakBtn(it.en)), ic('chevron-right', 'flip'), h('div', { class: 'par' }, L(it.arShow, 'ar')), it.help ? ui.defBox(it) : null));
     });
     return h('div', { class: 'lstep' }, h('p', { class: 'lcap' }, t('lesson.pairsHint')), list);
   }

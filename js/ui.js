@@ -341,9 +341,20 @@
   /* ---------- page: learn ---------- */
   /* A definition shown exactly as in the course material, with two optional helpers:
      "simple version" (short exam-ready wording) and "translation" (the other language). */
+  function helpBox(it) {
+    var box = h('div', { class: 'defbox' }), body = h('div', { class: 'dbody' }), on = false;
+    var btn = h('button', { type: 'button', class: 'dbtn', 'aria-pressed': 'false' }, ic('lightbulb'), t('def.explain'));
+    btn.onclick = function () {
+      on = !on; btn.setAttribute('aria-pressed', String(on)); btn.classList.toggle('on', on); body.textContent = '';
+      if (on) body.appendChild(h('div', { class: 'dpart simple' }, h('small', { class: 'dlbl' }, t('def.explainLbl')), h('div', { class: 'dtext' }, L(it.help.ar, 'ar')), h('div', { class: 'dtext dtr' }, L(it.help.en, 'en'))));
+    };
+    box.appendChild(body); box.appendChild(h('div', { class: 'dbtns' }, btn));
+    return box;
+  }
   function defBox(it) {
     var lang = it.origLang || 'en', other = lang === 'en' ? 'ar' : 'en';
     var box = h('div', { class: 'defbox' });
+    if (!it.orig && it.help) return helpBox(it);
     if (!it.orig) { box.appendChild(h('div', { class: 'dtext' }, L(it.def, lang))); return box; }
     var showSimple = false, showTr = false;
     var body = h('div', { class: 'dbody' }), bar = h('div', { class: 'dbtns' });
@@ -374,7 +385,7 @@
       var it = UN.itemsById[id];
       if (it.kind === 'sub') { tb.appendChild(h('div', { class: 'term defrow' }, h('div', { class: 'en' }, L(it.name, 'en')), defBox(it))); return; }
       if (it.kind !== 'term') return;
-      tb.appendChild(h('div', { class: 'term' + (it.orig ? ' withdef' : '') }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar')), it.orig ? defBox(it) : null));
+      tb.appendChild(h('div', { class: 'term' + ((it.orig || it.help) ? ' withdef' : '') }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar')), (it.orig || it.help) ? defBox(it) : null));
     });
     return tb;
   }
@@ -448,7 +459,7 @@
           if (grp !== 'all' && it.group !== grp) return;
           if (needle && norm(it.en + ' ' + it.arShow).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'vrow card' }, h('span', { class: 'vnum' }, it.id.slice(1)), h('div', { class: 'ven' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'var' }, L(it.arShow, 'ar')), h('span', { class: 'pill' }, UN.groups[it.group][lang]), it.orig ? defBox(it) : null));
+          list.appendChild(h('div', { class: 'vrow card' }, h('span', { class: 'vnum' }, it.id.slice(1)), h('div', { class: 'ven' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'var' }, L(it.arShow, 'ar')), h('span', { class: 'pill' }, UN.groups[it.group][lang]), (it.orig || it.help) ? defBox(it) : null));
         });
       } else if (tab === 'defs') {
         UN.subs.forEach(function (s) {

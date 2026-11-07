@@ -80,7 +80,7 @@
       "reading.enar": "English to Arabic",
       "reading.aren": "Arabic to English",
       "lesson.pairsHint": "Read each term and its Arabic out loud.",
-      "def.simple": "Simple version", "def.toAr": "Arabic translation", "def.toEn": "English translation",
+      "def.explain": "Explain this word", "def.explainLbl": "What it means", "def.simple": "Simple version", "def.toAr": "Arabic translation", "def.toEn": "English translation",
       "def.original": "Original definition", "def.simpleLbl": "Simple version (short exam answer)", "def.translation": "Translation",
       "def.nudge": "Read it, then say it in your own words and write it from memory."
     },
@@ -108,7 +108,7 @@
       "reading.enar": "من الإنجليزية إلى العربية",
       "reading.aren": "من العربية إلى الإنجليزية",
       "lesson.pairsHint": "اقرأ كل مصطلح ومقابله العربي بصوت عالٍ.",
-      "def.simple": "النسخة المبسّطة", "def.toAr": "الترجمة العربية", "def.toEn": "الترجمة الإنجليزية",
+      "def.explain": "اشرح الكلمة", "def.explainLbl": "معناها", "def.simple": "النسخة المبسّطة", "def.toAr": "الترجمة العربية", "def.toEn": "الترجمة الإنجليزية",
       "def.original": "التعريف الأصلي", "def.simpleLbl": "النسخة المبسّطة (إجابة قصيرة للامتحان)", "def.translation": "الترجمة",
       "def.nudge": "اقرأها ثم قلها بأسلوبك واكتبها من الذاكرة."
     }

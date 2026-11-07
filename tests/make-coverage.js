@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 global.window = global; global.UN = {};
 global.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
-['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'subjects', 'check', 'storage', 'generator']
+['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'subjects', 'check', 'storage', 'generator']
   .forEach(f => require(path.join('..', 'js', f + '.js')));
 
 let md = '# Content coverage checklist\n\nGenerated from the data files in `js/data/` by `node tests/make-coverage.js`. Every approved item is reachable in games, in the exams (UN: every item; Tourist: a balanced sample that changes each time), in the Memory Lessons and in the learning center. Nothing is ever excluded.\n';
