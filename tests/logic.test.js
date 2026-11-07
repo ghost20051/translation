@@ -85,7 +85,7 @@ ok('Scoring + self-grade + pending events excluded from stats', () => {
   assert.strictEqual(UN.exam.pending(att), 5);
   assert.strictEqual(att.score, 25);
   const wr = att.rows.map((r, i) => r.type === 'written' ? i : -1).filter(i => i >= 0);
-  assert.ok(!UN.adapt.rebuild().W1, 'pending written must not enter stats');
+  assert.ok(!UN.adapt.rebuild().W3, 'pending written (W3 only appears as a written question) must not enter stats');
   wr.forEach(i => UN.exam.selfGrade(att.id, i, 1));
   assert.strictEqual(UN.store.get().attempts[0].pct, 100);
   assert.ok(UN.adapt.rebuild().W1.ema === 1);
