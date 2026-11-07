@@ -17,7 +17,7 @@
       'goal.game2': 'Complete Game 2', 'goal.exam': 'Take {name}', 'goal.examAll': 'All three exams taken', 'goal.master': 'Master 10 items',
       'act.detail': '{n} questions · {c} correct', 'ago.now': 'just now', 'ago.min': '{n} min ago', 'ago.hr': '{n} h ago', 'ago.day': '{n} d ago',
       'quote.text': 'The United Nations was not created to take mankind to heaven, but to save humanity from hell.', 'quote.by': 'Dag Hammarskjöld',
-      'vocab.title': 'Vocabulary', 'vocab.lead': 'Search and revise the approved UN terms, definitions and model answers.', 'vocab.search': 'Search terms…', 'vocab.all': 'All',
+      'vocab.title': 'Vocabulary', 'vocab.lead': 'Search and revise the approved terms, definitions and model answers.', 'vocab.search': 'Search terms…', 'vocab.all': 'All',
       'vocab.terms': 'Terms', 'vocab.defs': 'Definitions', 'vocab.written': 'Written answers', 'vocab.none': 'No matches', 'vocab.noneText': 'Try a different word or clear the search.',
       'media.title': 'Videos & Audio', 'media.lead': 'Short explanations you can replay any time. Not available during exams.', 'media.all': 'All', 'media.video': 'Video', 'media.audio': 'Audio',
       'media.empty': 'No videos or audio yet', 'media.emptyText': 'Lessons will appear here once they are added. Meanwhile, read the written explanations in Learn.', 'media.openTopic': 'Open written explanation',
@@ -43,7 +43,7 @@
       'goal.game2': 'أكمل اللعبة 2', 'goal.exam': 'أدِّ {name}', 'goal.examAll': 'تم أداء الامتحانات الثلاثة', 'goal.master': 'أتقن 10 عناصر',
       'act.detail': '{n} سؤال · {c} صحيحة', 'ago.now': 'الآن', 'ago.min': 'منذ {n} د', 'ago.hr': 'منذ {n} س', 'ago.day': 'منذ {n} يوم',
       'quote.text': 'لم تُنشأ الأمم المتحدة لتأخذ البشرية إلى الجنة، بل لتنقذها من الجحيم.', 'quote.by': 'داغ همرشولد',
-      'vocab.title': 'المفردات', 'vocab.lead': 'ابحث وراجع مصطلحات الأمم المتحدة المعتمدة وتعريفاتها والإجابات النموذجية.', 'vocab.search': 'ابحث في المصطلحات…', 'vocab.all': 'الكل',
+      'vocab.title': 'المفردات', 'vocab.lead': 'ابحث وراجع المصطلحات المعتمدة وتعريفاتها والإجابات النموذجية.', 'vocab.search': 'ابحث في المصطلحات…', 'vocab.all': 'الكل',
       'vocab.terms': 'المصطلحات', 'vocab.defs': 'التعريفات', 'vocab.written': 'الإجابات المقالية', 'vocab.none': 'لا توجد نتائج', 'vocab.noneText': 'جرّب كلمة أخرى أو امسح البحث.',
       'media.title': 'فيديو وصوت', 'media.lead': 'شروحات قصيرة يمكنك إعادتها في أي وقت. غير متاحة أثناء الامتحانات.', 'media.all': 'الكل', 'media.video': 'فيديو', 'media.audio': 'صوت',
       'media.empty': 'لا يوجد فيديو أو صوت بعد', 'media.emptyText': 'ستظهر الدروس هنا عند إضافتها. وفي الأثناء اقرأ الشروحات المكتوبة في قسم تعلّم.', 'media.openTopic': 'افتح الشرح المكتوب',
@@ -55,5 +55,58 @@
       'ach.student.t': 'أستاذ الحفظ', 'ach.student.d': 'أنهِ 3 دروس حفظ.'
     }
   };
+  var more = {
+    en: {
+      "app.title": "Translation Revision",
+      "app.name": "Translation Revision",
+      "app.short": "Translation Revision",
+      "subject.label": "Subject",
+      "nav.reading": "Reading & Translation",
+      "exam1.desc.s": "A balanced sample of the whole material: 28 terms from every category, 4 written questions and 8 definition checks (40 questions). It sets your starting point.",
+      "exam3.desc.s": "The final exam: another balanced sample of the whole material (40 questions), with different items and formats where possible.",
+      "g1.body2": "Places and stays",
+      "g1.body2.d": "Identify hotel, place, tour and food terms.",
+      "g1.matchDef.d": "Pair each name with its meaning.",
+      "ach.flipper.d": "See {n} terms in the flip cards.",
+      "set.resetConfirm": "Delete ALL progress for this subject on this device? This cannot be undone.",
+      "set.resetText": "Deletes the scores, XP, achievements and history of the current subject from this device.",
+      "reading.title": "Reading & Translation",
+      "reading.lead": "Lecture summaries and translation passages with their translations, for revision. No questions are made from this page.",
+      "reading.tabSum": "Summaries",
+      "reading.tabTr": "Translation passages",
+      "reading.show": "Show translation",
+      "reading.hide": "Hide translation",
+      "reading.note": "The translations are drafts for revision. Compare them with your lecturer's version.",
+      "reading.enar": "English to Arabic",
+      "reading.aren": "Arabic to English",
+      "lesson.pairsHint": "Read each term and its Arabic out loud."
+    },
+    ar: {
+      "app.title": "مراجعة الترجمة",
+      "app.name": "مراجعة الترجمة",
+      "app.short": "مراجعة الترجمة",
+      "subject.label": "المادة",
+      "nav.reading": "القراءة والترجمة",
+      "exam1.desc.s": "عينة متوازنة من المادة كاملة: 28 مصطلحًا من كل الفئات و4 أسئلة مقالية و8 أسئلة عن التعريفات (40 سؤالًا). يحدد نقطة البداية.",
+      "exam3.desc.s": "الامتحان النهائي: عينة متوازنة أخرى من المادة كاملة (40 سؤالًا) بعناصر وصيغ مختلفة كلما أمكن.",
+      "g1.body2": "الأماكن والإقامة",
+      "g1.body2.d": "تعرّف على مصطلحات الفنادق والأماكن والجولات والطعام.",
+      "g1.matchDef.d": "طابق كل اسم مع معناه.",
+      "ach.flipper.d": "شاهد {n} مصطلحًا في بطاقات القلب.",
+      "set.resetConfirm": "هل تريد حذف كل التقدّم في هذه المادة على هذا الجهاز؟ لا يمكن التراجع عن ذلك.",
+      "set.resetText": "يحذف الدرجات والنقاط والإنجازات والسجل الخاص بالمادة الحالية من هذا الجهاز.",
+      "reading.title": "القراءة والترجمة",
+      "reading.lead": "ملخصات المحاضرات ونصوص الترجمة مع ترجماتها للمراجعة. لا تُبنى أسئلة على هذه الصفحة.",
+      "reading.tabSum": "الملخصات",
+      "reading.tabTr": "نصوص الترجمة",
+      "reading.show": "أظهر الترجمة",
+      "reading.hide": "أخفِ الترجمة",
+      "reading.note": "الترجمات مسودات للمراجعة. قارنها بنسخة المحاضِرة.",
+      "reading.enar": "من الإنجليزية إلى العربية",
+      "reading.aren": "من العربية إلى الإنجليزية",
+      "lesson.pairsHint": "اقرأ كل مصطلح ومقابله العربي بصوت عالٍ."
+    }
+  };
+  Object.keys(more).forEach(function (l) { Object.keys(more[l]).forEach(function (k) { add[l][k] = more[l][k]; }); });
   Object.keys(add).forEach(function (l) { Object.keys(add[l]).forEach(function (k) { UN.i18n[l][k] = add[l][k]; }); });
 })();

@@ -1,6 +1,6 @@
 {
-  "name": "UN Translation Revision",
-  "short_name": "UN Revision",
+  "name": "Translation Revision",
+  "short_name": "Revision",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

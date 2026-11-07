@@ -1,6 +1,7 @@
 /* Bootstrap. Everything runs locally; the only optional extra is an offline cache on https/localhost. */
 (function () {
   var UN = window.UN;
+  UN.useSubject(UN.store.getSubject());
   UN.ui.applyLang();
   UN.ui.applyTheme();
   UN.ui.render();

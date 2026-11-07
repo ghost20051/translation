@@ -15,7 +15,7 @@
   }
 
   function normEn(s) {
-    return String(s == null ? '' : s).toLowerCase()
+    return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[\-–—_\/]/g, ' ')
       .replace(/[^a-z0-9\s]/g, '')
       .replace(/\s+/g, ' ').trim()

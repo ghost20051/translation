@@ -1,6 +1,11 @@
-# UN Translation Revision
+# Translation Revision (UN Translation + Tourist Translation)
 
-A bilingual (English / Arabic) study game for UN translation terminology. Plain HTML, CSS and JavaScript. No server, no accounts, no AI, no external services. Progress is saved only in the student's own browser.
+A bilingual (English / Arabic) study game with two subjects: **UN Translation** and **Tourist Translation**. Use the UN / Tourism switch in the top bar; each subject keeps its own scores, XP, weak areas and achievements. Plain HTML, CSS and JavaScript. No server, no accounts, no AI, no external services. Progress is saved only in the student's own browser.
+
+## Subjects
+- **UN Translation:** 20 terms, 5 written questions, the six characteristics of UN translation (31 items). Exams cover every item.
+- **Tourist Translation:** about 340 English-Arabic terms from the lecture glossaries (11 categories: types of tourism, transport, air travel, hotels, rates and plans, booking and procedures, food, attractions, tours, people and jobs, the tourism industry), plus definitions of the types of tourism, etiquette and the language of tourism. Exams 1 and 3 are balanced 40-question samples (28 terms from every category, 4 written questions, 8 definition checks) that avoid repeating terms where possible; Exam 2 targets weak items. Games 2 and 3 have a full-material mode. A **Reading & Translation** page holds the lecture summaries and nine translation passages with translations for review (no questions are made from them). The passage translations and the Arabic lesson text were written by Claude and need a native-speaker check.
+- Source quirks in the PDFs (typos, conflicting Arabic for the same word) were fixed or merged; terms with the same Arabic (for example tour and trip) are accepted for each other when typing.
 
 ## Design
 One design system with two themes: a clean light theme and a modern dark theme (switch in the top bar; the choice is remembered, and the device preference is used until you choose). Desktop has a top bar and left sidebar (Dashboard, Learn, Games, Exams, Progress, Videos & Audio, Vocabulary, Achievements, Settings); phones get a compact top bar and a bottom navigation bar with a "More" sheet. Exams switch to a focused layout with no sidebar. All colours are CSS variables at the top of `css/style.css`. Icons are drawn locally in the Lucide style (`js/icons.js`), so there is no CDN.
@@ -34,6 +39,11 @@ Audio and video: an audio clip that only read the words aloud was tried with Ele
 4. Share the `https://<account>.github.io/<repo>/` link.
 
 Because the site is public, anyone can read the source, **including the answer keys**. See `SECURITY.md`.
+
+## Adding content for the Tourist subject
+- Terms: add a line to the table in `js/data/tourist/terms.js` (`group | English | Arabic variants separated by " / " | other accepted English | short definition`). Everything else (games, exams, lessons) picks it up automatically.
+- Definitions, written questions, answer keys and the question bank: `js/data/tourist/content.js`. Reading page: `js/data/tourist/reading.js`.
+- Run `node tests/tourist.test.js` after changes, and `node tests/make-coverage.js` to refresh `COVERAGE.md`.
 
 ## Adding content
 - **Terms:** add an object to `UN.terms` in `js/data/terms.js` (`id` like `T21`, `en`, `ar` list, `group`). Add it to a set in `UN.confusable` if it is easy to confuse. It then appears in every game and exam automatically. Add the id to a resource in `js/data/resources.js` so it shows in the learning center. Add the new file names to `sw.js` only if you add new files.

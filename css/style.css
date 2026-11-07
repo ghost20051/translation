@@ -251,3 +251,14 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .pair.purple { background: color-mix(in srgb, var(--purple) 14%, transparent); border-color: var(--purple); } .pair.amber { background: color-mix(in srgb, var(--amber) 16%, transparent); border-color: var(--amber); }
 .pair .par { font-size: 1.1rem; }
 .sfull { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; } .bigar { font-weight: 800; font-size: 1.2rem; }
+
+/* tourist lessons: term pairs, definition rows, subject switch */
+.plist { display: flex; flex-direction: column; gap: 8px; }
+.prow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 14px; box-shadow: none; animation: viewIn .35s var(--ease) both; }
+.prow .pen { font-weight: 600; display: flex; align-items: center; gap: 4px; } .prow .par { font-weight: 700; text-align: end; font-size: 1.05rem; } .prow > .ico { color: var(--muted); }
+.term.defrow { flex-direction: column; align-items: flex-start; }
+.seg.subj button { white-space: nowrap; }
+@media (max-width: 560px) { .bt { display: none; } .seg.subj button, .seg.lang button { padding: 5px 8px; font-size: .78rem; } .tools { gap: 4px; } .topbar { gap: 6px; } }
+/* reading page */
+.rpoint { padding: 10px 0; border-block-end: 1px solid var(--line); } .rpoint:last-child { border-block-end: 0; } .rpoint .ar { color: var(--muted); margin-top: 4px; }
+.passage { display: flex; flex-direction: column; gap: 10px; } .passage .text { line-height: 1.8; } .passage .trans { border-inline-start: 3px solid var(--green); padding: 8px 12px; background: var(--surface-2); border-radius: 8px; line-height: 1.9; }

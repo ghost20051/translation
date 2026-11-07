@@ -19,7 +19,7 @@
   UN.achievements = [
     { id: 'first_steps', test: function () { return S().events.length > 0; } },
     { id: 'game1_done',  test: function () { return actsDone() >= 3; } },
-    { id: 'flipper',     test: function () { return Object.keys(S().flipped || {}).length >= UN.terms.length; } },
+    { id: 'flipper',     test: function () { return Object.keys(S().flipped || {}).length >= UN.cfg.flipGoal; } },
     { id: 'combo10',     test: function () { return (g().maxCombo || 0) >= 10; } },
     { id: 'exam_first',  test: function () { return [1, 2, 3].some(function (n) { return examPcts(n).length; }); } },
     { id: 'sharp',       test: function () { return bestAny() >= 80; } },

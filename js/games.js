@@ -84,7 +84,7 @@
       box.appendChild(h('p', { class: 'lead' }, t('game1.lead')));
       var list = [
         ['flip', '🃏', 'g1.flip', flip], ['match1', '🔗', 'g1.matchEnAr', function () { match('en2ar'); }], ['match2', '🔗', 'g1.matchArEn', function () { match('ar2en'); }],
-        ['match3', '📖', 'g1.matchDef', function () { match('def'); }], ['speed', '⚡', 'g1.speed', speed], ['fill', '✏️', 'g1.fill', fill], ['body', '🏛️', 'g1.body', body]];
+        ['match3', '📖', 'g1.matchDef', function () { match('def'); }], ['speed', '⚡', 'g1.speed', speed], ['fill', '✏️', 'g1.fill', fill], ['body', '🏛️', UN.cfg.bodyKey, body]];
       var grid = h('div', { class: 'grid3' });
       list.forEach(function (a) {
         var key = a[0].replace(/\d/, ''); var done = acts[key];
@@ -100,7 +100,7 @@
 
     // --- flip cards
     function flip() {
-      var deck = shuffle(UN.terms.slice()), known = 0, total = deck.length, flipped = false;
+      var deck = shuffle(UN.terms.slice()).slice(0, UN.cfg.flipDeck), known = 0, total = deck.length, flipped = false;
       function show() {
         box.textContent = '';
         if (!deck.length) { mark('flip'); reward(total * 2); return summary(box, new Array(total).fill({ v: 1, q: { item: 'T1' } }), total * 2, flip, '#/game/1', menu); }
@@ -119,11 +119,23 @@
       show();
     }
 
+    // terms whose Arabic differs from each other, so every pair has exactly one answer
+    function distinctTerms(n) {
+      var out = [], used = {};
+      shuffle(UN.terms.slice()).forEach(function (x) {
+        if (out.length >= n) return;
+        var ks = x.ar.map(UN.check.normAr);
+        if (ks.some(function (k) { return used[k]; })) return;
+        ks.forEach(function (k) { used[k] = 1; }); out.push(x);
+      });
+      return out;
+    }
+
     // --- matching race
     function match(kind) {
       var pairs;
-      if (kind === 'def') pairs = shuffle(UN.subs.slice()).map(function (s) { return { id: s.id, l: s.name, r: s.def, ll: 'en', rl: 'en' }; });
-      else pairs = shuffle(UN.terms.slice()).slice(0, 6).map(function (x) {
+      if (kind === 'def') pairs = shuffle(UN.subs.slice()).slice(0, 6).map(function (s) { return { id: s.id, l: s.name, r: s.def, ll: 'en', rl: 'en' }; });
+      else pairs = distinctTerms(6).map(function (x) {
         return kind === 'en2ar' ? { id: x.id, l: x.en, r: x.arShow, ll: 'en', rl: 'ar' } : { id: x.id, l: x.arShow, r: x.en, ll: 'ar', rl: 'en' };
       });
       var selL = null, done = 0, mistakes = 0, missed = {}, t0 = Date.now(), att = UN.store.nextId();
@@ -204,7 +216,7 @@
 
     // --- missing word
     function fill() {
-      var terms = shuffle(UN.terms.filter(function (x) { return G().formatsFor(x.id).indexOf('fill') !== -1; })).slice(0, 6).map(function (x) { return G().make(x.id, 'fill'); });
+      var terms = shuffle(UN.terms.filter(function (x) { return G().formatsFor(x.id).indexOf('fill') !== -1; })).slice(0, 8 - UN.bank.cloze.length).map(function (x) { return G().make(x.id, 'fill'); });
       var cl = UN.bank.cloze.map(function (c) { return G().make(c.item, 'bank:' + c.id); });
       var qs = shuffle(terms.concat(cl));
       quiz(box, qs, { src: 'game1', onDone: function (res) { finishAct('fill', res, res.length * 6, fill); } });
@@ -212,7 +224,7 @@
 
     // --- UN body identification
     function body() {
-      var ids = UN.terms.filter(function (x) { return ['organs', 'sgoffice', 'offices'].indexOf(x.group) !== -1; }).map(function (x) { return x.id; });
+      var ids = UN.terms.filter(function (x) { return UN.cfg.bodyGroups.indexOf(x.group) !== -1; }).map(function (x) { return x.id; });
       var qs = shuffle(ids).slice(0, 8).map(function (id) { return G().make(id, G().pick(['mcq-ar2en', 'mcq-en2ar'])); });
       quiz(box, qs, { src: 'game1', onDone: function (res) { finishAct('body', res, res.length * 6, body); } });
     }
@@ -323,7 +335,7 @@
         groups.sort(function (a, b) { return (cats[a].avg == null ? 0.5 : cats[a].avg) - (cats[b].avg == null ? 0.5 : cats[b].avg); });
         waves = groups.slice(0, 3).map(function (g) { return { g: g, ids: rank.filter(function (id) { return UN.itemsById[id].group === g && bossFmt(id).length; }).slice(0, 5) }; });
       } else {
-        waves = groups.map(function (g) { return { g: g, ids: shuffle(UN.itemIds.filter(function (id) { return UN.itemsById[id].group === g && bossFmt(id).length; })) }; });
+        waves = groups.map(function (g) { return { g: g, ids: shuffle(UN.itemIds.filter(function (id) { return UN.itemsById[id].group === g && bossFmt(id).length; })).slice(0, UN.cfg.waveCap || 7) }; });
       }
       waves = waves.filter(function (w) { return w.ids.length; });
       var hearts = 3, wi = 0, missed = [], att = UN.store.nextId(), correct = 0, asked = 0, xp = 0;

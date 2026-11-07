@@ -17,13 +17,13 @@
     var done = lessonsDone();
     var weak = UN.adapt.weakIds();
     var order = UN.lessons.slice().sort(function (a, b) {
-      var ra = UN.resources.filter(function (r) { return r.id === a.id; })[0], rb = UN.resources.filter(function (r) { return r.id === b.id; })[0];
+      var ra = UN.resources.filter(function (r) { return r.id === (a.res || a.id); })[0], rb = UN.resources.filter(function (r) { return r.id === (b.res || b.id); })[0];
       var wa = ra ? ra.items.filter(function (x) { return weak.indexOf(x) !== -1; }).length : 0, wb = rb ? rb.items.filter(function (x) { return weak.indexOf(x) !== -1; }).length : 0;
       return wb - wa;
     });
     var grid = h('div', { class: 'grid2' });
     order.forEach(function (l) {
-      var res = UN.resources.filter(function (r) { return r.id === l.id; })[0];
+      var res = UN.resources.filter(function (r) { return r.id === (l.res || l.id); })[0];
       var isWeak = res && res.items.some(function (x) { return weak.indexOf(x) !== -1; });
       grid.appendChild(h('a', { class: 'card lcard', href: '#/lesson/' + l.id },
         ui.tile(l.icon, done[l.id] ? 'green' : 'blue'),
@@ -56,6 +56,24 @@
     });
     box.appendChild(list);
     return box;
+  }
+
+  function stepPairs(st) {
+    var box = h('div', { class: 'lstep' }), list = h('div', { class: 'plist' });
+    st.ids.forEach(function (id, i) {
+      var it = UN.itemsById[id];
+      list.appendChild(h('div', { class: 'prow card', style: delay(i) }, h('div', { class: 'pen' }, L(it.en, 'en'), ui.speakBtn(it.en)), ic('chevron-right', 'flip'), h('div', { class: 'par' }, L(it.arShow, 'ar'))));
+    });
+    return h('div', { class: 'lstep' }, h('p', { class: 'lcap' }, t('lesson.pairsHint')), list);
+  }
+
+  function stepDefs(st) {
+    var list = h('div', { class: 'hooks' });
+    st.ids.forEach(function (id, i) {
+      var it = UN.itemsById[id];
+      list.appendChild(h('div', { class: 'hook card', style: delay(i) }, ui.tile('lightbulb', TONES[i % 4]), h('div', null, h('b', null, L(it.en, 'en'), ' = ', L(it.arShow, 'ar')), h('div', { class: 'muted' }, L(it.def, 'ar')))));
+    });
+    return h('div', { class: 'lstep' }, list);
   }
 
   function stepHook(st) {
@@ -134,11 +152,11 @@
     return box;
   }
 
-  var RENDER = { say: stepSay, split: stepSplit, hook: stepHook, compare: stepCompare, letters: stepLetters, blocks: stepBlocks, check: stepCheck };
+  var RENDER = { say: stepSay, pairs: stepPairs, defs: stepDefs, split: stepSplit, hook: stepHook, compare: stepCompare, letters: stepLetters, blocks: stepBlocks, check: stepCheck };
 
   /* ---------- player ---------- */
   UN.routes.lesson = function (id) {
-    var lesson = UN.lessons.filter(function (l) { return l.id === id; })[0];
+    var lesson = UN.lessons.filter(function (l) { return l.id === id; })[0] || UN.lessons.filter(function (l) { return l.res === id; })[0];
     if (!lesson) return UN.routes.lessons();
     var idx = 0, page = h('div', { class: 'page narrow lesson' });
     var head = h('div', { class: 'row between' }), progress = h('div'), area = h('div', { class: 'card lessonarea' }), ctrl = h('div', { class: 'row between' });
@@ -160,7 +178,7 @@
       ctrl.appendChild(nextBtn);
     }
     function finish() {
-      var d = lessonsDone(), first = !d[id]; d[id] = Date.now(); UN.store.save();
+      var d = lessonsDone(), first = !d[lesson.id]; d[lesson.id] = Date.now(); UN.store.save();
       if (first) UN.prog.addXP(25);
       ui.afterProgress(); ui.toast(t('lesson.complete', { xp: first ? 25 : 0 }));
       ui.go('#/lessons');

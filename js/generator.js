@@ -9,11 +9,22 @@
 
   var STOP = { of: 1, the: 1, for: 1, and: 1, to: 1, a: 1 };
 
-  UN.itemsById = {};
-  UN.terms.forEach(function (t) { UN.itemsById[t.id] = t; });
-  UN.written.forEach(function (w) { w.kind = 'wq'; UN.itemsById[w.id] = w; });
-  UN.subs.forEach(function (s) { UN.itemsById[s.id] = s; });
-  UN.itemIds = Object.keys(UN.itemsById);
+  // (Re)build the item index for the subject currently in use.
+  function rebuildIndex() {
+    UN.itemsById = {};
+    UN.terms.forEach(function (t) { t.kind = 'term'; UN.itemsById[t.id] = t; });
+    UN.written.forEach(function (w) { w.kind = 'wq'; UN.itemsById[w.id] = w; });
+    UN.subs.forEach(function (s) { s.kind = 'sub'; UN.itemsById[s.id] = s; });
+    UN.itemIds = Object.keys(UN.itemsById);
+    // terms that share an Arabic form (e.g. "tour" and "trip" are both رحلة) must not be used as each other's distractors
+    var byAr = {};
+    UN.terms.forEach(function (t) { t.same = []; t.ar.forEach(function (a) { var k = UN.check.normAr(a); (byAr[k] = byAr[k] || []).push(t.id); }); });
+    UN.terms.forEach(function (t) {
+      var seen = {};
+      t.ar.forEach(function (a) { byAr[UN.check.normAr(a)].forEach(function (id) { if (id !== t.id && !seen[id]) { seen[id] = 1; t.same.push(id); } }); });
+    });
+  }
+  rebuildIndex();
 
   function rnd(rng) { return (rng || Math.random)(); }
   function shuffle(a, rng) {
@@ -29,9 +40,23 @@
   }
   // n distractor terms: same confusable set first, then others.
   function distractTerms(id, n, rng) {
-    var near = shuffle(setOf(id).filter(function (x) { return x !== id; }), rng);
-    var far = shuffle(UN.terms.map(function (t) { return t.id; }).filter(function (x) { return x !== id && near.indexOf(x) === -1; }), rng);
-    return near.concat(far).slice(0, n).map(function (x) { return UN.itemsById[x]; });
+    var it = UN.itemsById[id], bad = {};
+    bad[id] = 1; (it.same || []).forEach(function (x) { bad[x] = 1; });
+    var set = setOf(id).filter(function (x) { return !bad[x]; });
+    var grp = UN.terms.filter(function (t) { return t.group === it.group && !bad[t.id] && set.indexOf(t.id) === -1; }).map(function (t) { return t.id; });
+    var near = shuffle(set, rng).concat(shuffle(grp, rng));
+    var far = shuffle(UN.terms.map(function (t) { return t.id; }).filter(function (x) { return !bad[x] && near.indexOf(x) === -1; }), rng);
+    // pick n distractors that differ from each other in Arabic too (e.g. street and track are both سكة)
+    var used = {}, out = [];
+    it.ar.forEach(function (x) { used[UN.check.normAr(x)] = 1; });
+    near.concat(far).forEach(function (x) {
+      if (out.length >= n) return;
+      var c = UN.itemsById[x], keys = c.ar.map(UN.check.normAr);
+      if (keys.some(function (k) { return used[k]; })) return;
+      keys.forEach(function (k) { used[k] = 1; });
+      out.push(c);
+    });
+    return out;
   }
 
   function mcq(item, fmt, prompt, promptLang, correct, wrongs, optLang, rng, extra) {
@@ -110,14 +135,14 @@
       }
       case 'mcq-def': {
         var others = shuffle(UN.subs.filter(function (s) { return s.id !== id; }), rng).slice(0, 3);
-        return mcq(id, fmt, 'Which characteristic means: "' + it.def + '"?', 'en', it.name, others.map(function (s) { return s.name; }), 'en', rng);
+        return mcq(id, fmt, 'Which ' + (UN.cfg.subNoun || 'term') + ' means: "' + it.def + '"?', 'en', it.name, others.map(function (s) { return s.name; }), 'en', rng);
       }
       case 'mcq-name': {
         var others2 = shuffle(UN.subs.filter(function (s) { return s.id !== id; }), rng).slice(0, 3);
         return mcq(id, fmt, it.name + ' means…', 'en', it.def, others2.map(function (s) { return s.def; }), 'en', rng);
       }
       case 'type-name':
-        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', answerKind: 'name', prompt: 'Which characteristic means: "' + it.def + '"?', promptLang: 'en', correctText: it.name, accepted: [it.name] };
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', answerKind: 'name', prompt: 'Which ' + (UN.cfg.subNoun || 'term') + ' means: "' + it.def + '"?', promptLang: 'en', correctText: it.name, accepted: [it.name] };
       case 'written':
         return { id: id + ':written', item: id, fmt: fmt, type: 'written', prompt: it.q, promptLang: 'en', correctText: UN.keys.written[id].model };
       case 'recall':
@@ -165,10 +190,13 @@
     if (q.type === 'tf') return given === q.answer ? 1 : 0;
     if (q.type === 'type') {
       if (q.answerKind === 'name') return UN.check.matchName(given, q.correctText) ? 1 : 0;
-      return UN.check.matchTerm(given, UN.itemsById[q.item], q.answerLang) ? 1 : 0;
+      var tm = UN.itemsById[q.item];
+      if (UN.check.matchTerm(given, tm, q.answerLang)) return 1;
+      if (q.answerLang === 'en' && (tm.same || []).some(function (id) { return UN.check.matchTerm(given, UN.itemsById[id], 'en'); })) return 1;
+      return 0;
     }
     return 0;
   }
 
-  UN.gen = { shuffle: shuffle, pick: pick, formatsFor: formatsFor, drillFormatsFor: drillFormatsFor, make: make, chooseFormat: chooseFormat, grade: grade, distractTerms: distractTerms };
+  UN.gen = { rebuildIndex: rebuildIndex, shuffle: shuffle, pick: pick, formatsFor: formatsFor, drillFormatsFor: drillFormatsFor, make: make, chooseFormat: chooseFormat, grade: grade, distractTerms: distractTerms };
 })();

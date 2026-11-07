@@ -125,12 +125,21 @@
   }
   function toggleTheme() { animateTheme(function () { S().theme = resolvedTheme() === 'dark' ? 'light' : 'dark'; UN.store.save(); applyTheme(); refreshChrome(); }); }
   function setTheme(th) { animateTheme(function () { S().theme = th; UN.store.save(); applyTheme(); }); render(); }
+  function switchSubject(id) {
+    UN.store.setSubject(id); UN.useSubject(id);
+    UN.state.exam = null; go('#/home');
+  }
   function setLang(l) { S().lang = l; UN.store.save(); applyLang(); render(); }
   try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (S().theme === 'auto') { applyTheme(); refreshChrome(); } }); } catch (e) { /* older browsers */ }
 
   /* ---------- app shell ---------- */
-  var NAV = [['home', 'layout-dashboard', 'nav.dashboard'], ['learn', 'book-open', 'nav.learn'], ['games', 'gamepad', 'nav.games'], ['exams', 'file-text', 'nav.exams'],
+  var NAV_BASE = [['home', 'layout-dashboard', 'nav.dashboard'], ['learn', 'book-open', 'nav.learn'], ['games', 'gamepad', 'nav.games'], ['exams', 'file-text', 'nav.exams'],
     ['progress', 'bar-chart', 'nav.progress'], ['lessons', 'lightbulb', 'nav.lessons'], ['vocab', 'languages', 'nav.vocab'], ['achievements', 'trophy', 'nav.achievements'], ['settings', 'settings', 'nav.settings']];
+  function navItems() {
+    var n = NAV_BASE.slice();
+    if (UN.cfg && UN.cfg.reading) n.splice(6, 0, ['reading', 'book-open', 'nav.reading']);
+    return n;
+  }
   var BOTTOM = ['home', 'learn', 'games', 'exams'];
 
   function navLink(n, cls) { return h('a', { href: '#/' + n[0], 'data-r': n[0], class: cls || '' }, ic(n[1]), h('span', { class: 'nt' }, t(n[2]))); }
@@ -145,25 +154,27 @@
       h('span', { class: 'bt' }, h('b', null, t('app.short')), h('small', null, t('brand.tag')))));
     var lang = S().lang, dark = resolvedTheme() === 'dark';
     hdr.appendChild(h('div', { class: 'tools' },
+      (inExam || UN.subjectOrder.length < 2) ? null : h('div', { class: 'seg subj', role: 'group', 'aria-label': t('subject.label') },
+        UN.subjectOrder.map(function (id) { var c = UN.subjects[id].cfg; return h('button', { type: 'button', class: id === UN.subjectId ? 'on' : '', title: c.name[lang], 'aria-pressed': String(id === UN.subjectId), onclick: function () { if (id !== UN.subjectId) switchSubject(id); } }, c.short[lang]); })),
       h('div', { class: 'seg lang', role: 'group', 'aria-label': t('set.lang') },
         [['en', 'English'], ['ar', 'العربية']].map(function (o) { return h('button', { type: 'button', lang: o[0], class: o[0] === lang ? 'on' : '', 'aria-pressed': String(o[0] === lang), onclick: function () { if (o[0] !== S().lang) setLang(o[0]); } }, o[1]); })),
       h('button', { class: 'icon-btn round', type: 'button', onclick: toggleTheme, 'aria-label': t('theme.toggle'), title: t('theme.toggle') }, ic(dark ? 'sun' : 'moon')),
       inExam ? null : h('a', { class: 'avatar', href: '#/settings', 'aria-label': t('nav.settings'), title: t('nav.settings') }, ic('user'))));
     if (inExam) return;
 
-    side.appendChild(h('div', { class: 'side-nav' }, NAV.map(function (n) { return navLink(n); })));
+    side.appendChild(h('div', { class: 'side-nav' }, navItems().map(function (n) { return navLink(n); })));
     var xp = UN.prog.xpInfo();
     side.appendChild(h('div', { class: 'levelcard' }, h('span', { class: 'tile amber' }, ic('trophy')), h('b', null, t('lvl.label', { n: xp.level })),
       h('small', null, t('lvl.sub')), bar(xp.into / xp.per), h('small', { class: 'xpnum', dir: 'ltr' }, xp.into + ' / ' + xp.per + ' XP')));
 
-    BOTTOM.forEach(function (k) { nav.appendChild(navLink(NAV.filter(function (n) { return n[0] === k; })[0])); });
+    BOTTOM.forEach(function (k) { nav.appendChild(navLink(NAV_BASE.filter(function (n) { return n[0] === k; })[0])); });
     nav.appendChild(h('button', { type: 'button', class: 'morebtn', 'data-r': 'more', onclick: openMore }, ic('more'), h('span', { class: 'nt' }, t('nav.more'))));
   }
   function openMore() {
     var overlay = h('div', { class: 'overlay sheet-wrap' }), close = function () { overlay.remove(); };
     overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
     overlay.appendChild(h('div', { class: 'sheet card', role: 'dialog', 'aria-modal': 'true' },
-      NAV.filter(function (n) { return BOTTOM.indexOf(n[0]) === -1; }).map(function (n) { var a = navLink(n, 'sheet-link'); a.addEventListener('click', close); return a; })));
+      navItems().filter(function (n) { return BOTTOM.indexOf(n[0]) === -1; }).map(function (n) { var a = navLink(n, 'sheet-link'); a.addEventListener('click', close); return a; })));
     document.body.appendChild(overlay);
   }
   function refreshChrome() { buildChrome(); markNav(); }
@@ -178,7 +189,7 @@
       var on = a.getAttribute('data-r') === cur; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     var more = document.querySelector('#nav .morebtn');
-    if (more) more.classList.toggle('on', ['progress', 'lessons', 'vocab', 'achievements', 'settings'].indexOf(cur) !== -1);
+    if (more) more.classList.toggle('on', ['progress', 'lessons', 'vocab', 'reading', 'achievements', 'settings'].indexOf(cur) !== -1);
   }
 
   /* ---------- router ---------- */
@@ -332,6 +343,7 @@
     var tb = h('div', { class: 'terms' });
     ids.forEach(function (id) {
       var it = UN.itemsById[id];
+      if (it.kind === 'sub') { tb.appendChild(h('div', { class: 'term defrow' }, h('div', { class: 'en' }, L(it.name, 'en')), h('div', { class: 'muted' }, L(it.def, 'en')))); return; }
       if (it.kind !== 'term') return;
       tb.appendChild(h('div', { class: 'term' }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar'))));
     });
@@ -395,7 +407,7 @@
     function drawChips() {
       chips.textContent = '';
       if (tab !== 'terms') return;
-      [['all']].concat(['organs', 'sgoffice', 'offices', 'docs', 'translation'].map(function (g) { return [g]; })).forEach(function (x) {
+      [['all']].concat(UN.cfg.termGroups.map(function (g) { return [g]; })).forEach(function (x) {
         chips.appendChild(h('button', { type: 'button', class: 'chipbtn' + (grp === x[0] ? ' on' : ''), onclick: function () { grp = x[0]; draw(); } }, x[0] === 'all' ? t('vocab.all') : UN.groups[x[0]][lang]));
       });
     }
@@ -462,7 +474,7 @@
     var ag = h('div', { class: 'ach-grid' });
     UN.achievements.forEach(function (a) {
       var on = S().ach[a.id];
-      ag.appendChild(h('div', { class: 'ach card' + (on ? ' got' : '') }, tile(on ? 'trophy' : 'lock', on ? 'amber' : 'slate'), h('div', null, h('b', null, t('ach.' + a.id + '.t')), h('div', { class: 'muted small' }, t('ach.' + a.id + '.d')))));
+      ag.appendChild(h('div', { class: 'ach card' + (on ? ' got' : '') }, tile(on ? 'trophy' : 'lock', on ? 'amber' : 'slate'), h('div', null, h('b', null, t('ach.' + a.id + '.t')), h('div', { class: 'muted small' }, t('ach.' + a.id + '.d', { n: UN.cfg.flipGoal })))));
     });
     page.appendChild(ag);
     return page;

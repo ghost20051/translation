@@ -4,6 +4,7 @@
   var ui = UN.ui, h = ui.h, t = ui.t, L = ui.L;
   var S = function () { return UN.store.get(); };
 
+  function examDesc(n) { return t('exam' + n + '.desc' + (UN.cfg.exam.sample && n !== 2 ? '.s' : '')); }
   function best(no) { var p = UN.prog.examPcts(no); return p.length ? Math.max.apply(null, p) : null; }
 
   UN.routes.exams = function () {
@@ -13,7 +14,7 @@
       var b = best(n);
       grid.appendChild(h('div', { class: 'card exam-card e' + n },
         h('div', { class: 'big-emoji' }, ['📝', '🎯', '🏁'][n - 1]),
-        h('h2', null, t('exam' + n + '.name')), h('p', null, t('exam' + n + '.desc')),
+        h('h2', null, t('exam' + n + '.name')), h('p', null, examDesc(n)),
         h('div', { class: 'muted' }, b == null ? t('exams.notTaken') : t('exams.best') + ': ' + b + '%'),
         h('a', { class: 'btn primary', href: '#/exam/' + n }, b == null ? t('exams.start') : t('exams.retake'))));
     });
@@ -31,7 +32,7 @@
     return h('div', { class: 'page narrow' },
       h('h1', null, t('exam' + no + '.name')),
       h('div', { class: 'card stack' },
-        h('p', null, t('exam' + no + '.desc')),
+        h('p', null, examDesc(no)),
         no === 2 ? h('p', { class: 'note' }, data ? '🎯 ' + t('exam2.adaptiveOn') : 'ℹ️ ' + t('exam2.adaptiveOff')) : null,
         h('h3', null, t('exam.rules')),
         h('ul', { class: 'rules' }, ['exam.r1', 'exam.r2', 'exam.r3', 'exam.r4'].map(function (k) { return h('li', null, t(k)); })),
