@@ -339,13 +339,42 @@
   };
 
   /* ---------- page: learn ---------- */
+  /* A definition shown exactly as in the course material, with two optional helpers:
+     "simple version" (short exam-ready wording) and "translation" (the other language). */
+  function defBox(it) {
+    var lang = it.origLang || 'en', other = lang === 'en' ? 'ar' : 'en';
+    var box = h('div', { class: 'defbox' });
+    if (!it.orig) { box.appendChild(h('div', { class: 'dtext' }, L(it.def, lang))); return box; }
+    var showSimple = false, showTr = false;
+    var body = h('div', { class: 'dbody' }), bar = h('div', { class: 'dbtns' });
+    var bSimple = h('button', { type: 'button', class: 'dbtn', 'aria-pressed': 'false' }, ic('lightbulb'), t('def.simple'));
+    var bTr = h('button', { type: 'button', class: 'dbtn', 'aria-pressed': 'false' }, ic('languages'), t(other === 'ar' ? 'def.toAr' : 'def.toEn'));
+    function draw() {
+      bSimple.setAttribute('aria-pressed', String(showSimple)); bSimple.classList.toggle('on', showSimple);
+      bTr.setAttribute('aria-pressed', String(showTr)); bTr.classList.toggle('on', showTr);
+      body.textContent = '';
+      body.appendChild(h('div', { class: 'dpart' }, h('small', { class: 'dlbl' }, t('def.original')), h('div', { class: 'dtext' }, L(it.orig, lang))));
+      if (showTr && it.origOther) body.appendChild(h('div', { class: 'dpart tr' }, h('small', { class: 'dlbl' }, t('def.translation')), h('div', { class: 'dtext' }, L(it.origOther, other))));
+      if (showSimple) {
+        var p = h('div', { class: 'dpart simple' }, h('small', { class: 'dlbl' }, t('def.simpleLbl')), h('div', { class: 'dtext' }, L(it.def, lang)));
+        if (showTr && it.defOther) p.appendChild(h('div', { class: 'dtext dtr' }, L(it.defOther, other)));
+        p.appendChild(h('small', { class: 'muted dnudge' }, t('def.nudge')));
+        body.appendChild(p);
+      }
+    }
+    bSimple.onclick = function () { showSimple = !showSimple; draw(); };
+    bTr.onclick = function () { showTr = !showTr; draw(); };
+    bar.appendChild(bSimple); bar.appendChild(bTr);
+    box.appendChild(body); box.appendChild(bar); draw();
+    return box;
+  }
   function termTable(ids) {
     var tb = h('div', { class: 'terms' });
     ids.forEach(function (id) {
       var it = UN.itemsById[id];
-      if (it.kind === 'sub') { tb.appendChild(h('div', { class: 'term defrow' }, h('div', { class: 'en' }, L(it.name, 'en')), h('div', { class: 'muted' }, L(it.def, 'en')))); return; }
+      if (it.kind === 'sub') { tb.appendChild(h('div', { class: 'term defrow' }, h('div', { class: 'en' }, L(it.name, 'en')), defBox(it))); return; }
       if (it.kind !== 'term') return;
-      tb.appendChild(h('div', { class: 'term' }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar'))));
+      tb.appendChild(h('div', { class: 'term' + (it.orig ? ' withdef' : '') }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar')), it.orig ? defBox(it) : null));
     });
     return tb;
   }
@@ -419,13 +448,13 @@
           if (grp !== 'all' && it.group !== grp) return;
           if (needle && norm(it.en + ' ' + it.arShow).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'vrow card' }, h('span', { class: 'vnum' }, it.id.slice(1)), h('div', { class: 'ven' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'var' }, L(it.arShow, 'ar')), h('span', { class: 'pill' }, UN.groups[it.group][lang])));
+          list.appendChild(h('div', { class: 'vrow card' }, h('span', { class: 'vnum' }, it.id.slice(1)), h('div', { class: 'ven' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'var' }, L(it.arShow, 'ar')), h('span', { class: 'pill' }, UN.groups[it.group][lang]), it.orig ? defBox(it) : null));
         });
       } else if (tab === 'defs') {
         UN.subs.forEach(function (s) {
           if (needle && norm(s.name + ' ' + s.def).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'vrow card def' }, tile('book', 'purple'), h('div', null, h('b', null, L(s.name, 'en')), h('div', { class: 'muted' }, L(s.def, 'en')))));
+          list.appendChild(h('div', { class: 'vrow card def' }, tile('book', 'purple'), h('div', { class: 'vdef' }, h('b', null, L(s.name, 'en')), defBox(s))));
         });
       } else {
         UN.written.forEach(function (w) {
@@ -565,5 +594,5 @@
 
   UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
     confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
-    applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
+    defBox: defBox, applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
 })();

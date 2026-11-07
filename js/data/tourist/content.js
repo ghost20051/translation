@@ -143,6 +143,7 @@
       { icon: 'landmark', key: s('Pilgrimage / spiritual tourism', 'السياحة الدينية والروحية'), text: s('Spiritual or religious reasons (Hajj, Jerusalem)', 'لأسباب دينية أو روحية (الحج، القدس)') },
       { icon: 'sparkles', key: s('Cultural tourism', 'السياحة الثقافية'), text: s('Festivals, rituals, local cultural activities', 'مهرجانات وطقوس وأنشطة ثقافية محلية') },
       { icon: 'globe', key: s('Wildlife tourism', 'سياحة الحياة البرية'), text: s('Wildlife, flora and fauna in their natural habitat', 'مشاهدة الحيوانات والنباتات في بيئتها الطبيعية') }] },
+    { t: 'subdefs', ids: ['RD-dom', 'RD-int', 'RD-bus', 'RD-adv', 'RD-wild', 'RD-well', 'RD-pil', 'RD-cul'] },
     { t: 'blocks', q: 'RW3', blocks: [
       { label: s('Domestic', 'داخلية'), en: 'Domestic tourism is travelling in your own country, so tourists do not cross international borders or entry points.', ar: 'السياحة الداخلية: جوه البلد من غير عبور حدود' },
       { label: s('International', 'دولية'), en: 'International tourism is travelling outside your country and needs a visa and a passport.', ar: 'السياحة الدولية: برّه البلد وتحتاج تأشيرة وجواز سفر' }] },
@@ -167,6 +168,7 @@
       { icon: 'user', key: s('Good posture', 'وقفة سليمة'), text: s('Feet on the floor, back straight, arms not crossed', 'القدمين على الأرض والظهر مستقيم والذراعين غير متشابكتين') },
       { icon: 'alert-circle', key: s('Sneezing or coughing', 'العطس أو الكحة'), text: s('Cover nose and mouth with a handkerchief in the left hand', 'غطّي الأنف والفم بمنديل في اليد الشمال') },
       { icon: 'sparkles', key: s('Fragrance', 'العطر'), text: s('Apply sparingly; strong or cheap fragrance is offensive', 'استخدمه بخفة؛ العطر القوي مزعج') }] },
+    { t: 'subdefs', ids: ['RE-eti', 'RE-dec', 'RE-pro', 'RE-cou', 'RE-bus', 'RE-soc'] },
     { t: 'blocks', q: 'RW5', blocks: [
       { label: s('What?', 'إيه هو؟'), en: 'Etiquette means conventionally accepted rules for formal relations and personal behaviour in polite society.', ar: 'قواعد متعارف عليها للتعامل والسلوك' },
       { label: s('Also', 'كمان'), en: 'It includes the code of ethical behaviour in professional practice among members of a profession in dealing with each other.', ar: 'ويشمل ميثاق السلوك المهني بين أفراد المهنة' }] },

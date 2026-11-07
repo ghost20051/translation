@@ -396,17 +396,17 @@ Generated from the data files in `js/data/` by `node tests/make-coverage.js`. Ev
 | RW6 | etiquette | What is the difference between business etiquette and social etiquette? | written, bank:RM5, bank:RT4 |
 | RW7 | language | How is the language of tourism described? | written, bank:RM1, bank:RM3, bank:RT8 |
 | RW8 | language | How do the English and Arabic tourism texts differ? | written, bank:RM2, bank:RT5 |
-| RD-dom | defs | Domestic tourism: Travelling in your own country, without crossing international borders or entry points | mcq-def, mcq-name, type-name |
-| RD-int | defs | International tourism: Travelling outside your country, which needs a visa and a passport | mcq-def, mcq-name, type-name |
-| RD-bus | defs | Business tourism: Travelling to attend meetings, conferences, seminars, exhibitions and trade fairs | mcq-def, mcq-name, type-name |
-| RD-adv | defs | Adventure tourism: Travelling to seek fresh adventures and activities such as hiking, rafting, climbing and diving | mcq-def, mcq-name, type-name |
-| RD-wild | defs | Wildlife tourism: Travelling to observe and interact with wildlife, flora and fauna in their natural habitat | mcq-def, mcq-name, type-name |
-| RD-well | defs | Wellness tourism: Travelling to recover health through physical, spiritual or psychological activities | mcq-def, mcq-name, type-name |
-| RD-pil | defs | Pilgrimage and spiritual tourism: Travelling to other places for spiritual or religious reasons | mcq-def, mcq-name, type-name |
-| RD-cul | defs | Cultural tourism: Travelling to learn and take part in local festivals, rituals and cultural activities | mcq-def, mcq-name, type-name |
-| RE-eti | etiquette | Etiquette: Conventionally accepted rules for formal relations and personal behaviour in polite society | mcq-def, mcq-name, type-name |
-| RE-dec | etiquette | Decorum: Behaviour that suggests dignity and a sense of what is appropriate for a person of good breeding | mcq-def, mcq-name, type-name |
-| RE-pro | etiquette | Propriety: Established conventions of morals and good taste | mcq-def, mcq-name, type-name |
-| RE-cou | etiquette | Courtesy: Behaviour that shows respect to everyone, regardless of position | mcq-def, mcq-name, type-name |
-| RE-bus | etiquette | Business etiquette: Genderless: men and women are peers in the workplace | mcq-def, mcq-name, type-name |
-| RE-soc | etiquette | Social etiquette: Traditional chivalrous etiquette, such as holding the door open for a woman | mcq-def, mcq-name, type-name |
+| RD-dom | defs | Domestic tourism: Travelling within your own country, without crossing international borders or entry points. | mcq-def, mcq-name, type-name, define |
+| RD-int | defs | International tourism: Travelling outside your own country; it needs a visa and a passport. | mcq-def, mcq-name, type-name, define |
+| RD-bus | defs | Business tourism: Travelling to attend meetings, conferences, seminars, exhibitions and trade fairs. | mcq-def, mcq-name, type-name, define |
+| RD-adv | defs | Adventure tourism: Travelling to seek new adventures and activities, such as hiking, rafting, climbing and diving. | mcq-def, mcq-name, type-name, define |
+| RD-wild | defs | Wildlife tourism: Travelling to observe and interact with wildlife, plants and animals in their natural habitat. | mcq-def, mcq-name, type-name, define |
+| RD-well | defs | Wellness tourism: Travelling to improve health through physical, spiritual or psychological activities. | mcq-def, mcq-name, type-name, define |
+| RD-pil | defs | Pilgrimage and spiritual tourism: Travelling to other places for spiritual or religious reasons. | mcq-def, mcq-name, type-name, define |
+| RD-cul | defs | Cultural tourism: Travelling to learn about and take part in local festivals, rituals and cultural activities. | mcq-def, mcq-name, type-name, define |
+| RE-eti | etiquette | Etiquette: Accepted rules of polite behaviour in formal and professional relations. | mcq-def, mcq-name, type-name, define |
+| RE-dec | etiquette | Decorum: Dignified behaviour that is appropriate for the situation. | mcq-def, mcq-name, type-name, define |
+| RE-pro | etiquette | Propriety: Following accepted morals and good taste. | mcq-def, mcq-name, type-name, define |
+| RE-cou | etiquette | Courtesy: Showing respect and politeness to everyone, whatever their position. | mcq-def, mcq-name, type-name, define |
+| RE-bus | etiquette | Business etiquette: Etiquette at work: it is genderless, because men and women are peers. | mcq-def, mcq-name, type-name, define |
+| RE-soc | etiquette | Social etiquette: Traditional chivalrous manners in social life, such as holding the door open for a woman. | mcq-def, mcq-name, type-name, define |

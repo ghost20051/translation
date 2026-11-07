@@ -71,7 +71,16 @@
     var list = h('div', { class: 'hooks' });
     st.ids.forEach(function (id, i) {
       var it = UN.itemsById[id];
-      list.appendChild(h('div', { class: 'hook card', style: delay(i) }, ui.tile('lightbulb', TONES[i % 4]), h('div', null, h('b', null, L(it.en, 'en'), ' = ', L(it.arShow, 'ar')), h('div', { class: 'muted' }, L(it.def, 'ar')))));
+      list.appendChild(h('div', { class: 'hook card', style: delay(i) }, ui.tile('lightbulb', TONES[i % 4]), h('div', null, h('b', null, L(it.en, 'en'), ' = ', L(it.arShow, 'ar')), ui.defBox(it))));
+    });
+    return h('div', { class: 'lstep' }, list);
+  }
+
+  function stepSubdefs(st) {
+    var list = h('div', { class: 'hooks' });
+    st.ids.forEach(function (id, i) {
+      var it = UN.itemsById[id];
+      list.appendChild(h('div', { class: 'hook card', style: delay(i) }, ui.tile('book', TONES[i % 4]), h('div', { class: 'vdef' }, h('b', null, L(it.name, 'en')), ui.defBox(it))));
     });
     return h('div', { class: 'lstep' }, list);
   }
@@ -152,7 +161,7 @@
     return box;
   }
 
-  var RENDER = { say: stepSay, pairs: stepPairs, defs: stepDefs, split: stepSplit, hook: stepHook, compare: stepCompare, letters: stepLetters, blocks: stepBlocks, check: stepCheck };
+  var RENDER = { say: stepSay, pairs: stepPairs, defs: stepDefs, subdefs: stepSubdefs, split: stepSplit, hook: stepHook, compare: stepCompare, letters: stepLetters, blocks: stepBlocks, check: stepCheck };
 
   /* ---------- player ---------- */
   UN.routes.lesson = function (id) {

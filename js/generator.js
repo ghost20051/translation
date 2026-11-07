@@ -80,6 +80,7 @@
     }
     if (it.kind === 'sub') {
       var s = ['mcq-def', 'mcq-name', 'type-name'];
+      if (it.orig) s.push('define');
       UN.bank.mcq.concat(UN.bank.tf).forEach(function (b) { if (b.item === id) s.push('bank:' + b.id); });
       return s;
     }
@@ -91,7 +92,7 @@
   // formats usable in games/drills (nothing that needs free writing, plus self-check recall for written items)
   function drillFormatsFor(id) {
     var it = UN.itemsById[id];
-    var f = formatsFor(id).filter(function (x) { return x !== 'written'; });
+    var f = formatsFor(id).filter(function (x) { return x !== 'written' && x !== 'define'; });
     if (it.kind === 'wq') {
       f.push('recall');
       if (id === 'W3') f = ['mcq-def', 'mcq-name', 'recall'];
@@ -143,6 +144,8 @@
       }
       case 'type-name':
         return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', answerKind: 'name', prompt: 'Which ' + (UN.cfg.subNoun || 'term') + ' means: "' + it.def + '"?', promptLang: 'en', correctText: it.name, accepted: [it.name] };
+      case 'define':
+        return { id: id + ':define', item: id, fmt: fmt, type: 'written', prompt: 'Define: ' + it.name, promptLang: 'en', correctText: it.def, extra: { orig: it.orig } };
       case 'written':
         return { id: id + ':written', item: id, fmt: fmt, type: 'written', prompt: it.q, promptLang: 'en', correctText: UN.keys.written[id].model };
       case 'recall':

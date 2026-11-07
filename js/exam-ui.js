@@ -161,7 +161,8 @@
       if (r.type === 'written') {
         card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), h('div', { class: 'quote' }, r.given ? L(r.given, 'en') : h('i', null, t('res.blank')))));
         card.appendChild(h('div', { class: 'est' }, t('res.estimate') + ': ', h('b', null, (r.est || 0) + '%'), ' ', h('span', { class: 'muted small' }, '(' + t('res.estimateNote') + ')')));
-        card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.model')), h('div', { class: 'quote model' }, L(r.correct, 'en'))));
+        card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.model')), h('div', { class: 'quote model' }, L(r.correct, r.pl === 'ar' ? 'en' : (r.orig && /[؀-ۿ]/.test(r.correct) ? 'ar' : 'en')))));
+        if (r.orig) card.appendChild(h('div', { class: 'given' }, h('small', null, t('def.original')), h('div', { class: 'quote' }, L(r.orig, /[؀-ۿ]/.test(r.orig) ? 'ar' : 'en'))));
         card.appendChild(h('div', { class: 'row grade' }, h('span', { class: 'muted' }, t('q.selfGrade')),
           [[1, 'sg.yes', 'ok'], [0.5, 'sg.part', 'part'], [0, 'sg.no', 'bad']].map(function (g) {
             return h('button', { class: 'btn small ' + (r.graded && r.v === g[0] ? g[2] : 'ghost'), onclick: function () {

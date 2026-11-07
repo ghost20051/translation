@@ -102,7 +102,10 @@
       var given = answers[i];
       var row = { item: q.item, fmt: q.fmt, type: q.type, prompt: q.prompt, pl: q.promptLang, given: givenText(q, given),
         correct: q.correctText, v: valueOf(q, given), est: null, graded: q.type !== 'written' };
-      if (q.type === 'written') row.est = UN.check.estimateWritten(given || '', UN.keys.written[q.item].phrases).pct;
+      if (q.type === 'written') {
+        if (q.fmt === 'define') { var di = UN.itemsById[q.item]; row.est = UN.check.estimateBy(given || '', [di.def, di.orig]); row.orig = di.orig; }
+        else row.est = UN.check.estimateWritten(given || '', UN.keys.written[q.item].phrases).pct;
+      }
       return row;
     });
     var att = { id: id, kind: 'exam', no: no, ts: Date.now(), mode: built.mode, rows: rows, extras: built.extras, writtenIds: built.writtenIds, targeted: built.targeted, durSec: meta && meta.durSec };

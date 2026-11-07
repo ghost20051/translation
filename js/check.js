@@ -43,7 +43,35 @@
     return { pct: phrases.length ? Math.round(100 * hit / phrases.length) : 0, hit: hit, total: phrases.length };
   }
 
+  // Estimate for a definition: how many of the key words of ANY acceptable wording (easy or original) appear. Estimate only.
+  var STOP = { the:1, and:1, for:1, with:1, that:1, this:1, from:1, are:1, you:1, your:1, not:1, can:1, have:1, has:1, its:1, who:1, which:1, their:1, them:1, they:1, into:1, such:1, when:1, where:1, what:1, like:1, been:1, being:1, more:1, than:1, also:1, some:1, any:1, other:1, one:1, all:1, but:1, how:1, was:1, were:1, will:1, etc:1 };
+  var AR = /[؀-ۿ]/;
+  function arStem(w) { w = w.replace(/^(وال|بال|لل|ال|و)/, ''); return w.length < 3 ? '' : w.slice(0, 4); }
+  function keyStems(text) {
+    var seen = {}, out = [];
+    if (AR.test(text)) {
+      normAr(text).split(' ').forEach(function (w) { var st = arStem(w); if (st && !seen[st]) { seen[st] = 1; out.push(st); } });
+      return out;
+    }
+    normEn(text).split(' ').forEach(function (w) {
+      if (w.length < 4 || STOP[w]) return;
+      var st = w.slice(0, 5); if (!seen[st]) { seen[st] = 1; out.push(st); }
+    });
+    return out;
+  }
+  function estimateBy(input, texts) {
+    var best = 0;
+    texts.forEach(function (tx) {
+      if (!tx) return;
+      var ks = keyStems(tx); if (!ks.length) return;
+      var given = AR.test(tx) ? ' ' + normAr(input).split(' ').map(arStem).join(' ') + ' ' : normEn(input);
+      var hit = ks.filter(function (k) { return given.indexOf(k) !== -1; }).length;
+      best = Math.max(best, Math.round(100 * hit / ks.length));
+    });
+    return best;
+  }
+
   function estimateLabel(pct) { return pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low'; }
 
-  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, estimateWritten: estimateWritten, estimateLabel: estimateLabel };
+  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
 })();

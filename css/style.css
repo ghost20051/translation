@@ -262,3 +262,20 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 /* reading page */
 .rpoint { padding: 10px 0; border-block-end: 1px solid var(--line); } .rpoint:last-child { border-block-end: 0; } .rpoint .ar { color: var(--muted); margin-top: 4px; }
 .passage { display: flex; flex-direction: column; gap: 10px; } .passage .text { line-height: 1.8; } .passage .trans { border-inline-start: 3px solid var(--green); padding: 8px 12px; background: var(--surface-2); border-radius: 8px; line-height: 1.9; }
+
+/* definitions: original + simple version + translation */
+.defbox { width: 100%; margin-top: 6px; }
+.defbox .dpart { padding: 8px 10px; border-radius: 10px; background: var(--surface-2, rgba(127,127,127,.08)); margin-bottom: 6px; }
+.defbox .dpart.simple { border-inline-start: 3px solid var(--ok); }
+.defbox .dpart.tr { border-inline-start: 3px solid var(--link); }
+.defbox .dlbl { display: block; color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+.defbox .dtext { line-height: 1.55; }
+.defbox .dtr { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(127,127,127,.35); }
+.defbox .dnudge { display: block; margin-top: 6px; }
+.dbtns { display: flex; flex-wrap: wrap; gap: 8px; }
+.dbtn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(127,127,127,.4); background: transparent; color: inherit; font: inherit; font-size: .85rem; cursor: pointer; min-height: 36px; }
+.dbtn .ico, .dbtn svg { width: 16px; height: 16px; }
+.dbtn.on { background: var(--link); color: #fff; border-color: transparent; }
+.term.withdef { flex-wrap: wrap; }
+.vrow .defbox { flex-basis: 100%; grid-column: 1 / -1; } .vdef { flex: 1; min-width: 0; }
+.terms .term.defrow, .terms .term.withdef { grid-column: 1 / -1; }

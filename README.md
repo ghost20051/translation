@@ -69,3 +69,7 @@ Because the site is public, anyone can read the source, **including the answer k
 - Real MP4 playback was not tested (no sample video yet); the player element and the missing-file path were created, local audio playback was verified.
 - Layouts were checked in the built-in browser at 1280 px and 375 px (dark/light, English/Arabic: no horizontal overflow on 13+ pages, no console errors, text/button colour pairs at least 4.5:1). Tablet width (768-1024 px) and real phones were not tested.
 - The service worker and offline cache were not exercised (needs https hosting).
+
+## Definitions (Tourist Translation)
+
+Every definition is shown exactly as written in the course material. Two buttons sit under it: **Simple version** (a short, exam-ready wording with the same core meaning) and **Translation** (Arabic for English originals, English for Arabic ones). In exams, "Define: …" questions are self-graded against both the simple and the original wording. The Arabic text was written by Claude and should be checked by a native speaker.

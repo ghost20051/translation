@@ -6,7 +6,7 @@ global.window = global;
 global.UN = {};
 const mem = {};
 global.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
-['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
+['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
   .forEach(f => require(path.join('..', 'js', f + '.js')));
 
 let n = 0;
@@ -90,7 +90,7 @@ ok('Tourist exam: 40 questions, balanced across categories; Exam 3 asks differen
   UN.store.reset();
   const e1 = UN.exam.buildFull();
   assert.strictEqual(e1.qs.length, 40);
-  assert.strictEqual(e1.qs.filter(q => q.type === 'written').length, 4);
+  assert.strictEqual(e1.qs.filter(q => q.fmt === 'written').length, 4);
   const termQs = e1.qs.filter(q => UN.itemsById[q.item].kind === 'term');
   assert.strictEqual(termQs.length, 28);
   assert.strictEqual(new Set(termQs.map(q => q.item)).size, 28, 'terms must be unique');
@@ -151,5 +151,30 @@ ok('Reading data: 9 passages, both directions, with translations', () => {
   assert.strictEqual(p.filter(x => x.dir === 'en2ar').length, 4);
   assert.strictEqual(p.filter(x => x.dir === 'ar2en').length, 5);
 });
+ok('Definitions: original kept verbatim, short simple version, translations present, define questions graded', () => {
+  const withOrig = UN.itemIds.map(i => UN.itemsById[i]).filter(x => x.orig);
+  assert.ok(withOrig.length >= 14 + 15, 'definitions with an original: ' + withOrig.length);
+  UN.subs.forEach(x => {
+    assert.ok(x.orig && x.def && x.origOther && x.defOther, 'missing parts ' + x.id);
+    assert.ok(x.def.length <= x.orig.length, 'simple version must not be longer than the original: ' + x.id);
+    assert.ok(x.def.split(' ').length <= 20, 'simple version too long: ' + x.id);
+  });
+  withOrig.filter(x => x.kind === 'term').forEach(x => assert.ok(x.origOther && x.defOther, 'term translation ' + x.id));
+  const sub = UN.subs[0], q = UN.gen.make(sub.id, 'define');
+  assert.strictEqual(q.type, 'written');
+  assert.strictEqual(q.correctText, sub.def);
+  assert.strictEqual(UN.check.estimateBy(sub.def, [sub.def, sub.orig]), 100);
+  assert.strictEqual(UN.check.estimateBy(sub.orig, [sub.def, sub.orig]), 100);
+  assert.strictEqual(UN.check.estimateBy('hotel room', [sub.def, sub.orig]), 0);
+  const term = withOrig.find(x => x.kind === 'term');
+  assert.strictEqual(UN.check.estimateBy(term.def, [term.def, term.orig]), 100);
+  UN.store.reset();
+  const att = UN.exam.finish(1, { mode: 'full', qs: [q], extras: [], writtenIds: [], targeted: [] }, { 0: sub.def }, {});
+  assert.strictEqual(att.rows[0].est, 100);
+  assert.strictEqual(att.rows[0].orig, sub.orig);
+  assert.strictEqual(att.rows[0].graded, false);
+  UN.store.reset();
+});
+
 
 console.log('\n' + n + ' tourist test groups passed');
