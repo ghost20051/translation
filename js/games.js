@@ -64,6 +64,7 @@
     var right = results.filter(function (r) { return r.v >= 0.99; }).length;
     var missed = results.filter(function (r) { return r.v < 0.75; }).map(function (r) { return r.q.item; });
     box.textContent = '';
+    if (UN.sfx) UN.sfx.play(right === results.length ? 'win' : right * 2 >= results.length ? 'done' : 'lose');
     box.appendChild(h('div', { class: 'card result center' },
       h('div', { class: 'big-emoji' }, right === results.length ? '🎉' : '👏'),
       h('h2', null, t('sum.done')), h('p', null, t('sum.score', { r: right, n: results.length }) + ' · +' + xp + ' XP'),
@@ -108,7 +109,7 @@
         S().flipped[it.id] = 1; UN.store.save();
         var front = h('div', { class: 'face front' }, h('small', null, t('flip.tap')), h('div', { class: 'big-term' }, L(it.en, 'en')), ui.speakBtn(it.en));
         var back = h('div', { class: 'face back' }, h('small', null, UN.groups[it.group][S().lang]), h('div', { class: 'big-term' }, L(it.arShow, 'ar')));
-        var card = h('div', { class: 'flipcard', role: 'button', tabindex: '0', onclick: function () { card.classList.toggle('flipped'); } }, h('div', { class: 'inner' }, front, back));
+        var card = h('div', { class: 'flipcard', role: 'button', tabindex: '0', onclick: function () { card.classList.toggle('flipped'); if (UN.sfx) UN.sfx.play('flip'); } }, h('div', { class: 'inner' }, front, back));
         card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('flipped'); } });
         box.appendChild(h('div', { class: 'row between' }, h('b', null, t('flip.left', { n: deck.length })), ui.bar((total - deck.length) / total, 'good')));
         box.appendChild(card);
@@ -159,8 +160,10 @@
           if (b.classList.contains('done') || selL == null) return;
           if (selL === p.id) {
             lbtn[p.id].classList.remove('sel'); lbtn[p.id].classList.add('done'); b.classList.add('done'); selL = null; done++;
+            if (UN.sfx && done < pairs.length) UN.sfx.play('pair');
             if (done === pairs.length) end();
           } else {
+            if (UN.sfx) UN.sfx.play('miss');
             mistakes++; missed[selL] = 1; b.classList.add('shake'); lbtn[selL].classList.add('shake');
             var lb = lbtn[selL]; setTimeout(function () { b.classList.remove('shake'); lb.classList.remove('shake'); }, 450);
           }
@@ -362,9 +365,11 @@
           }
           holder.appendChild(UN.qview.render(q, { mode: 'game', focus: true, onAnswer: function (v) { done(v); } }));
           box.appendChild(holder); box.appendChild(nxt);
+          var lastLeft = null;
           var tick = ui.every(function () {
             if (answered) { clearInterval(tick); return; }
             left = secs - Math.floor((Date.now() - started) / 1000); tbar.firstChild.style.width = (100 * left / secs) + '%'; tbar.classList.toggle('low', left <= 5);
+            if (left <= 5 && left > 0 && left !== lastLeft && UN.sfx) UN.sfx.play('time'); lastLeft = left;
             if (left <= 0) {
               clearInterval(tick);
               Array.prototype.forEach.call(holder.querySelectorAll('button,input,textarea'), function (b) { b.disabled = true; });
@@ -404,6 +409,7 @@
       function end(victory) {
         gm().g3 = (gm().g3 || 0) + 1; if (victory) gm().bossWins = (gm().bossWins || 0) + 1;
         var bonus = victory ? 50 : 0; UN.store.save(); reward(xp + bonus);
+        if (UN.sfx) UN.sfx.play(victory ? 'win' : 'lose');
         box.textContent = '';
         box.appendChild(h('div', { class: 'card result center' }, h('div', { class: 'big-emoji' }, victory ? '🏆' : '💔'), h('h2', null, victory ? t('boss.win') : t('boss.lose')),
           h('p', null, t('sum.score', { r: correct, n: asked }) + ' · +' + (xp + bonus) + ' XP'),

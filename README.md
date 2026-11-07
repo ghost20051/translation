@@ -73,3 +73,7 @@ Because the site is public, anyone can read the source, **including the answer k
 ## Definitions (Tourist Translation)
 
 Every definition is shown exactly as written in the course material. Two buttons sit under it: **Simple version** (a short, exam-ready wording with the same core meaning) and **Translation** (Arabic for English originals, English for Arabic ones). In exams, "Define: …" questions are self-graded against both the simple and the original wording. The Arabic text was written by Claude and should be checked by a native speaker.
+
+## Sound effects
+
+All sounds are generated in the browser with the Web Audio API (no audio files, nothing to download, works offline). They play on right/wrong/partly answers in games and lessons, matching pairs and mistakes, card flips, the boss-battle countdown, win/lose fanfares, achievements, finishing a lesson and submitting an exam. Exams never reveal correctness through sound. A speaker button in the top bar turns sound on or off (the choice is remembered).

@@ -56,6 +56,7 @@
     ex.running = false;
     var att = UN.exam.finish(ex.no, ex.built, ex.answers, { durSec: Math.round((Date.now() - ex.startedAt) / 1000) });
     UN.state.exam = null;
+    if (UN.sfx) UN.sfx.play('finish');
     ui.afterProgress();
     ui.go('#/exam-result/' + att.id);
   }

@@ -189,6 +189,7 @@
     function finish() {
       var d = lessonsDone(), first = !d[lesson.id]; d[lesson.id] = Date.now(); UN.store.save();
       if (first) UN.prog.addXP(25);
+      if (UN.sfx) UN.sfx.play('done');
       ui.afterProgress(); ui.toast(t('lesson.complete', { xp: first ? 25 : 0 }));
       ui.go('#/lessons');
     }

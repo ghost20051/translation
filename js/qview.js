@@ -22,6 +22,7 @@
       fb.textContent = '';
       fb.appendChild(h('b', null, v >= 0.99 ? '✅ ' + t('fb.correct') : v > 0 ? '🟡 ' + t('fb.partly') : '❌ ' + t('fb.wrong')));
       if (v < 0.99 && q.type !== 'recall') fb.appendChild(h('div', null, t('fb.answer') + ' ', ui.mixed(String(q.correctText))));
+      if (!exam && UN.sfx) UN.sfx.play(v >= 0.99 ? 'correct' : v > 0 ? 'partly' : 'wrong');
       if (cfg.onAnswer) cfg.onAnswer(v, given);
     }
 

@@ -98,7 +98,7 @@
   }
 
   function afterProgress() {
-    UN.prog.checkAch().forEach(function (id) { toast(t('ach.' + id + '.t'), 'ach'); });
+    UN.prog.checkAch().forEach(function (id) { toast(t('ach.' + id + '.t'), 'ach'); if (UN.sfx) UN.sfx.play('ach'); });
     refreshChrome();
   }
 
@@ -129,6 +129,7 @@
     UN.store.setSubject(id); UN.useSubject(id);
     UN.state.exam = null; go('#/home');
   }
+  function toggleSound() { if (UN.sfx) { UN.sfx.setEnabled(!UN.sfx.enabled()); refreshChrome(); } }
   function setLang(l) { S().lang = l; UN.store.save(); applyLang(); render(); }
   try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (S().theme === 'auto') { applyTheme(); refreshChrome(); } }); } catch (e) { /* older browsers */ }
 
@@ -158,6 +159,7 @@
         UN.subjectOrder.map(function (id) { var c = UN.subjects[id].cfg; return h('button', { type: 'button', class: id === UN.subjectId ? 'on' : '', title: c.name[lang], 'aria-pressed': String(id === UN.subjectId), onclick: function () { if (id !== UN.subjectId) switchSubject(id); } }, c.short[lang]); })),
       h('div', { class: 'seg lang', role: 'group', 'aria-label': t('set.lang') },
         [['en', 'English'], ['ar', 'العربية']].map(function (o) { return h('button', { type: 'button', lang: o[0], class: o[0] === lang ? 'on' : '', 'aria-pressed': String(o[0] === lang), onclick: function () { if (o[0] !== S().lang) setLang(o[0]); } }, o[1]); })),
+      h('button', { class: 'icon-btn round', type: 'button', 'data-nosfx': '1', 'aria-pressed': String(!UN.sfx || UN.sfx.enabled()), onclick: toggleSound, 'aria-label': t('sfx.toggle'), title: t('sfx.toggle') }, ic(UN.sfx && !UN.sfx.enabled() ? 'volume-x' : 'volume')),
       h('button', { class: 'icon-btn round', type: 'button', onclick: toggleTheme, 'aria-label': t('theme.toggle'), title: t('theme.toggle') }, ic(dark ? 'sun' : 'moon')),
       inExam ? null : h('a', { class: 'avatar', href: '#/settings', 'aria-label': t('nav.settings'), title: t('nav.settings') }, ic('user'))));
     if (inExam) return;
