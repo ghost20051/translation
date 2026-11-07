@@ -1,0 +1,557 @@
+/* UI core: DOM helpers, theme, router, app shell (top bar, sidebar, bottom nav) and the main pages. No innerHTML anywhere. */
+(function () {
+  var UN = window.UN = window.UN || {};
+  var S = function () { return UN.store.get(); };
+  UN.state = { exam: null, timers: [] };
+  UN.routes = {};
+
+  /* ---------- helpers ---------- */
+  function append(el, c) {
+    if (c == null || c === false) return;
+    if (Array.isArray(c)) { c.forEach(function (x) { append(el, x); }); return; }
+    if (typeof c === 'object') { el.appendChild(c); return; }
+    c = String(c);
+    if (UN.icons.hasIcon(c)) { UN.icons.nodes(c).forEach(function (n) { n.classList && n.classList.remove('flip'); el.appendChild(n); }); return; }
+    el.appendChild(document.createTextNode(c));
+  }
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v == null || v === false) return;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+      else if (k === 'style') el.setAttribute('style', v);
+      else if (v === true) el.setAttribute(k, '');
+      else el.setAttribute(k, v);
+    });
+    for (var i = 2; i < arguments.length; i++) append(el, arguments[i]);
+    return el;
+  }
+  function ic(name, cls) { return UN.icons.icon(name, cls); }
+  function setText(el, str) { el.textContent = ''; append(el, str); }
+  function t(key, vars) {
+    var lang = S().lang, d = UN.i18n[lang] || {}, s = d[key];
+    if (s == null) s = (UN.i18n.en || {})[key];
+    if (s == null) return key;
+    if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); });
+    return s;
+  }
+  // text in a fixed language (exam content keeps its own language whatever the interface language is)
+  function L(text, lang, cls) { return h('span', { lang: lang, dir: lang === 'ar' ? 'rtl' : 'ltr', class: 'bidi ' + (cls || '') }, text); }
+  var AR_RUN = /([؀-ۿ][؀-ۿ\s\/]*[؀-ۿ]|[؀-ۿ])/;
+  function mixed(text) {
+    var out = h('span', { dir: 'ltr', lang: 'en', class: 'bidi' });
+    String(text).split(AR_RUN).forEach(function (p, i) {
+      if (!p) return;
+      out.appendChild(i % 2 ? h('bdi', { dir: 'rtl', lang: 'ar' }, p) : document.createTextNode(p));
+    });
+    return out;
+  }
+  function promptNode(q) { return q.promptLang === 'ar' ? L(q.prompt, 'ar') : mixed(q.prompt); }
+  function termLabel(id) {
+    var it = UN.itemsById[id];
+    if (it.kind === 'term') return h('span', null, L(it.en, 'en'), ' · ', L(it.arShow, 'ar'));
+    if (it.kind === 'sub') return L(it.name, 'en');
+    return L(it.q, 'en');
+  }
+  function later(fn, ms) { var id = setTimeout(fn, ms); UN.state.timers.push(id); return id; }
+  function every(fn, ms) { var id = setInterval(fn, ms); UN.state.timers.push(id); return id; }
+  function clearTimers() { UN.state.timers.forEach(function (id) { clearTimeout(id); clearInterval(id); }); UN.state.timers = []; }
+  function pct(n) { return Math.round(n * 100) + '%'; }
+  function bar(value, cls) { return h('div', { class: 'bar ' + (cls || ''), role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(Math.round(value * 100)) }, h('div', { class: 'fill', style: 'width:' + Math.max(0, Math.min(100, value * 100)) + '%' })); }
+  function go(hash) { if (location.hash === hash) render(); else location.hash = hash; }
+  function tile(name, tone) { return h('span', { class: 'tile ' + (tone || 'blue') }, ic(name)); }
+
+  function toast(msg, kind) {
+    var box = document.getElementById('toasts');
+    var el = h('div', { class: 'toast ' + (kind || ''), role: 'status' }, kind === 'ach' ? ic('trophy') : null, msg);
+    box.appendChild(el);
+    setTimeout(function () { el.classList.add('out'); setTimeout(function () { el.remove(); }, 400); }, 3200);
+  }
+
+  function confirmDialog(text, yesLabel, onYes, danger) {
+    var overlay = h('div', { class: 'overlay', role: 'dialog', 'aria-modal': 'true' });
+    var close = function () { overlay.remove(); };
+    overlay.appendChild(h('div', { class: 'dialog card' },
+      h('p', null, text),
+      h('div', { class: 'row end' },
+        h('button', { class: 'btn ghost', onclick: close }, t('cancel')),
+        h('button', { class: 'btn ' + (danger ? 'danger' : 'primary'), onclick: function () { close(); onYes(); } }, yesLabel))));
+    document.body.appendChild(overlay);
+  }
+
+  function speak(text, lang) {
+    if (UN.state.exam && UN.state.exam.running) return;
+    try {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text); u.lang = lang === 'ar' ? 'ar-EG' : 'en-US'; u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    } catch (e) { /* audio is optional */ }
+  }
+  function speakBtn(text) {
+    if (!('speechSynthesis' in window)) return null;
+    return h('button', { class: 'icon-btn', type: 'button', 'aria-label': t('listen'), title: t('listen'), onclick: function (e) { e.stopPropagation(); speak(text, 'en'); } }, ic('volume'));
+  }
+
+  function afterProgress() {
+    UN.prog.checkAch().forEach(function (id) { toast(t('ach.' + id + '.t'), 'ach'); });
+    refreshChrome();
+  }
+
+  /* ---------- language / theme ---------- */
+  function applyLang() {
+    var lang = S().lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = t('app.title');
+  }
+  function resolvedTheme() {
+    var th = S().theme;
+    if (th === 'light' || th === 'dark') return th;
+    try { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch (e) { return 'light'; }
+  }
+  function applyTheme() {
+    var r = resolvedTheme();
+    document.documentElement.setAttribute('data-theme', r);
+    var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', r === 'dark' ? '#0b1120' : '#2563eb');
+  }
+  function animateTheme(fn) {
+    var root = document.documentElement; root.classList.add('theme-anim'); fn();
+    setTimeout(function () { root.classList.remove('theme-anim'); }, 350);
+  }
+  function toggleTheme() { animateTheme(function () { S().theme = resolvedTheme() === 'dark' ? 'light' : 'dark'; UN.store.save(); applyTheme(); refreshChrome(); }); }
+  function setTheme(th) { animateTheme(function () { S().theme = th; UN.store.save(); applyTheme(); }); render(); }
+  function setLang(l) { S().lang = l; UN.store.save(); applyLang(); render(); }
+  try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (S().theme === 'auto') { applyTheme(); refreshChrome(); } }); } catch (e) { /* older browsers */ }
+
+  /* ---------- app shell ---------- */
+  var NAV = [['home', 'layout-dashboard', 'nav.dashboard'], ['learn', 'book-open', 'nav.learn'], ['games', 'gamepad', 'nav.games'], ['exams', 'file-text', 'nav.exams'],
+    ['progress', 'bar-chart', 'nav.progress'], ['lessons', 'lightbulb', 'nav.lessons'], ['vocab', 'languages', 'nav.vocab'], ['achievements', 'trophy', 'nav.achievements'], ['settings', 'settings', 'nav.settings']];
+  var BOTTOM = ['home', 'learn', 'games', 'exams'];
+
+  function navLink(n, cls) { return h('a', { href: '#/' + n[0], 'data-r': n[0], class: cls || '' }, ic(n[1]), h('span', { class: 'nt' }, t(n[2]))); }
+
+  function buildChrome() {
+    var hdr = document.getElementById('hdr'), side = document.getElementById('side'), nav = document.getElementById('nav');
+    hdr.textContent = ''; side.textContent = ''; nav.textContent = '';
+    var inExam = !!(UN.state.exam && UN.state.exam.running);
+    document.body.classList.toggle('exam-mode', inExam);
+
+    hdr.appendChild(h('a', { class: 'brand', href: inExam ? '#/exam-run' : '#/home' }, h('span', { class: 'logo' }, ic('globe')),
+      h('span', { class: 'bt' }, h('b', null, t('app.short')), h('small', null, t('brand.tag')))));
+    var lang = S().lang, dark = resolvedTheme() === 'dark';
+    hdr.appendChild(h('div', { class: 'tools' },
+      h('div', { class: 'seg lang', role: 'group', 'aria-label': t('set.lang') },
+        [['en', 'English'], ['ar', 'العربية']].map(function (o) { return h('button', { type: 'button', lang: o[0], class: o[0] === lang ? 'on' : '', 'aria-pressed': String(o[0] === lang), onclick: function () { if (o[0] !== S().lang) setLang(o[0]); } }, o[1]); })),
+      h('button', { class: 'icon-btn round', type: 'button', onclick: toggleTheme, 'aria-label': t('theme.toggle'), title: t('theme.toggle') }, ic(dark ? 'sun' : 'moon')),
+      inExam ? null : h('a', { class: 'avatar', href: '#/settings', 'aria-label': t('nav.settings'), title: t('nav.settings') }, ic('user'))));
+    if (inExam) return;
+
+    side.appendChild(h('div', { class: 'side-nav' }, NAV.map(function (n) { return navLink(n); })));
+    var xp = UN.prog.xpInfo();
+    side.appendChild(h('div', { class: 'levelcard' }, h('span', { class: 'tile amber' }, ic('trophy')), h('b', null, t('lvl.label', { n: xp.level })),
+      h('small', null, t('lvl.sub')), bar(xp.into / xp.per), h('small', { class: 'xpnum', dir: 'ltr' }, xp.into + ' / ' + xp.per + ' XP')));
+
+    BOTTOM.forEach(function (k) { nav.appendChild(navLink(NAV.filter(function (n) { return n[0] === k; })[0])); });
+    nav.appendChild(h('button', { type: 'button', class: 'morebtn', 'data-r': 'more', onclick: openMore }, ic('more'), h('span', { class: 'nt' }, t('nav.more'))));
+  }
+  function openMore() {
+    var overlay = h('div', { class: 'overlay sheet-wrap' }), close = function () { overlay.remove(); };
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    overlay.appendChild(h('div', { class: 'sheet card', role: 'dialog', 'aria-modal': 'true' },
+      NAV.filter(function (n) { return BOTTOM.indexOf(n[0]) === -1; }).map(function (n) { var a = navLink(n, 'sheet-link'); a.addEventListener('click', close); return a; })));
+    document.body.appendChild(overlay);
+  }
+  function refreshChrome() { buildChrome(); markNav(); }
+  function curRoute() {
+    var cur = (location.hash.replace('#/', '').split('/')[0]) || 'home';
+    if (cur === 'lesson') cur = 'lessons'; if (cur === 'game') cur = 'games'; if (cur === 'exam' || cur === 'exam-run' || cur === 'exam-result') cur = 'exams'; if (cur === 'dashboard') cur = 'progress';
+    return cur;
+  }
+  function markNav() {
+    var cur = curRoute();
+    Array.prototype.forEach.call(document.querySelectorAll('#side a, #nav a'), function (a) {
+      var on = a.getAttribute('data-r') === cur; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    var more = document.querySelector('#nav .morebtn');
+    if (more) more.classList.toggle('on', ['progress', 'lessons', 'vocab', 'achievements', 'settings'].indexOf(cur) !== -1);
+  }
+
+  /* ---------- router ---------- */
+  var suppress = false;
+  function parse() {
+    var raw = (location.hash || '#/home').replace(/^#\/?/, '');
+    var parts = raw.split('/');
+    return { name: parts[0] || 'home', arg: parts[1] };
+  }
+  function render() {
+    clearTimers();
+    var r = parse(), fn = UN.routes[r.name] || UN.routes.home;
+    var ex = UN.state.exam;
+    if (ex && ex.running && r.name !== 'exam-run') { fn = UN.routes['exam-run']; }
+    if (!(ex && ex.running) && r.name === 'exam-run') fn = UN.routes.exams;
+    buildChrome(); markNav();
+    var app = document.getElementById('app');
+    app.textContent = '';
+    var view = fn(r.arg);
+    view.classList.add('view');
+    app.appendChild(view);
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', function () {
+    if (suppress) { suppress = false; return; }
+    var ex = UN.state.exam, r = parse();
+    if (ex && ex.running && r.name !== 'exam-run') {
+      var target = location.hash;
+      suppress = true; location.hash = '#/exam-run';
+      confirmDialog(t('exam.leave'), t('exam.leaveYes'), function () { UN.exam_ui.abandon(); go(target); }, true);
+      return;
+    }
+    render();
+  });
+
+  /* ---------- shared widgets ---------- */
+  function stepState(n) {
+    var p = UN.prog;
+    if (n === 'g1') return p.actsDone() >= 3 ? 'done' : (p.actsDone() ? 'part' : 'todo');
+    if (n === 'g2') return (p.g().g2 || 0) ? 'done' : 'todo';
+    if (n === 'g3') return (p.g().g3 || 0) ? 'done' : 'todo';
+    var no = +n.slice(1), a = p.examPcts(no);
+    return a.length ? 'done' : 'todo';
+  }
+  function journey() {
+    var steps = [['g1', 'gamepad', 'game1.name', '#/game/1'], ['e1', 'file-text', 'exam1.name', '#/exam/1'], ['g2', 'wrench', 'game2.name', '#/game/2'],
+      ['e2', 'file-text', 'exam2.name', '#/exam/2'], ['g3', 'swords', 'game3.name', '#/game/3'], ['e3', 'flag', 'exam3.name', '#/exam/3']];
+    var wrap = h('ol', { class: 'journey' });
+    steps.forEach(function (s) {
+      var st = stepState(s[0]), score = '';
+      if (s[0].charAt(0) === 'e') { var a = UN.prog.examPcts(+s[0].slice(1)); if (a.length) score = a[a.length - 1] + '%'; }
+      wrap.appendChild(h('li', { class: 'step ' + st },
+        h('a', { href: s[3] }, h('span', { class: 'bubble' }, ic(st === 'done' ? 'check' : s[1])), h('span', { class: 'sl' }, t(s[2])), score ? h('span', { class: 'sc' }, score) : null)));
+    });
+    return wrap;
+  }
+  function nextStep() {
+    var order = [['g1', '#/game/1', 'game1.name'], ['e1', '#/exam/1', 'exam1.name'], ['g2', '#/game/2', 'game2.name'], ['e2', '#/exam/2', 'exam2.name'], ['g3', '#/game/3', 'game3.name'], ['e3', '#/exam/3', 'exam3.name']];
+    for (var i = 0; i < order.length; i++) if (stepState(order[i][0]) !== 'done') return order[i];
+    return ['rev', '#/progress', 'nav.progress'];
+  }
+  function pageHead(title, sub, extra) {
+    return h('div', { class: 'pagehead' }, h('div', null, h('h1', null, title), sub ? h('p', { class: 'lead' }, sub) : null), extra || null);
+  }
+  function stat(icon, tone, label, value, sub) {
+    return h('div', { class: 'card stat' }, tile(icon, tone), h('div', { class: 'sbody' }, h('small', null, label), h('b', { class: 'num' }, value), sub ? h('span', { class: 'ssub ' + (sub[1] || '') }, sub[0]) : null));
+  }
+  function ring(value, label) {
+    return h('div', { class: 'ring', style: '--p:' + Math.round(value * 100), role: 'img', 'aria-label': label }, h('span', null, Math.round(value * 100) + '%'), h('small', null, label));
+  }
+  function empty(icon, title, text, action) {
+    return h('div', { class: 'empty' }, h('span', { class: 'tile slate big' }, ic(icon)), h('b', null, title), h('p', { class: 'muted' }, text), action || null);
+  }
+  function ago(ts) {
+    var m = Math.round((Date.now() - ts) / 60000);
+    if (m < 1) return t('ago.now'); if (m < 60) return t('ago.min', { n: m });
+    var hr = Math.round(m / 60); if (hr < 24) return t('ago.hr', { n: hr });
+    return t('ago.day', { n: Math.round(hr / 24) });
+  }
+
+  /* ---------- page: dashboard (home) ---------- */
+  UN.routes.home = function () {
+    var info = UN.prog.xpInfo(), o = UN.adapt.overall(), acc = UN.prog.accuracy(), sk = UN.prog.streak(), cats = UN.adapt.categoryStats();
+    var page = h('div', { class: 'page' });
+
+    page.appendChild(h('section', { class: 'card welcome' }, h('div', null, h('h1', null, t('dash.welcome')), h('p', { class: 'lead' }, t('dash.welcomeSub'))),
+      h('span', { class: 'emblem', 'aria-hidden': 'true' }, ic('globe'))));
+
+    page.appendChild(h('section', { class: 'grid4' },
+      stat('star', 'amber', t('stat.xp'), String(info.xp), [t('xp.next', { n: info.per - info.into }), 'muted']),
+      stat('trophy', 'blue', t('stat.level'), String(info.level), [t('lvl.sub'), 'blue']),
+      stat('target', 'green', t('stat.accuracy'), acc == null ? '—' : pct(acc), [acc == null ? t('stat.noacc') : acc >= 0.75 ? t('stat.acc.good') : t('stat.acc.keep'), acc != null && acc >= 0.75 ? 'green' : 'muted']),
+      stat('flame', 'purple', t('stat.streak'), t('stat.days', { n: sk.days }), [sk.today ? t('stat.today') : t('stat.startToday'), 'muted'])));
+
+    var left = h('div', { class: 'stack' }), right = h('div', { class: 'stack' });
+    var cont = h('div', { class: 'grid3 tight' });
+    [[1, 'gamepad', 'blue'], [2, 'target', 'green'], [3, 'trophy', 'purple']].forEach(function (g) {
+      cont.appendChild(h('div', { class: 'card gcard tone-' + g[2] }, tile(g[1], g[2]), h('b', null, t('game' + g[0] + '.short')), h('small', { class: 'muted' }, t('game' + g[0] + '.tag')),
+        h('a', { class: 'btn small ' + g[2], href: '#/game/' + g[0] }, t('games.play'))));
+    });
+    left.appendChild(h('section', null, h('h2', null, t('dash.continue')), cont));
+
+    var weak = UN.adapt.weakIds(), rec = UN.adapt.recommendResources(weak).slice(0, 4);
+    var recGrid = h('div', { class: 'grid2' });
+    if (rec.length) rec.forEach(function (r) {
+      recGrid.appendChild(h('a', { class: 'card rcard', href: '#/lesson/' + r.id }, tile('lightbulb', 'amber'), h('b', null, r.title[S().lang]), h('small', { class: 'muted' }, t('dash.basedOnExam')), h('span', { class: 'link' }, t('dash.startNow'), ic('chevron-right'))));
+    });
+    else {
+      var nx = nextStep();
+      recGrid.appendChild(h('a', { class: 'card rcard', href: nx[1] }, tile('play-circle', 'blue'), h('b', null, t(nx[2])), h('small', { class: 'muted' }, t('dash.suggested')), h('span', { class: 'link' }, t('dash.startNow'), ic('chevron-right'))));
+      recGrid.appendChild(h('a', { class: 'card rcard', href: '#/vocab' }, tile('languages', 'green'), h('b', null, t('nav.vocab')), h('small', { class: 'muted' }, t('vocab.lead')), h('span', { class: 'link' }, t('dash.startNow'), ic('chevron-right'))));
+    }
+    left.appendChild(h('section', null, h('h2', null, t('dash.recommended')), recGrid));
+
+    var recent = UN.prog.recent(5), rl = h('ul', { class: 'activity' });
+    recent.forEach(function (g) {
+      var src = String(g.src), isExam = src.indexOf('exam') === 0, no = src.replace(/\D/g, '');
+      var isLesson = src === 'lesson';
+      var label = isExam ? t('exam' + no + '.name') : isLesson ? t('nav.lessons') : t('game' + no + '.short');
+      var detail = isExam ? Math.round(100 * g.sum / g.n) + '%' : t('act.detail', { n: g.n, c: Math.round(g.sum) });
+      rl.appendChild(h('li', null, tile(isExam ? 'file-text' : isLesson ? 'lightbulb' : 'gamepad', isExam ? 'blue' : isLesson ? 'amber' : 'green'), h('div', null, h('b', null, label), h('small', { class: 'muted' }, detail)), h('small', { class: 'muted when' }, ago(g.t))));
+    });
+    left.appendChild(h('section', { class: 'card' }, h('h2', null, t('dash.recent')), recent.length ? rl : empty('clock', t('dash.noRecent'), t('dash.noRecentText'))));
+
+    var ccount = Object.keys(UN.groups).filter(function (g) { return cats[g]; }).slice(0, 4);
+    var prog = h('section', { class: 'card' }, h('div', { class: 'row between' }, h('h2', null, t('dash.yourProgress')), h('a', { class: 'link small', href: '#/progress' }, t('dash.viewDetails'))),
+      h('div', { class: 'progress-split' }, ring(o.total ? o.mastered / o.total : 0, t('dash.overall')),
+        h('div', { class: 'catlist' }, ccount.map(function (g) {
+          var c = cats[g];
+          return h('div', { class: 'catrow' }, h('span', null, UN.groups[g][S().lang]), h('b', null, c.avg == null ? '—' : pct(c.avg)), bar(c.avg == null ? 0 : c.avg, c.avg != null && c.avg < 0.6 ? 'warn' : ''));
+        }))));
+    right.appendChild(prog);
+
+    var goals = [];
+    goals.push([t('goal.game2'), 'target', Math.min(1, UN.prog.g().g2 || 0), 1]);
+    var ne = [1, 2, 3].filter(function (n) { return !UN.prog.examPcts(n).length; })[0];
+    goals.push([ne ? t('goal.exam', { name: t('exam' + ne + '.name') }) : t('goal.examAll'), 'file-text', ne ? 0 : 1, 1]);
+    goals.push([t('goal.master'), 'trophy', Math.min(10, o.mastered), 10]);
+    right.appendChild(h('section', { class: 'card' }, h('h2', null, t('dash.goals')),
+      h('ul', { class: 'goals' }, goals.map(function (g) {
+        return h('li', null, tile(g[1], g[2] >= g[3] ? 'green' : 'blue'), h('div', null, h('b', null, g[0]), bar(g[2] / g[3], g[2] >= g[3] ? 'good' : '')), h('b', { class: 'gcount', dir: 'ltr' }, g[2] + '/' + g[3]));
+      }))));
+    right.appendChild(h('section', { class: 'card quote' }, ic('quote'), h('p', null, t('quote.text')), h('small', { class: 'muted' }, '— ' + t('quote.by'))));
+
+    page.appendChild(h('div', { class: 'cols' }, left, right));
+    return page;
+  };
+
+  /* ---------- page: learn ---------- */
+  function termTable(ids) {
+    var tb = h('div', { class: 'terms' });
+    ids.forEach(function (id) {
+      var it = UN.itemsById[id];
+      if (it.kind !== 'term') return;
+      tb.appendChild(h('div', { class: 'term' }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar'))));
+    });
+    return tb;
+  }
+  function mediaBlock(r) {
+    var m = h('div', { class: 'media' });
+    if (r.video) m.appendChild(h('video', { controls: true, preload: 'none', playsinline: true, src: r.video, 'aria-label': r.title[S().lang] }));
+    if (r.audio) m.appendChild(h('audio', { controls: true, preload: 'none', src: r.audio }));
+    if (!r.video && !r.audio) return null;
+    return m;
+  }
+  function resourceCard(r, open) {
+    var lang = S().lang;
+    var d = h('details', { class: 'card res', id: r.id });
+    if (open) d.setAttribute('open', '');
+    d.appendChild(h('summary', null, h('span', { class: 'rt' }, r.title[lang]), h('span', { class: 'pill' }, t('learn.items', { n: r.items.length })), ic('chevron-right', 'caret')));
+    d.appendChild(h('p', null, r.text[lang]));
+    d.appendChild(h('div', { class: 'tip' }, ic('lightbulb'), h('span', null, r.tip[lang])));
+    d.appendChild(termTable(r.items));
+    var mb = mediaBlock(r); if (mb) d.appendChild(mb);
+    return d;
+  }
+  UN.routes.learn = function (arg) {
+    var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
+    var weak = UN.adapt.weakIds();
+    var rec = weak.length ? UN.adapt.recommendResources(weak) : [];
+    if (rec.length) {
+      page.appendChild(h('section', null, h('h2', null, t('learn.recommended')),
+        h('div', { class: 'stack' }, rec.slice(0, 3).map(function (r) { return resourceCard(r, r.id === arg); }))));
+    }
+    page.appendChild(h('h2', null, t('learn.all')));
+    var stack = h('div', { class: 'stack' });
+    UN.resources.forEach(function (r) { if (rec.slice(0, 3).indexOf(r) === -1) stack.appendChild(resourceCard(r, r.id === arg)); });
+    page.appendChild(stack);
+    page.appendChild(h('h2', null, t('learn.written')));
+    var wst = h('div', { class: 'stack' });
+    UN.written.forEach(function (w) {
+      wst.appendChild(h('details', { class: 'card res' }, h('summary', null, h('span', { class: 'rt' }, L(w.q, 'en')), ic('chevron-right', 'caret')), h('p', { class: 'quote model' }, L(UN.keys.written[w.id].model, 'en'))));
+    });
+    page.appendChild(wst);
+    if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    return page;
+  };
+
+  /* ---------- page: vocabulary ---------- */
+  UN.routes.vocab = function () {
+    var tab = 'terms', q = '', grp = 'all', lang = S().lang;
+    var page = h('div', { class: 'page' }, pageHead(t('vocab.title'), t('vocab.lead')));
+    var tabs = h('div', { class: 'tabs', role: 'tablist' }), chips = h('div', { class: 'chips-row' }), list = h('div', { class: 'vlist' });
+    var search = h('input', { type: 'search', class: 'txt', placeholder: t('vocab.search'), 'aria-label': t('vocab.search'), autocomplete: 'off' });
+    var searchBox = h('div', { class: 'searchbox' }, ic('search'), search);
+    page.appendChild(h('div', { class: 'toolbar' }, tabs, searchBox)); page.appendChild(chips); page.appendChild(list);
+    function norm(s) { return UN.check.normEn(s) + ' ' + UN.check.normAr(s); }
+    function drawTabs() {
+      tabs.textContent = '';
+      [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']].forEach(function (x) {
+        tabs.appendChild(h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === x[0]), class: 'tab' + (tab === x[0] ? ' on' : ''), onclick: function () { tab = x[0]; draw(); } }, t(x[1])));
+      });
+    }
+    function drawChips() {
+      chips.textContent = '';
+      if (tab !== 'terms') return;
+      [['all']].concat(['organs', 'sgoffice', 'offices', 'docs', 'translation'].map(function (g) { return [g]; })).forEach(function (x) {
+        chips.appendChild(h('button', { type: 'button', class: 'chipbtn' + (grp === x[0] ? ' on' : ''), onclick: function () { grp = x[0]; draw(); } }, x[0] === 'all' ? t('vocab.all') : UN.groups[x[0]][lang]));
+      });
+    }
+    function draw() {
+      drawTabs(); drawChips(); list.textContent = '';
+      var needle = norm(q), n = 0;
+      if (tab === 'terms') {
+        UN.terms.forEach(function (it) {
+          if (grp !== 'all' && it.group !== grp) return;
+          if (needle && norm(it.en + ' ' + it.arShow).indexOf(needle) === -1) return;
+          n++;
+          list.appendChild(h('div', { class: 'vrow card' }, h('span', { class: 'vnum' }, it.id.slice(1)), h('div', { class: 'ven' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'var' }, L(it.arShow, 'ar')), h('span', { class: 'pill' }, UN.groups[it.group][lang])));
+        });
+      } else if (tab === 'defs') {
+        UN.subs.forEach(function (s) {
+          if (needle && norm(s.name + ' ' + s.def).indexOf(needle) === -1) return;
+          n++;
+          list.appendChild(h('div', { class: 'vrow card def' }, tile('book', 'purple'), h('div', null, h('b', null, L(s.name, 'en')), h('div', { class: 'muted' }, L(s.def, 'en')))));
+        });
+      } else {
+        UN.written.forEach(function (w) {
+          var m = UN.keys.written[w.id].model;
+          if (needle && norm(w.q + ' ' + m).indexOf(needle) === -1) return;
+          n++;
+          list.appendChild(h('div', { class: 'card' }, h('b', null, L(w.q, 'en')), h('p', { class: 'quote model' }, L(m, 'en'))));
+        });
+      }
+      if (!n) list.appendChild(empty('search', t('vocab.none'), t('vocab.noneText')));
+    }
+    search.addEventListener('input', function () { q = search.value; draw(); });
+    draw();
+    return page;
+  };
+
+  /* ---------- page: videos & audio ---------- */
+  UN.routes.media = function () {
+    if (UN.routes.lessons) return UN.routes.lessons();
+    var filter = 'all', lang = S().lang;
+    var page = h('div', { class: 'page' }, pageHead(t('media.title'), t('media.lead')));
+    var tabs = h('div', { class: 'tabs', role: 'tablist' }), list = h('div', { class: 'grid2' });
+    page.appendChild(tabs); page.appendChild(list);
+    function draw() {
+      tabs.textContent = ''; list.textContent = '';
+      [['all', 'media.all'], ['video', 'media.video'], ['audio', 'media.audio']].forEach(function (x) {
+        tabs.appendChild(h('button', { type: 'button', role: 'tab', 'aria-selected': String(filter === x[0]), class: 'tab' + (filter === x[0] ? ' on' : ''), onclick: function () { filter = x[0]; draw(); } }, t(x[1])));
+      });
+      var items = UN.resources.filter(function (r) { return filter === 'all' ? (r.video || r.audio) : r[filter]; });
+      if (!items.length) { list.className = ''; list.appendChild(empty('play-circle', t('media.empty'), t('media.emptyText'), h('a', { class: 'btn primary', href: '#/learn' }, t('nav.learn')))); return; }
+      list.className = 'grid2';
+      items.forEach(function (r) {
+        list.appendChild(h('div', { class: 'card mcard' }, h('div', { class: 'row between' }, h('b', null, r.title[lang]), h('span', { class: 'pill' }, t(r.video ? 'media.video' : 'media.audio'))),
+          h('p', { class: 'muted' }, r.text[lang]), mediaBlock(r), h('a', { class: 'link', href: '#/learn/' + r.id }, t('media.openTopic'), ic('chevron-right'))));
+      });
+    }
+    draw();
+    return page;
+  };
+
+  /* ---------- page: achievements ---------- */
+  UN.routes.achievements = function () {
+    var got = UN.achievements.filter(function (a) { return S().ach[a.id]; }).length;
+    var page = h('div', { class: 'page' }, pageHead(t('ach.title'), t('ach.unlocked', { n: got, m: UN.achievements.length })));
+    page.appendChild(bar(got / UN.achievements.length, 'good'));
+    var ag = h('div', { class: 'ach-grid' });
+    UN.achievements.forEach(function (a) {
+      var on = S().ach[a.id];
+      ag.appendChild(h('div', { class: 'ach card' + (on ? ' got' : '') }, tile(on ? 'trophy' : 'lock', on ? 'amber' : 'slate'), h('div', null, h('b', null, t('ach.' + a.id + '.t')), h('div', { class: 'muted small' }, t('ach.' + a.id + '.d')))));
+    });
+    page.appendChild(ag);
+    return page;
+  };
+
+  /* ---------- page: progress ---------- */
+  function wrongRows() {
+    var seen = {}, out = [], a = S().attempts;
+    for (var i = a.length - 1; i >= 0 && out.length < 10; i--) {
+      a[i].rows.forEach(function (r) { if (r.graded && r.v < 0.75 && !seen[r.item] && out.length < 10) { seen[r.item] = 1; out.push(r); } });
+    }
+    return out;
+  }
+  UN.routes.progress = UN.routes.dashboard = function () {
+    var info = UN.prog.xpInfo(), o = UN.adapt.overall(), st = UN.adapt.rebuild(), cats = UN.adapt.categoryStats();
+    var page = h('div', { class: 'page' }, pageHead(t('dash.title')));
+
+    page.appendChild(h('section', { class: 'grid3' },
+      stat('star', 'amber', t('level') + ' ' + info.level, info.xp + ' XP', [t('xp.next', { n: info.per - info.into }), 'muted']),
+      stat('check-circle', 'green', t('stat.mastered'), o.mastered + '/' + o.total),
+      stat('alert-circle', 'amber', t('stat.weak'), String(o.weak))));
+    page.appendChild(h('section', null, h('h2', null, t('home.journey')), h('p', { class: 'muted' }, t('home.free')), journey()));
+
+    var ex = h('div', { class: 'card' }), any = false, prev = null;
+    [1, 2, 3].forEach(function (n) {
+      var p = UN.prog.examPcts(n), last = p.length ? p[p.length - 1] : null, delta = '';
+      if (last != null) { any = true; if (prev != null) { var d = last - prev; delta = (d > 0 ? '+' : '') + d + '%'; } prev = last; }
+      ex.appendChild(h('div', { class: 'exrow' }, h('span', { class: 'exn' }, t('exam' + n + '.name')),
+        bar(last == null ? 0 : last / 100, last != null && last >= 70 ? 'good' : last != null && last < 50 ? 'warn' : ''),
+        h('span', { class: 'exv' }, last == null ? '—' : last + '%'), h('span', { class: 'delta' }, delta)));
+    });
+    page.appendChild(h('section', null, h('h2', null, t('dash.exams')), ex, any ? null : h('p', { class: 'muted' }, t('dash.noexam'))));
+
+    var cc = h('div', { class: 'card' });
+    Object.keys(UN.groups).forEach(function (g) {
+      var c = cats[g]; if (!c) return;
+      cc.appendChild(h('div', { class: 'exrow' }, h('span', { class: 'exn' }, UN.groups[g][S().lang]),
+        bar(c.avg == null ? 0 : c.avg, c.avg != null && c.avg < 0.6 ? 'warn' : 'good'), h('span', { class: 'exv' }, c.avg == null ? '—' : pct(c.avg))));
+    });
+    page.appendChild(h('section', null, h('h2', null, t('dash.categories')), cc));
+
+    var ranked = UN.adapt.rank().ids.filter(function (id) { return UN.adapt.isWeak(st[id]); });
+    var weakBox = h('div', { class: 'card' });
+    if (!ranked.length) weakBox.appendChild(empty('check-circle', t('dash.noweak'), t('dash.noweakText')));
+    else {
+      [['term', 'dash.weakTerms'], ['sub', 'dash.weakDefs'], ['wq', 'dash.weakConcepts']].forEach(function (k) {
+        var ids = ranked.filter(function (id) { return UN.itemsById[id].kind === k[0]; });
+        if (!ids.length) return;
+        weakBox.appendChild(h('h3', null, t(k[1])));
+        weakBox.appendChild(h('ul', { class: 'list' }, ids.map(function (id) {
+          return h('li', null, termLabel(id), h('span', { class: 'pill warn' }, pct(st[id].ema)), st[id].miss > 1 ? h('span', { class: 'pill' }, t('dash.repeat', { n: st[id].miss })) : null);
+        })));
+      });
+      weakBox.appendChild(h('div', { class: 'row' }, h('a', { class: 'btn primary', href: '#/game/2' }, ic('wrench'), t('game2.name')), h('a', { class: 'btn ghost', href: '#/learn' }, ic('book-open'), t('nav.learn'))));
+    }
+    page.appendChild(h('section', null, h('h2', null, t('dash.weak')), weakBox));
+
+    var rec = UN.adapt.recommendResources(ranked);
+    if (rec.length) {
+      page.appendChild(h('section', null, h('h2', null, t('dash.revision')),
+        h('div', { class: 'card' }, h('ul', { class: 'list' }, rec.map(function (r) { return h('li', null, h('a', { class: 'link', href: '#/lesson/' + r.id }, r.title[S().lang])); })))));
+    }
+    var wr = wrongRows();
+    page.appendChild(h('section', null, h('h2', null, t('dash.prevWrong')),
+      h('div', { class: 'card' }, wr.length ? h('ul', { class: 'list wrong' }, wr.map(function (r) {
+        return h('li', null, h('div', { class: 'q' }, r.pl === 'ar' ? L(r.prompt, 'ar') : mixed(r.prompt)), h('div', { class: 'ans' }, ic('check'), mixed(r.correct)));
+      })) : empty('check-circle', t('dash.noWrong'), ''))));
+    page.appendChild(h('section', null, h('a', { class: 'btn ghost', href: '#/achievements' }, ic('trophy'), t('ach.title'))));
+    return page;
+  };
+
+  /* ---------- page: settings ---------- */
+  UN.routes.settings = function () {
+    var s = S();
+    var seg = function (opts, cur, on) {
+      return h('div', { class: 'seg wide' }, opts.map(function (o) { return h('button', { type: 'button', class: o[0] === cur ? 'on' : '', 'aria-pressed': String(o[0] === cur), onclick: function () { on(o[0]); } }, o[1]); }));
+    };
+    return h('div', { class: 'page narrow' }, pageHead(t('nav.settings')),
+      h('div', { class: 'card stack' },
+        h('label', null, t('set.lang')), seg([['en', 'English'], ['ar', 'العربية']], s.lang, setLang),
+        h('label', null, t('set.theme')), seg([['auto', t('set.auto')], ['light', t('set.light')], ['dark', t('set.dark')]], s.theme, setTheme)),
+      h('div', { class: 'card stack' }, h('h2', null, t('set.privacy')), h('p', null, t('set.privacyText'))),
+      h('div', { class: 'card stack' }, h('h2', null, t('set.reset')), h('p', null, t('set.resetText')),
+        h('button', { class: 'btn danger', onclick: function () {
+          confirmDialog(t('set.resetConfirm'), t('set.resetYes'), function () { UN.store.reset(); applyLang(); applyTheme(); toast(t('set.resetDone')); go('#/home'); }, true);
+        } }, ic('trash'), t('set.reset'))));
+  };
+
+  UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
+    confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
+    applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
+})();

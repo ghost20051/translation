@@ -1,0 +1,59 @@
+/* Extra interface strings for the app shell, dashboard and new pages (merged into UN.i18n). */
+(function () {
+  var UN = window.UN = window.UN || {};
+  var add = {
+    en: {
+      'app.short': 'UN Translation', 'brand.tag': 'Learn • Practice • Master', 'theme.toggle': 'Switch light / dark theme',
+      'nav.dashboard': 'Dashboard', 'nav.media': 'Videos & Audio', 'nav.vocab': 'Vocabulary', 'nav.achievements': 'Achievements', 'nav.more': 'More',
+      'lvl.label': 'XP Level {n}', 'lvl.sub': 'Learner',
+      'dash.welcome': 'Welcome back, Student!', 'dash.welcomeSub': "Let's continue your learning journey and achieve your goals.",
+      'stat.xp': 'XP points', 'stat.level': 'Level', 'stat.accuracy': 'Accuracy', 'stat.streak': 'Streak', 'stat.days': '{n} days', 'stat.today': 'Active today', 'stat.startToday': 'Practise today to keep it',
+      'stat.noacc': 'No answers yet', 'stat.acc.good': 'Good job!', 'stat.acc.keep': 'Keep going', 'xp.next': '{n} XP to next level',
+      'game1.short': 'Game 1', 'game2.short': 'Game 2', 'game3.short': 'Game 3', 'game1.tag': 'Learn & Explore', 'game2.tag': 'Adaptive Practice', 'game3.tag': 'Mastery Challenge',
+      'dash.continue': 'Continue learning', 'dash.yourProgress': 'Your progress', 'dash.overall': 'Overall mastery', 'dash.viewDetails': 'View details', 'dash.recommended': 'Recommended for you',
+      'dash.basedOnExam': 'Based on your results', 'dash.suggested': 'Suggested next step', 'dash.startNow': 'Start now',
+      'dash.goals': 'Learning goals', 'dash.recent': 'Recent activity', 'dash.noRecent': 'No activity yet', 'dash.noRecentText': 'Play a game or take an exam and it will show up here.',
+      'dash.noweakText': 'Your weak areas will appear here after you practise.',
+      'goal.game2': 'Complete Game 2', 'goal.exam': 'Take {name}', 'goal.examAll': 'All three exams taken', 'goal.master': 'Master 10 items',
+      'act.detail': '{n} questions · {c} correct', 'ago.now': 'just now', 'ago.min': '{n} min ago', 'ago.hr': '{n} h ago', 'ago.day': '{n} d ago',
+      'quote.text': 'The United Nations was not created to take mankind to heaven, but to save humanity from hell.', 'quote.by': 'Dag Hammarskjöld',
+      'vocab.title': 'Vocabulary', 'vocab.lead': 'Search and revise the approved UN terms, definitions and model answers.', 'vocab.search': 'Search terms…', 'vocab.all': 'All',
+      'vocab.terms': 'Terms', 'vocab.defs': 'Definitions', 'vocab.written': 'Written answers', 'vocab.none': 'No matches', 'vocab.noneText': 'Try a different word or clear the search.',
+      'media.title': 'Videos & Audio', 'media.lead': 'Short explanations you can replay any time. Not available during exams.', 'media.all': 'All', 'media.video': 'Video', 'media.audio': 'Audio',
+      'media.empty': 'No videos or audio yet', 'media.emptyText': 'Lessons will appear here once they are added. Meanwhile, read the written explanations in Learn.', 'media.openTopic': 'Open written explanation',
+      'ach.title': 'Achievements', 'ach.unlocked': '{n} of {m} unlocked',
+      'lesson.together': 'Together:', 'nav.lessons': 'Memory Lessons', 'lessons.title': 'Memory Lessons', 'lessons.lead': 'Short step-by-step lessons with memory tricks, comparisons and a quick check. Learning only: not available during exams.',
+      'lessons.meta': '{n} steps · about {m} min', 'lessons.recommended': 'Recommended', 'lessons.done': 'Done', 'lessons.start': 'Start lesson',
+      'lesson.step': 'Step {i} of {n}', 'lesson.finish': 'Finish lesson', 'lesson.showNext': 'Show piece {i} of {n}', 'lesson.buildHint': 'Build the answer piece by piece.',
+      'lesson.checkIntro': 'Quick check: answer to finish this lesson.', 'lesson.checkDone': 'Nice work!', 'lesson.complete': 'Lesson complete! +{xp} XP',
+      'ach.student.t': 'Memory master', 'ach.student.d': 'Finish 3 Memory Lessons.'
+    },
+    ar: {
+      'app.short': 'ترجمة الأمم المتحدة', 'brand.tag': 'تعلّم • تدرّب • أتقن', 'theme.toggle': 'التبديل بين المظهر الفاتح والداكن',
+      'nav.dashboard': 'لوحة التحكم', 'nav.media': 'فيديو وصوت', 'nav.vocab': 'المفردات', 'nav.achievements': 'الإنجازات', 'nav.more': 'المزيد',
+      'lvl.label': 'مستوى الخبرة {n}', 'lvl.sub': 'متعلّم',
+      'dash.welcome': 'أهلًا بعودتك أيها الطالب!', 'dash.welcomeSub': 'لنواصل رحلة التعلّم ونحقق أهدافك.',
+      'stat.xp': 'نقاط الخبرة', 'stat.level': 'المستوى', 'stat.accuracy': 'الدقة', 'stat.streak': 'التتابع', 'stat.days': '{n} أيام', 'stat.today': 'نشط اليوم', 'stat.startToday': 'تدرّب اليوم للحفاظ عليه',
+      'stat.noacc': 'لا توجد إجابات بعد', 'stat.acc.good': 'عمل جيد!', 'stat.acc.keep': 'واصل التقدّم', 'xp.next': '{n} نقطة للمستوى التالي',
+      'game1.short': 'اللعبة 1', 'game2.short': 'اللعبة 2', 'game3.short': 'اللعبة 3', 'game1.tag': 'تعلّم واستكشف', 'game2.tag': 'تدريب تكيّفي', 'game3.tag': 'تحدّي الإتقان',
+      'dash.continue': 'تابع التعلّم', 'dash.yourProgress': 'تقدّمك', 'dash.overall': 'الإتقان العام', 'dash.viewDetails': 'عرض التفاصيل', 'dash.recommended': 'مقترح لك',
+      'dash.basedOnExam': 'بناءً على نتائجك', 'dash.suggested': 'الخطوة التالية المقترحة', 'dash.startNow': 'ابدأ الآن',
+      'dash.goals': 'أهداف التعلّم', 'dash.recent': 'النشاط الأخير', 'dash.noRecent': 'لا يوجد نشاط بعد', 'dash.noRecentText': 'العب لعبة أو أدِّ امتحانًا وسيظهر هنا.',
+      'dash.noweakText': 'ستظهر نقاط ضعفك هنا بعد أن تتدرّب.',
+      'goal.game2': 'أكمل اللعبة 2', 'goal.exam': 'أدِّ {name}', 'goal.examAll': 'تم أداء الامتحانات الثلاثة', 'goal.master': 'أتقن 10 عناصر',
+      'act.detail': '{n} سؤال · {c} صحيحة', 'ago.now': 'الآن', 'ago.min': 'منذ {n} د', 'ago.hr': 'منذ {n} س', 'ago.day': 'منذ {n} يوم',
+      'quote.text': 'لم تُنشأ الأمم المتحدة لتأخذ البشرية إلى الجنة، بل لتنقذها من الجحيم.', 'quote.by': 'داغ همرشولد',
+      'vocab.title': 'المفردات', 'vocab.lead': 'ابحث وراجع مصطلحات الأمم المتحدة المعتمدة وتعريفاتها والإجابات النموذجية.', 'vocab.search': 'ابحث في المصطلحات…', 'vocab.all': 'الكل',
+      'vocab.terms': 'المصطلحات', 'vocab.defs': 'التعريفات', 'vocab.written': 'الإجابات المقالية', 'vocab.none': 'لا توجد نتائج', 'vocab.noneText': 'جرّب كلمة أخرى أو امسح البحث.',
+      'media.title': 'فيديو وصوت', 'media.lead': 'شروحات قصيرة يمكنك إعادتها في أي وقت. غير متاحة أثناء الامتحانات.', 'media.all': 'الكل', 'media.video': 'فيديو', 'media.audio': 'صوت',
+      'media.empty': 'لا يوجد فيديو أو صوت بعد', 'media.emptyText': 'ستظهر الدروس هنا عند إضافتها. وفي الأثناء اقرأ الشروحات المكتوبة في قسم تعلّم.', 'media.openTopic': 'افتح الشرح المكتوب',
+      'ach.title': 'الإنجازات', 'ach.unlocked': 'تم فتح {n} من {m}',
+      'lesson.together': 'معًا:', 'nav.lessons': 'دروس الحفظ', 'lessons.title': 'دروس الحفظ', 'lessons.lead': 'دروس قصيرة خطوة بخطوة فيها حيل للحفظ ومقارنات واختبار سريع. للتعلّم فقط، ومش متاحة أثناء الامتحان.',
+      'lessons.meta': '{n} خطوات · حوالي {m} دقيقة', 'lessons.recommended': 'مقترح', 'lessons.done': 'تم', 'lessons.start': 'ابدأ الدرس',
+      'lesson.step': 'الخطوة {i} من {n}', 'lesson.finish': 'إنهاء الدرس', 'lesson.showNext': 'أظهر الجزء {i} من {n}', 'lesson.buildHint': 'ابنِ الإجابة جزء بجزء.',
+      'lesson.checkIntro': 'اختبار سريع: جاوب علشان تخلّص الدرس.', 'lesson.checkDone': 'شغل ممتاز!', 'lesson.complete': 'خلّصت الدرس! +{xp} نقطة',
+      'ach.student.t': 'أستاذ الحفظ', 'ach.student.d': 'أنهِ 3 دروس حفظ.'
+    }
+  };
+  Object.keys(add).forEach(function (l) { Object.keys(add[l]).forEach(function (k) { UN.i18n[l][k] = add[l][k]; }); });
+})();

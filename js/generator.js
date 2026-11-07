@@ -1,0 +1,174 @@
+/*
+ * Question generator. Every question belongs to an item id (T1..T20, W1..W5, W3-xxx).
+ * A question: { id, item, fmt, type, prompt, promptLang, options?, answer, extra }
+ *   type: mcq | tf | type | written | recall
+ * options: [{ id, text, lang }]; answer: option id (mcq), true/false (tf), or accepted-answer info.
+ */
+(function () {
+  var UN = window.UN = window.UN || {};
+
+  var STOP = { of: 1, the: 1, for: 1, and: 1, to: 1, a: 1 };
+
+  UN.itemsById = {};
+  UN.terms.forEach(function (t) { UN.itemsById[t.id] = t; });
+  UN.written.forEach(function (w) { w.kind = 'wq'; UN.itemsById[w.id] = w; });
+  UN.subs.forEach(function (s) { UN.itemsById[s.id] = s; });
+  UN.itemIds = Object.keys(UN.itemsById);
+
+  function rnd(rng) { return (rng || Math.random)(); }
+  function shuffle(a, rng) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd(rng) * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function pick(a, rng) { return a[Math.floor(rnd(rng) * a.length)]; }
+
+  function setOf(id) {
+    for (var i = 0; i < UN.confusable.length; i++) if (UN.confusable[i].indexOf(id) !== -1) return UN.confusable[i];
+    return [];
+  }
+  // n distractor terms: same confusable set first, then others.
+  function distractTerms(id, n, rng) {
+    var near = shuffle(setOf(id).filter(function (x) { return x !== id; }), rng);
+    var far = shuffle(UN.terms.map(function (t) { return t.id; }).filter(function (x) { return x !== id && near.indexOf(x) === -1; }), rng);
+    return near.concat(far).slice(0, n).map(function (x) { return UN.itemsById[x]; });
+  }
+
+  function mcq(item, fmt, prompt, promptLang, correct, wrongs, optLang, rng, extra) {
+    var opts = shuffle([{ id: 'c', text: correct }].concat(wrongs.map(function (w, i) { return { id: 'w' + i, text: w }; })), rng);
+    opts.forEach(function (o) { o.lang = optLang; });
+    return { id: item + ':' + fmt, item: item, fmt: fmt, type: 'mcq', prompt: prompt, promptLang: promptLang, options: opts, answer: 'c', correctText: correct, extra: extra || null };
+  }
+
+  function contentWords(en) {
+    return en.split(' ').filter(function (w) { return w.length > 2 && !STOP[w.toLowerCase()]; });
+  }
+
+  // formats available for each item
+  function formatsFor(id) {
+    var it = UN.itemsById[id];
+    if (it.kind === 'term') {
+      var f = ['mcq-en2ar', 'mcq-ar2en', 'type-ar', 'type-en', 'tf-term'];
+      if (it.en.split(' ').length > 1 && contentWords(it.en).length) f.push('fill');
+      UN.bank.tf.forEach(function (b) { if (b.item === id) f.push('bank:' + b.id); });
+      return f;
+    }
+    if (it.kind === 'sub') {
+      var s = ['mcq-def', 'mcq-name', 'type-name'];
+      UN.bank.mcq.concat(UN.bank.tf).forEach(function (b) { if (b.item === id) s.push('bank:' + b.id); });
+      return s;
+    }
+    var w = ['written'];
+    UN.bank.mcq.concat(UN.bank.tf, UN.bank.cloze).forEach(function (b) { if (b.item === id) w.push('bank:' + b.id); });
+    return w;
+  }
+
+  // formats usable in games/drills (nothing that needs free writing, plus self-check recall for written items)
+  function drillFormatsFor(id) {
+    var it = UN.itemsById[id];
+    var f = formatsFor(id).filter(function (x) { return x !== 'written'; });
+    if (it.kind === 'wq') {
+      f.push('recall');
+      if (id === 'W3') f = ['mcq-def', 'mcq-name', 'recall'];
+    }
+    return f;
+  }
+
+  function make(id, fmt, rng) {
+    var it = UN.itemsById[id];
+    if (id === 'W3' && (fmt === 'mcq-def' || fmt === 'mcq-name' || fmt === 'type-name')) {
+      var sub = pick(UN.subs, rng);
+      return make(sub.id, fmt, rng); // tracked under the specific characteristic
+    }
+    var m, i;
+    switch (fmt) {
+      case 'mcq-en2ar': {
+        var d = distractTerms(id, 3, rng);
+        return mcq(id, fmt, it.en, 'en', it.arShow, d.map(function (x) { return x.arShow; }), 'ar', rng);
+      }
+      case 'mcq-ar2en': {
+        var d2 = distractTerms(id, 3, rng);
+        return mcq(id, fmt, it.arShow, 'ar', it.en, d2.map(function (x) { return x.en; }), 'en', rng);
+      }
+      case 'type-ar': return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'ar', prompt: it.en, promptLang: 'en', correctText: it.arShow };
+      case 'type-en': return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', prompt: it.arShow, promptLang: 'ar', correctText: it.en };
+      case 'tf-term': {
+        var truth = rnd(rng) < 0.5;
+        var other = distractTerms(id, 1, rng)[0];
+        var claimAr = truth ? it.arShow : other.arShow;
+        return { id: id + ':' + fmt + ':' + (truth ? 1 : 0), item: id, fmt: fmt, type: 'tf', promptLang: 'en',
+          prompt: 'The Arabic for "' + it.en + '" is ' + claimAr + '.', answer: truth,
+          correctText: it.en + ' = ' + it.arShow };
+      }
+      case 'fill': {
+        var words = contentWords(it.en);
+        var w = pick(words, rng);
+        var blanked = it.en.replace(new RegExp('\\b' + w + '\\b'), '____');
+        var pool = [];
+        UN.terms.forEach(function (t) { if (t.id !== id) contentWords(t.en).forEach(function (x) { if (x.toLowerCase() !== w.toLowerCase() && pool.indexOf(x) === -1 && it.en.indexOf(x) === -1) pool.push(x); }); });
+        return mcq(id, fmt, blanked, 'en', w, shuffle(pool, rng).slice(0, 3), 'en', rng, { hint: it.arShow });
+      }
+      case 'mcq-def': {
+        var others = shuffle(UN.subs.filter(function (s) { return s.id !== id; }), rng).slice(0, 3);
+        return mcq(id, fmt, 'Which characteristic means: "' + it.def + '"?', 'en', it.name, others.map(function (s) { return s.name; }), 'en', rng);
+      }
+      case 'mcq-name': {
+        var others2 = shuffle(UN.subs.filter(function (s) { return s.id !== id; }), rng).slice(0, 3);
+        return mcq(id, fmt, it.name + ' means…', 'en', it.def, others2.map(function (s) { return s.def; }), 'en', rng);
+      }
+      case 'type-name':
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', answerKind: 'name', prompt: 'Which characteristic means: "' + it.def + '"?', promptLang: 'en', correctText: it.name, accepted: [it.name] };
+      case 'written':
+        return { id: id + ':written', item: id, fmt: fmt, type: 'written', prompt: it.q, promptLang: 'en', correctText: UN.keys.written[id].model };
+      case 'recall':
+        return { id: id + ':recall', item: id, fmt: fmt, type: 'recall', prompt: it.q, promptLang: 'en', correctText: UN.keys.written[id].model };
+    }
+    if (fmt.indexOf('bank:') === 0) {
+      var bid = fmt.slice(5);
+      var b;
+      for (i = 0; i < UN.bank.mcq.length; i++) if (UN.bank.mcq[i].id === bid) {
+        b = UN.bank.mcq[i];
+        var key = UN.keys.mcq[bid];
+        var ids = shuffle(Object.keys(b.opts), rng);
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'mcq', prompt: b.text, promptLang: 'en',
+          options: ids.map(function (k) { return { id: k, text: b.opts[k], lang: 'en' }; }), answer: key, correctText: b.opts[key] };
+      }
+      for (i = 0; i < UN.bank.cloze.length; i++) if (UN.bank.cloze[i].id === bid) {
+        b = UN.bank.cloze[i];
+        var ck = UN.keys.cloze[bid];
+        var cids = shuffle(Object.keys(b.opts), rng);
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'mcq', prompt: b.text, promptLang: 'en',
+          options: cids.map(function (k) { return { id: k, text: b.opts[k], lang: 'en' }; }), answer: ck, correctText: b.opts[ck] };
+      }
+      for (i = 0; i < UN.bank.tf.length; i++) if (UN.bank.tf[i].id === bid) {
+        b = UN.bank.tf[i];
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'tf', prompt: b.text, promptLang: 'en', answer: UN.keys.tf[bid], correctText: UN.keys.tf[bid] ? 'True' : 'False' };
+      }
+    }
+    throw new Error('Unknown format ' + fmt + ' for ' + id);
+  }
+
+  // Choose a format the student has seen least for this item. counts = { fmt: n }
+  function chooseFormat(id, counts, rng, drill, avoid) {
+    var all = drill ? drillFormatsFor(id) : formatsFor(id);
+    counts = counts || {};
+    var pool = all.filter(function (f) { return !avoid || avoid.indexOf(f) === -1; });
+    if (!pool.length) pool = all;
+    var min = Infinity;
+    pool.forEach(function (f) { min = Math.min(min, counts[f] || 0); });
+    return pick(pool.filter(function (f) { return (counts[f] || 0) === min; }), rng);
+  }
+
+  // Grade an answer. given: option id | boolean | string. Returns 0..1 (written/recall handled by self-grade).
+  function grade(q, given) {
+    if (q.type === 'mcq') return given === q.answer ? 1 : 0;
+    if (q.type === 'tf') return given === q.answer ? 1 : 0;
+    if (q.type === 'type') {
+      if (q.answerKind === 'name') return UN.check.matchName(given, q.correctText) ? 1 : 0;
+      return UN.check.matchTerm(given, UN.itemsById[q.item], q.answerLang) ? 1 : 0;
+    }
+    return 0;
+  }
+
+  UN.gen = { shuffle: shuffle, pick: pick, formatsFor: formatsFor, drillFormatsFor: drillFormatsFor, make: make, chooseFormat: chooseFormat, grade: grade, distractTerms: distractTerms };
+})();

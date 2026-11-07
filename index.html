@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="UN Translation Revision: an offline, bilingual study game for UN translation terminology.">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="color-scheme" content="light dark">
+  <title>UN Translation Revision</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#app">Skip to content</a>
+  <header id="hdr" class="topbar"></header>
+  <div class="shell">
+    <aside id="side" class="side" aria-label="Main"></aside>
+    <main id="app" class="app"></main>
+  </div>
+  <nav id="nav" class="bottomnav" aria-label="Main"></nav>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <noscript><p style="padding:2rem">This study site needs JavaScript. It works offline and never sends data anywhere.</p></noscript>
+
+  <!-- Classic scripts in dependency order (no modules, no fetch: works from file://). -->
+  <script src="js/data/terms.js"></script>
+  <script src="js/data/questions.js"></script>
+  <script src="js/data/answer-keys.js"></script>
+  <script src="js/data/resources.js"></script>
+  <script src="js/data/lessons.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/i18n-ui.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/check.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/adaptive.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/exam.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/qview.js"></script>
+  <script src="js/exam-ui.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/lessons-ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
