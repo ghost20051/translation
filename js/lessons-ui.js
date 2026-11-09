@@ -85,6 +85,24 @@
     return h('div', { class: 'lstep' }, list);
   }
 
+  function stepGaps(st) {
+    var list = h('div', { class: 'hooks' });
+    st.ids.forEach(function (id, i) {
+      var it = UN.itemsById[id];
+      list.appendChild(h('div', { class: 'hook card', style: delay(i) }, ui.tile('lightbulb', TONES[i % 4]), h('div', { class: 'vdef' }, h('div', { class: 'gapfull' }, ui.gapSentence(it.q, it.answer)), h('div', { class: 'muted small' }, it.note))));
+    });
+    return h('div', { class: 'lstep' }, list);
+  }
+
+  function stepEssays(st) {
+    var list = h('div', { class: 'hooks' });
+    st.ids.forEach(function (id, i) {
+      var w = UN.itemsById[id], k = UN.keys.written[id];
+      list.appendChild(h('div', { class: 'hook card', style: delay(i) }, ui.tile('file-text', TONES[i % 4]), h('div', { class: 'vdef' }, h('b', null, w.q), h('div', { class: 'quote model' }, k.model), h('div', { class: 'tip' }, ui.ic('lightbulb'), h('span', null, k.trick)))));
+    });
+    return h('div', { class: 'lstep' }, list);
+  }
+
   function stepHook(st) {
     var list = h('div', { class: 'hooks' });
     st.items.forEach(function (it, i) {
@@ -161,7 +179,7 @@
     return box;
   }
 
-  var RENDER = { say: stepSay, pairs: stepPairs, defs: stepDefs, subdefs: stepSubdefs, split: stepSplit, hook: stepHook, compare: stepCompare, letters: stepLetters, blocks: stepBlocks, check: stepCheck };
+  var RENDER = { say: stepSay, pairs: stepPairs, defs: stepDefs, subdefs: stepSubdefs, gaps: stepGaps, essays: stepEssays, split: stepSplit, hook: stepHook, compare: stepCompare, letters: stepLetters, blocks: stepBlocks, check: stepCheck };
 
   /* ---------- player ---------- */
   UN.routes.lesson = function (id) {

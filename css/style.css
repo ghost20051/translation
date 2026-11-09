@@ -280,3 +280,26 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .vrow .defbox { flex-basis: 100%; grid-column: 1 / -1; } .vdef { flex: 1; min-width: 0; }
 .terms .term.defrow, .terms .term.withdef { grid-column: 1 / -1; }
 .prow .defbox, .vrow .defbox { grid-column: 1 / -1; }
+
+.gapfull { font-weight: 600; line-height: 1.5; }
+.gapsent { font-size: 1.15rem; line-height: 1.6; padding: 8px 4px; } .gapsent.small { font-size: .9rem; }
+
+/* subject picker */
+.subjbtn { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 300px; padding: 6px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; }
+.subjbtn .sn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.subjbtn .ico { flex: none; } .subjbtn .ico.down { transform: rotate(90deg); width: 14px; height: 14px; color: var(--muted); }
+.subjbtn:hover { border-color: var(--primary); }
+.subjsheet h2 { margin: 4px 8px 10px; }
+.subjrow { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.subjrow:hover { background: var(--bg); } .subjrow.on { border-color: var(--primary); }
+.subjrow .sjt { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; } .subjrow .sjt b { font-size: 1rem; }
+.subjnow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.quip { margin-top: 8px; font-size: .92rem; color: var(--muted); font-style: italic; }
+@media (max-width: 560px) { .subjbtn { max-width: 46vw; padding: 6px 8px; font-size: .8rem; } .topbar .logo { display: none; } }
+
+/* fill-in-the-gap sentences: a real blank, and the answer in colour */
+.gapline { line-height: 2; }
+.gblank { display: inline-block; min-width: 6.5em; height: 1.2em; margin: 0 .3em; vertical-align: -.25em; border-bottom: 3px solid var(--primary); background: color-mix(in srgb, var(--primary) 10%, transparent); border-radius: 6px 6px 0 0; }
+.gans { margin: 0 .15em; padding: 0 .35em; font-weight: 800; color: var(--ok); background: color-mix(in srgb, var(--ok) 16%, transparent); border-bottom: 3px solid var(--ok); border-radius: 6px 6px 0 0; }
+.qprompt .gapline { font-size: 1.15em; }
+@media (max-width: 760px) { .topbar .bt { display: none; } }

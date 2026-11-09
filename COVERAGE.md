@@ -410,3 +410,118 @@ Generated from the data files in `js/data/` by `node tests/make-coverage.js`. Ev
 | RE-cou | etiquette | Courtesy: Showing respect and politeness to everyone, whatever their position. | mcq-def, mcq-name, type-name, define |
 | RE-bus | etiquette | Business etiquette: Etiquette at work: it is genderless, because men and women are peers. | mcq-def, mcq-name, type-name, define |
 | RE-soc | etiquette | Social etiquette: Traditional chivalrous manners in social life, such as holding the door open for a woman. | mcq-def, mcq-name, type-name, define |
+
+## Simultaneous Interpretation (110 items)
+
+| Item | Category | Content | Question formats |
+|---|---|---|---|
+| SW1 | time | Explain the concept of synchronicity in simultaneous interpreting and discuss why it is difficult to measure. | written |
+| SW2 | time | Discuss the role of pauses in simultaneous interpreting and explain how they can influence interpreter performance. | written |
+| SW3 | evs | Explain the concept of Ear-Voice Span (EVS) and discuss its importance in simultaneous interpreting. | written |
+| SW4 | evs | Describe the different methods used to measure Ear-Voice Span and evaluate their effectiveness. | written |
+| SW5 | evs | Discuss the factors that may affect the length of EVS during simultaneous interpreting. | written |
+| SW6 | segm | Explain why interpreters need to comprehend sufficient source-language information before beginning their output. | written |
+| SW7 | evs | Discuss the relationship between key words, syntactic elements, and the timing of interpretation. | written |
+| SW8 | evs | Explain the concept of shadowing and compare it with simultaneous interpreting. | written |
+| SW9 | evs | Discuss the role of cognitive activity in determining the length of EVS. | written |
+| SW10 | evs | Explain how cognitive load affects interpreter performance during simultaneous interpreting. | written |
+| SW11 | segm | Discuss the concept of segmentation and explain its importance in processing source-language input. | written |
+| SW12 | segm | Explain how segmentation helps interpreters transform speech into processing-relevant units. | written |
+| SW13 | bil | Discuss bilingualism as a criterion for evaluating interpreter performance. | written |
+| SW14 | bil | Explain the concept of Natural Translation/Interpreting and discuss its relationship to bilingualism. | written |
+| SW15 | bil | Discuss the factors that influence proficiency in a second language. | written |
+| SW16 | bil | Explain the concept of language interference and describe how it may affect bilingual speakers. | written |
+| SW17 | bil | Discuss the importance of psycholinguistics in understanding bilingualism and simultaneous interpreting. | written |
+| SW18 | bil | Compare balanced bilinguals and dominant bilinguals, explaining how they differ in language proficiency. | written |
+| SW19 | bil | Discuss the characteristics that distinguish simultaneous interpreters from ordinary bilinguals. | written |
+| SW20 | bil | Explain why high proficiency in both the source language (SL) and target language (TL) is essential for successful simultaneous interpreting. | written |
+| SK1 | key | Synchronicity: Listening and speaking at almost the same time | mcq-def, mcq-name, type-name |
+| SK2 | key | EVS: Time gap between hearing and speaking | mcq-def, mcq-name, type-name |
+| SK3 | key | Shadowing: Repeating in the same language | mcq-def, mcq-name, type-name |
+| SK4 | key | Segmentation: Dividing speech into meaningful units | mcq-def, mcq-name, type-name |
+| SK5 | key | Chunking: Helps memory storage | mcq-def, mcq-name, type-name |
+| SK6 | key | Balanced bilingual: Equal proficiency | mcq-def, mcq-name, type-name |
+| SK7 | key | Dominant bilingual: Stronger in one language | mcq-def, mcq-name, type-name |
+| SK8 | key | Language interference: One language affects another | mcq-def, mcq-name, type-name |
+| SK9 | key | Cognitive load: Mental effort | mcq-def, mcq-name, type-name |
+| SK10 | key | Psycholinguistics: Language and the mind | mcq-def, mcq-name, type-name |
+| G1 | segm | Simultaneous interpreters rely on __ rather than perception. | mcq-gap, type-gap, bank:SM1 |
+| G2 | segm | According to Kalina, segmentation is a comprehension-based __. | mcq-gap, type-gap, bank:SM2 |
+| G3 | segm | Chunking helps facilitate memory __. | mcq-gap, type-gap, bank:SM3 |
+| G4 | study | Goldman-Eisler's study included six professional __. | mcq-gap, type-gap, bank:SM4 |
+| G5 | study | The interpreters were asked to render short __. | mcq-gap, type-gap |
+| G6 | study | The speeches ranged from 3 to 6 __. | mcq-gap, type-gap |
+| G7 | study | The study involved several language __. | mcq-gap, type-gap |
+| G8 | study | EVS units were found to be __ in nature. | mcq-gap, type-gap, bank:SM5 |
+| G9 | study | EVS units were not primarily __ in nature. | mcq-gap, type-gap |
+| G10 | segm | Input segmentation is based on identifying propositional meaning __. | mcq-gap, type-gap, bank:SM6 |
+| G11 | segm | A complete predicative expression contains a noun phrase and a __ phrase. | mcq-gap, type-gap, bank:SM7 |
+| G12 | segm | A predicate is usually formed by a __ phrase. | mcq-gap, type-gap |
+| G13 | time | Temporal phenomena in SI deal with the mechanism of __. | mcq-gap, type-gap |
+| G14 | time | Researchers investigated the delivery pattern of SI input and __. | mcq-gap, type-gap |
+| G15 | time | Fluency, pausing, and lag are examples of temporal __. | mcq-gap, type-gap |
+| G16 | time | Ear-voice span is abbreviated as __. | mcq-gap, type-gap, bank:SM8 |
+| G17 | time | Measuring synchronicity between input and output is considered a difficult __. | mcq-gap, type-gap, bank:SM9 |
+| G18 | time | An interpreter must speak while simultaneously __. | mcq-gap, type-gap, bank:SM10 |
+| G19 | time | Simultaneous interpreting is often described as spectacular and __. | mcq-gap, type-gap |
+| G20 | time | Interpreters may pause to listen and use pauses in the __ speech. | mcq-gap, type-gap |
+| G21 | study | Gerver's study involved pre-recorded __ speech. | mcq-gap, type-gap, bank:SM11 |
+| G22 | study | The students interpreted from French into __. | mcq-gap, type-gap, bank:SM12 |
+| G23 | study | In Gerver's experiment, pauses over 0.25 seconds were __. | mcq-gap, type-gap |
+| G24 | study | Interpreter pauses tended to occur in the same __ as speaker pauses. | mcq-gap, type-gap |
+| G25 | study | Similar pause locations indicate structural __. | mcq-gap, type-gap, bank:SM13 |
+| G26 | study | Structural correspondence exists between SL input and TL __. | mcq-gap, type-gap |
+| G27 | time | Normal pausing in source speech makes interpreting __. | mcq-gap, type-gap, bank:SM14 |
+| G28 | time | Source-speaker pauses can help interpreters produce successful __. | mcq-gap, type-gap |
+| G29 | time | Unusual pauses at ungrammatical locations may __ interpreting. | mcq-gap, type-gap |
+| G30 | bil | Bilingualism is one criterion for evaluating interpreter __. | mcq-gap, type-gap |
+| G31 | bil | A person who speaks two languages is called a __. | mcq-gap, type-gap, bank:SM15 |
+| G32 | bil | Harris suggested that bilinguals possess a natural ability to __. | mcq-gap, type-gap |
+| G33 | bil | Natural Translation/Interpreting does not necessarily require specialized __. | mcq-gap, type-gap |
+| G34 | bil | One factor affecting bilingual proficiency is age of __. | mcq-gap, type-gap |
+| G35 | bil | Motivation can influence second-language __. | mcq-gap, type-gap |
+| G36 | bil | Personality may affect language __. | mcq-gap, type-gap |
+| G37 | bil | Language interference may occur when learners encounter new __. | mcq-gap, type-gap, bank:SM16 |
+| G38 | bil | L2 learners often associate new concepts through their __ language. | mcq-gap, type-gap |
+| G39 | bil | Language interference can occur despite high language __. | mcq-gap, type-gap |
+| G40 | bil | Interpreters must understand at least one language besides their __ language. | mcq-gap, type-gap, bank:SM17 |
+| G41 | bil | Interpreters need to understand one language while __ another. | mcq-gap, type-gap |
+| G42 | bil | The study of bilingualism belongs to the field of __. | mcq-gap, type-gap, bank:SM18 |
+| G43 | bil | Psycholinguistics studies mental and cognitive __. | mcq-gap, type-gap |
+| G44 | bil | Psycholinguistics also examines neural __. | mcq-gap, type-gap |
+| G45 | bil | Language acquisition involves one or more __. | mcq-gap, type-gap |
+| G46 | bil | Simultaneous interpreters are different from normal __. | mcq-gap, type-gap |
+| G47 | bil | A bilingual may have two languages with equal __. | mcq-gap, type-gap |
+| G48 | bil | A bilingual with equal proficiency is called a __ bilingual. | mcq-gap, type-gap, bank:SM19 |
+| G49 | bil | A bilingual may have one language that is more __ than the other. | mcq-gap, type-gap |
+| G50 | segm | Segmentation helps interpreters organize incoming __. | mcq-gap, type-gap |
+| G51 | segm | Comprehension-based segmentation supports memory __. | mcq-gap, type-gap |
+| G52 | segm | Meaningful units are identified before __ begins. | mcq-gap, type-gap |
+| G53 | segm | A complete predicative expression contains at least two major __. | mcq-gap, type-gap |
+| G54 | evs | Ear-voice span refers to the lag between two __. | mcq-gap, type-gap |
+| G55 | time | SI researchers examined pausing and __ patterns. | mcq-gap, type-gap |
+| G56 | segm | Interpreters process information in meaningful __. | mcq-gap, type-gap |
+| G57 | time | The source speaker provides the __ input. | mcq-gap, type-gap |
+| G58 | time | The interpreter produces the __ output. | mcq-gap, type-gap |
+| G59 | time | Structural correspondence may exist between source and target __. | mcq-gap, type-gap |
+| G60 | bil | Effective interpreting requires both comprehension and language __. | mcq-gap, type-gap, bank:SM20 |
+| G61 | evs | Ear-voice span (EVS) is also known as __ or time lag. | mcq-gap, type-gap |
+| G62 | evs | EVS refers to the interval between hearing the source speech and delivering the __. | mcq-gap, type-gap |
+| G63 | evs | Time lag can be measured by units of time or the number of content __. | mcq-gap, type-gap |
+| G64 | evs | Paneth's findings showed that the average EVS ranged from __ to 4 seconds. | mcq-gap, type-gap |
+| G65 | evs | According to some studies, EVS may range from 2 to __ seconds. | mcq-gap, type-gap |
+| G66 | evs | An interpreter must comprehend a sufficient amount of __ information before beginning interpretation. | mcq-gap, type-gap |
+| G67 | evs | The position of key words may affect the length of the __. | mcq-gap, type-gap |
+| G68 | evs | The predicate is considered an important __ element. | mcq-gap, type-gap |
+| G69 | evs | Cognitive activity can influence the length of time __. | mcq-gap, type-gap |
+| G70 | evs | Shadowing involves the immediate verbatim __ of the input. | mcq-gap, type-gap |
+| G71 | evs | In shadowing, the input is repeated in the same __. | mcq-gap, type-gap |
+| G72 | evs | Studies have shown that EVS in interpreting is generally __ than in shadowing. | mcq-gap, type-gap |
+| G73 | evs | The longer EVS in interpreting may be caused by increased cognitive __. | mcq-gap, type-gap |
+| G74 | evs | Simultaneous interpreters must make continuous __ while interpreting. | mcq-gap, type-gap |
+| G75 | evs | The average time lag is not the same for all interpreters or all types of __. | mcq-gap, type-gap |
+| G76 | segm | According to Pöchhacker, segmentation refers to the interpreter's processing of both input and __. | mcq-gap, type-gap |
+| G77 | segm | Segmentation helps decompose speech into processing-relevant __. | mcq-gap, type-gap |
+| G78 | bil | Interpreters should possess both perceptive and __ language skills. | mcq-gap, type-gap |
+| G79 | bil | A bilingual who learns two languages from birth is described as an __ sequential bilingual. | mcq-gap, type-gap |
+| G80 | bil | High proficiency in both the source language and target language is an important criterion for evaluating an interpreter's __. | mcq-gap, type-gap |

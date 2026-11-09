@@ -31,6 +31,13 @@
     return cand.indexOf(given) !== -1;
   }
 
+  // Fill-in-the-gap answers: the answer or any listed alternative; a plural "s" or a leading "the" does not matter.
+  function gapStem(s) { return normEn(s).replace(/s$/, ''); }
+  function matchGap(input, it) {
+    var g = normEn(input); if (!g) return false;
+    return [it.answer].concat(it.alt || []).some(function (c) { var n = normEn(c); return n === g || gapStem(c) === gapStem(g); });
+  }
+
   function matchName(input, name) { return !!input && normEn(input) === normEn(name); }
 
   // Estimate only: share of key-phrase groups found in the student's text.
@@ -73,5 +80,5 @@
 
   function estimateLabel(pct) { return pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low'; }
 
-  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
+  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, matchGap: matchGap, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
 })();

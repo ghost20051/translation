@@ -80,7 +80,7 @@
       "reading.enar": "English to Arabic",
       "reading.aren": "Arabic to English",
       "lesson.pairsHint": "Read each term and its Arabic out loud.",
-      "sfx.toggle": "Sound effects on/off", "def.explain": "Explain this word", "def.suggest": "Another common Arabic wording (our suggestion, not from the book)", "def.explainLbl": "What it means", "def.simple": "Simple version", "def.toAr": "Arabic translation", "def.toEn": "English translation",
+      "sfx.toggle": "Sound effects on/off", "subject.pick": "Choose a subject", "subject.now": "You are studying", "subject.change": "Change subject", "subject.current": "Current", "vocab.gaps": "Questions", "g1.gflip": "Flip cards", "g1.gflip.d": "See a sentence with a blank, then flip for the answer.", "g1.gtype": "Type the answer", "g1.gtype.d": "Type the missing word for each sentence.", "game1.progress2": "Activities completed: {n}/{m}", "def.explain": "Explain this word", "def.suggest": "Another common Arabic wording (our suggestion, not from the book)", "def.explainLbl": "What it means", "def.simple": "Simple version", "def.toAr": "Arabic translation", "def.toEn": "English translation",
       "def.original": "Original definition", "def.simpleLbl": "Simple version (short exam answer)", "def.translation": "Translation",
       "def.nudge": "Read it, then say it in your own words and write it from memory."
     },
@@ -108,7 +108,7 @@
       "reading.enar": "من الإنجليزية إلى العربية",
       "reading.aren": "من العربية إلى الإنجليزية",
       "lesson.pairsHint": "اقرأ كل مصطلح ومقابله العربي بصوت عالٍ.",
-      "sfx.toggle": "تشغيل/إيقاف المؤثرات الصوتية", "def.explain": "اشرح الكلمة", "def.suggest": "صياغة عربية شائعة أخرى (اقتراحنا، وليست من الكتاب)", "def.explainLbl": "معناها", "def.simple": "النسخة المبسّطة", "def.toAr": "الترجمة العربية", "def.toEn": "الترجمة الإنجليزية",
+      "sfx.toggle": "تشغيل/إيقاف المؤثرات الصوتية", "subject.pick": "اختر المادة", "subject.now": "أنت بتذاكر", "subject.change": "غيّر المادة", "subject.current": "الحالية", "vocab.gaps": "الأسئلة", "g1.gflip": "بطاقات القلب", "g1.gflip.d": "شاهد جملة فيها فراغ ثم اقلب البطاقة لترى الإجابة.", "g1.gtype": "اكتب الإجابة", "g1.gtype.d": "اكتب الكلمة الناقصة في كل جملة.", "game1.progress2": "الأنشطة المكتملة: {n}/{m}", "def.explain": "اشرح الكلمة", "def.suggest": "صياغة عربية شائعة أخرى (اقتراحنا، وليست من الكتاب)", "def.explainLbl": "معناها", "def.simple": "النسخة المبسّطة", "def.toAr": "الترجمة العربية", "def.toEn": "الترجمة الإنجليزية",
       "def.original": "التعريف الأصلي", "def.simpleLbl": "النسخة المبسّطة (إجابة قصيرة للامتحان)", "def.translation": "الترجمة",
       "def.nudge": "اقرأها ثم قلها بأسلوبك واكتبها من الذاكرة."
     }

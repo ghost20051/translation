@@ -6,7 +6,7 @@ global.window = global;
 global.UN = {};
 const mem = {};
 global.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
-['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
+['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'data/interp/gaps', 'data/interp/bank', 'data/interp/content', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
   .forEach(f => require(path.join('..', 'js', f + '.js')));
 
 let n = 0;
@@ -14,7 +14,7 @@ const ok = (name, fn) => { fn(); n++; console.log('ok -', name); };
 const answerFor = q => (q.type === 'mcq' || q.type === 'tf') ? q.answer : (q.type === 'type' ? q.correctText.split(' / ')[0] : 'x');
 
 ok('Subjects are registered; UN stays the default and keeps its size', () => {
-  assert.deepStrictEqual(UN.subjectOrder, ['un', 'tour']);
+  assert.deepStrictEqual(UN.subjectOrder, ['un', 'tour', 'si']);
   assert.strictEqual(UN.subjectId, 'un');
   assert.strictEqual(UN.itemIds.length, 31);
 });

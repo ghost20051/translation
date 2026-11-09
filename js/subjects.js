@@ -5,7 +5,7 @@
  */
 (function () {
   var UN = window.UN = window.UN || {};
-  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading'];
+  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps'];
 
   UN.subjects = {};
   UN.subjectOrder = [];
@@ -22,6 +22,8 @@
     id: 'un',
     name: { en: 'UN Translation', ar: 'ترجمة الأمم المتحدة' },
     short: { en: 'UN', ar: 'الأمم المتحدة' },
+    icon: 'landmark',
+    desc: { en: 'United Nations bodies, offices, documents and written answers', ar: 'هيئات الأمم المتحدة ومكاتبها ووثائقها والإجابات المقالية' },
     subNoun: 'characteristic',
     exam: { terms: 'all', written: 'all', extras: 5, extraPool: ['W3-acc', 'W3-cla', 'W3-obj', 'W3-con', 'W3-neu', 'W3-cnf', 'W1', 'W2', 'W4', 'W5'], sample: false, adaptive: { total: 20, targeted: 15 }, fullTotal: 30 },
     flipGoal: 20, flipDeck: 20, termGroups: ['organs', 'sgoffice', 'offices', 'docs', 'translation'],
@@ -34,6 +36,14 @@
     var tour = {};
     FIELDS.forEach(function (f) { tour[f] = UN.T[f]; });
     UN.registerSubject('tour', tour);
+  }
+
+  // Subject 3: Simultaneous Interpretation (fill-in-the-gap questions, content in UN.SI)
+  if (UN.SI) {
+    var si = {};
+    FIELDS.forEach(function (f) { si[f] = UN.SI[f]; });
+    si.cfg = UN.SI.cfg;
+    UN.registerSubject('si', si);
   }
 
   UN.useSubject = function (id) {

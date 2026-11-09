@@ -22,6 +22,11 @@
       fb.textContent = '';
       fb.appendChild(h('b', null, v >= 0.99 ? '✅ ' + t('fb.correct') : v > 0 ? '🟡 ' + t('fb.partly') : '❌ ' + t('fb.wrong')));
       if (v < 0.99 && q.type !== 'recall') fb.appendChild(h('div', null, t('fb.answer') + ' ', ui.mixed(String(q.correctText))));
+      var blank = !exam && q.extra && q.extra.ans ? box.querySelector('.gblank') : null;
+      if (blank) blank.replaceWith(h('mark', { class: 'gans' }, q.extra.ans));   // fill the blank right where the student is looking
+      if (q.extra && q.extra.q && !blank) fb.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(q.extra.q, q.extra.ans)));
+      if (q.extra && q.extra.note) fb.appendChild(h('div', { class: 'muted small' }, q.extra.note));
+      if (!exam && UN.fun) fb.appendChild(h('div', { class: 'quip' }, UN.fun.answer(v)));
       if (!exam && UN.sfx) UN.sfx.play(v >= 0.99 ? 'correct' : v > 0 ? 'partly' : 'wrong');
       if (cfg.onAnswer) cfg.onAnswer(v, given);
     }

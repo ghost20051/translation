@@ -4,7 +4,9 @@
   var ui = UN.ui, h = ui.h, t = ui.t, L = ui.L;
   var S = function () { return UN.store.get(); };
 
-  function examDesc(n) { return t('exam' + n + '.desc' + (UN.cfg.exam.sample && n !== 2 ? '.s' : '')); }
+  function examDesc(n) {
+    var d = UN.cfg.exam.desc; if (d && d[n]) return d[n][S().lang] || d[n].en;
+    return t('exam' + n + '.desc' + (UN.cfg.exam.sample && n !== 2 ? '.s' : '')); }
   function best(no) { var p = UN.prog.examPcts(no); return p.length ? Math.max.apply(null, p) : null; }
 
   UN.routes.exams = function () {
@@ -125,6 +127,7 @@
     var prevPct = idx > 0 ? hist[idx - 1].pct : null;
     var otherNo = att.no > 1 ? UN.prog.examPcts(att.no - 1) : [];
     page.appendChild(h('h1', null, t('exam' + att.no + '.name') + ' — ' + t('res.title')));
+    if (UN.fun) page.appendChild(h('p', { class: 'quip' }, UN.fun.band(att.pct)));
     page.appendChild(h('section', { class: 'card result' },
       h('div', { class: 'ring', style: '--p:' + att.pct }, h('span', null, att.pct + '%')),
       h('div', null, h('h2', null, t(lbl)), h('p', null, t('res.score', { s: att.score % 1 ? att.score.toFixed(1) : att.score, n: att.max })),
@@ -172,6 +175,8 @@
       } else {
         card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), ' ', r.given ? ui.mixed(r.given) : h('i', null, t('res.blank'))));
         if (r.v < 0.99) card.appendChild(h('div', { class: 'given right' }, h('small', null, t('fb.answer')), ' ', ui.mixed(String(r.correct))));
+        if (r.gapQ) card.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(r.gapQ, r.gapA)));
+        if (r.note) card.appendChild(h('div', { class: 'muted small' }, r.note));
       }
       list.appendChild(card);
     });

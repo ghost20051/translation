@@ -34,6 +34,8 @@
   function setText(el, str) { el.textContent = ''; append(el, str); }
   function t(key, vars) {
     var lang = S().lang, d = UN.i18n[lang] || {}, s = d[key];
+    var ov = UN.cfg && UN.cfg.text && (UN.cfg.text[lang] || UN.cfg.text.en);
+    if (ov && ov[key] != null) s = ov[key];
     if (s == null) s = (UN.i18n.en || {})[key];
     if (s == null) return key;
     if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); });
@@ -50,11 +52,21 @@
     });
     return out;
   }
-  function promptNode(q) { return q.promptLang === 'ar' ? L(q.prompt, 'ar') : mixed(q.prompt); }
+  // A fill-in-the-gap sentence: a visible blank box, or (when the answer is given) the answer in colour.
+  function gapSentence(text, ans) {
+    var parts = String(text).split('__');
+    var mid = ans != null ? h('mark', { class: 'gans' }, ans) : h('span', { class: 'gblank', role: 'img', 'aria-label': 'blank' }, ' ');
+    return h('span', { class: 'gapline', lang: 'en', dir: 'ltr' }, parts[0], mid, parts[1] || '');
+  }
+  function promptNode(q) {
+    if ((q.fmt === 'mcq-gap' || q.fmt === 'type-gap') && q.extra && q.extra.q) return gapSentence(q.extra.q);
+    return q.promptLang === 'ar' ? L(q.prompt, 'ar') : mixed(q.prompt);
+  }
   function termLabel(id) {
     var it = UN.itemsById[id];
     if (it.kind === 'term') return h('span', null, L(it.en, 'en'), ' · ', L(it.arShow, 'ar'));
     if (it.kind === 'sub') return L(it.name, 'en');
+    if (it.kind === 'gap') return gapSentence(it.q);
     return L(it.q, 'en');
   }
   function later(fn, ms) { var id = setTimeout(fn, ms); UN.state.timers.push(id); return id; }
@@ -155,8 +167,8 @@
       h('span', { class: 'bt' }, h('b', null, t('app.short')), h('small', null, t('brand.tag')))));
     var lang = S().lang, dark = resolvedTheme() === 'dark';
     hdr.appendChild(h('div', { class: 'tools' },
-      (inExam || UN.subjectOrder.length < 2) ? null : h('div', { class: 'seg subj', role: 'group', 'aria-label': t('subject.label') },
-        UN.subjectOrder.map(function (id) { var c = UN.subjects[id].cfg; return h('button', { type: 'button', class: id === UN.subjectId ? 'on' : '', title: c.name[lang], 'aria-pressed': String(id === UN.subjectId), onclick: function () { if (id !== UN.subjectId) switchSubject(id); } }, c.short[lang]); })),
+      (inExam || UN.subjectOrder.length < 2) ? null : h('button', { type: 'button', class: 'subjbtn', 'aria-haspopup': 'dialog', title: t('subject.pick'), 'aria-label': t('subject.pick') + ': ' + UN.cfg.name[lang], onclick: openSubjects },
+        ic(UN.cfg.icon || 'book-open'), h('span', { class: 'sn' }, UN.cfg.name[lang]), ic('chevron-right', 'down')),
       h('div', { class: 'seg lang', role: 'group', 'aria-label': t('set.lang') },
         [['en', 'English'], ['ar', 'العربية']].map(function (o) { return h('button', { type: 'button', lang: o[0], class: o[0] === lang ? 'on' : '', 'aria-pressed': String(o[0] === lang), onclick: function () { if (o[0] !== S().lang) setLang(o[0]); } }, o[1]); })),
       h('button', { class: 'icon-btn round', type: 'button', 'data-nosfx': '1', 'aria-pressed': String(!UN.sfx || UN.sfx.enabled()), onclick: toggleSound, 'aria-label': t('sfx.toggle'), title: t('sfx.toggle') }, ic(UN.sfx && !UN.sfx.enabled() ? 'volume-x' : 'volume')),
@@ -171,6 +183,21 @@
 
     BOTTOM.forEach(function (k) { nav.appendChild(navLink(NAV_BASE.filter(function (n) { return n[0] === k; })[0])); });
     nav.appendChild(h('button', { type: 'button', class: 'morebtn', 'data-r': 'more', onclick: openMore }, ic('more'), h('span', { class: 'nt' }, t('nav.more'))));
+  }
+  // Subject picker: a list with the full subject names, so it still reads clearly with four or more subjects.
+  function openSubjects() {
+    var lang = S().lang, overlay = h('div', { class: 'overlay sheet-wrap' }), close = function () { overlay.remove(); };
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    overlay.appendChild(h('div', { class: 'sheet card subjsheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('subject.pick') },
+      h('h2', null, t('subject.pick')),
+      UN.subjectOrder.map(function (id, i) {
+        var c = UN.subjects[id].cfg, cur = id === UN.subjectId;
+        return h('button', { type: 'button', class: 'subjrow' + (cur ? ' on' : ''), 'aria-pressed': String(cur), onclick: function () { close(); if (!cur) switchSubject(id); } },
+          tile(c.icon || 'book-open', ['blue', 'green', 'purple', 'amber'][i % 4]),
+          h('span', { class: 'sjt' }, h('b', null, c.name[lang]), h('small', { class: 'muted' }, (c.desc && c.desc[lang]) || '')),
+          cur ? h('span', { class: 'pill good' }, ic('check'), t('subject.current')) : ic('chevron-right', 'flip'));
+      })));
+    document.body.appendChild(overlay);
   }
   function openMore() {
     var overlay = h('div', { class: 'overlay sheet-wrap' }), close = function () { overlay.remove(); };
@@ -277,8 +304,10 @@
     var info = UN.prog.xpInfo(), o = UN.adapt.overall(), acc = UN.prog.accuracy(), sk = UN.prog.streak(), cats = UN.adapt.categoryStats();
     var page = h('div', { class: 'page' });
 
-    page.appendChild(h('section', { class: 'card welcome' }, h('div', null, h('h1', null, t('dash.welcome')), h('p', { class: 'lead' }, t('dash.welcomeSub'))),
-      h('span', { class: 'emblem', 'aria-hidden': 'true' }, ic('globe'))));
+    page.appendChild(h('section', { class: 'card welcome' }, h('div', null, h('h1', null, t('dash.welcome')), h('p', { class: 'lead' }, t('dash.welcomeSub')),
+      UN.subjectOrder.length < 2 ? null : h('div', { class: 'subjnow' }, h('span', { class: 'muted' }, t('subject.now') + ':'), h('b', null, UN.cfg.name[S().lang]),
+        h('button', { type: 'button', class: 'btn ghost small', onclick: openSubjects }, t('subject.change')))),
+      h('span', { class: 'emblem', 'aria-hidden': 'true' }, ic(UN.cfg.icon || 'globe'))));
 
     page.appendChild(h('section', { class: 'grid4' },
       stat('star', 'amber', t('stat.xp'), String(info.xp), [t('xp.next', { n: info.per - info.into }), 'muted']),
@@ -389,6 +418,7 @@
     ids.forEach(function (id) {
       var it = UN.itemsById[id];
       if (it.kind === 'sub') { tb.appendChild(h('div', { class: 'term defrow' }, h('div', { class: 'en' }, L(it.name, 'en')), defBox(it))); return; }
+      if (it.kind === 'gap') { tb.appendChild(h('div', { class: 'term defrow' }, h('div', { class: 'gapfull' }, gapSentence(it.q, it.answer)), h('div', { class: 'muted small' }, it.note))); return; }
       if (it.kind !== 'term') return;
       tb.appendChild(h('div', { class: 'term' + ((it.orig || it.help) ? ' withdef' : '') }, h('div', { class: 'en' }, L(it.en, 'en'), speakBtn(it.en)), h('div', { class: 'ar' }, L(it.arShow, 'ar')), (it.orig || it.help) ? defBox(it) : null));
     });
@@ -424,10 +454,11 @@
     var stack = h('div', { class: 'stack' });
     UN.resources.forEach(function (r) { if (rec.slice(0, 3).indexOf(r) === -1) stack.appendChild(resourceCard(r, r.id === arg)); });
     page.appendChild(stack);
+    if (!UN.written.length) { if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return page; }
     page.appendChild(h('h2', null, t('learn.written')));
     var wst = h('div', { class: 'stack' });
     UN.written.forEach(function (w) {
-      wst.appendChild(h('details', { class: 'card res' }, h('summary', null, h('span', { class: 'rt' }, L(w.q, 'en')), ic('chevron-right', 'caret')), h('p', { class: 'quote model' }, L(UN.keys.written[w.id].model, 'en'))));
+      wst.appendChild(h('details', { class: 'card res' }, h('summary', null, h('span', { class: 'rt' }, L(w.q, 'en')), ic('chevron-right', 'caret')), h('p', { class: 'quote model' }, L(UN.keys.written[w.id].model, 'en')), UN.keys.written[w.id].trick ? h('div', { class: 'tip' }, ic('lightbulb'), h('span', null, UN.keys.written[w.id].trick)) : null));
     });
     page.appendChild(wst);
     if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
@@ -436,7 +467,7 @@
 
   /* ---------- page: vocabulary ---------- */
   UN.routes.vocab = function () {
-    var tab = 'terms', q = '', grp = 'all', lang = S().lang;
+    var gapMode = UN.cfg.flipKind === 'gap', tab = gapMode ? 'gaps' : 'terms', q = '', grp = 'all', lang = S().lang;
     var page = h('div', { class: 'page' }, pageHead(t('vocab.title'), t('vocab.lead')));
     var tabs = h('div', { class: 'tabs', role: 'tablist' }), chips = h('div', { class: 'chips-row' }), list = h('div', { class: 'vlist' });
     var search = h('input', { type: 'search', class: 'txt', placeholder: t('vocab.search'), 'aria-label': t('vocab.search'), autocomplete: 'off' });
@@ -445,13 +476,13 @@
     function norm(s) { return UN.check.normEn(s) + ' ' + UN.check.normAr(s); }
     function drawTabs() {
       tabs.textContent = '';
-      [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']].forEach(function (x) {
+      (gapMode ? [['gaps', 'vocab.gaps'], ['defs', 'vocab.defs'], ['written', 'vocab.written']] : [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']]).forEach(function (x) {
         tabs.appendChild(h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === x[0]), class: 'tab' + (tab === x[0] ? ' on' : ''), onclick: function () { tab = x[0]; draw(); } }, t(x[1])));
       });
     }
     function drawChips() {
       chips.textContent = '';
-      if (tab !== 'terms') return;
+      if (tab !== 'terms' && tab !== 'gaps') return;
       [['all']].concat(UN.cfg.termGroups.map(function (g) { return [g]; })).forEach(function (x) {
         chips.appendChild(h('button', { type: 'button', class: 'chipbtn' + (grp === x[0] ? ' on' : ''), onclick: function () { grp = x[0]; draw(); } }, x[0] === 'all' ? t('vocab.all') : UN.groups[x[0]][lang]));
       });
@@ -459,7 +490,14 @@
     function draw() {
       drawTabs(); drawChips(); list.textContent = '';
       var needle = norm(q), n = 0;
-      if (tab === 'terms') {
+      if (tab === 'gaps') {
+        UN.gaps.forEach(function (it) {
+          if (grp !== 'all' && it.group !== grp) return;
+          if (needle && norm(it.q + ' ' + it.answer + ' ' + it.note).indexOf(needle) === -1) return;
+          n++;
+          list.appendChild(h('div', { class: 'vrow card def' }, h('span', { class: 'vnum' }, it.n), h('div', { class: 'vdef' }, h('div', { class: 'gapfull' }, gapSentence(it.q, it.answer)), h('div', { class: 'muted small' }, it.note)), h('span', { class: 'pill' }, UN.groups[it.group][lang])));
+        });
+      } else if (tab === 'terms') {
         UN.terms.forEach(function (it) {
           if (grp !== 'all' && it.group !== grp) return;
           if (needle && norm(it.en + ' ' + it.arShow).indexOf(needle) === -1) return;
@@ -477,7 +515,7 @@
           var m = UN.keys.written[w.id].model;
           if (needle && norm(w.q + ' ' + m).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'card' }, h('b', null, L(w.q, 'en')), h('p', { class: 'quote model' }, L(m, 'en'))));
+          list.appendChild(h('div', { class: 'card' }, h('b', null, L(w.q, 'en')), h('p', { class: 'quote model' }, L(m, 'en')), UN.keys.written[w.id].trick ? h('div', { class: 'tip' }, ic('lightbulb'), h('span', null, UN.keys.written[w.id].trick)) : null));
         });
       }
       if (!n) list.appendChild(empty('search', t('vocab.none'), t('vocab.noneText')));
@@ -609,6 +647,6 @@
   };
 
   UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
-    confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
+    gapSentence: gapSentence, openSubjects: openSubjects, confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
     defBox: defBox, applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
 })();

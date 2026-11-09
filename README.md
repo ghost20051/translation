@@ -77,3 +77,9 @@ Every definition is shown exactly as written in the course material. Two buttons
 ## Sound effects
 
 All sounds are generated in the browser with the Web Audio API (no audio files, nothing to download, works offline). They play on right/wrong/partly answers in games and lessons, matching pairs and mistakes, card flips, the boss-battle countdown, win/lose fanfares, achievements, finishing a lesson and submitting an exam. Exams never reveal correctness through sound. A speaker button in the top bar turns sound on or off (the choice is remembered).
+
+## Subjects
+
+The top bar shows the current subject by its full name; tap it to choose another (UN Translation, Tourist Translation, Simultaneous Interpretation). Progress is kept separately for each subject. A fourth subject can be added the same way: its content files, one `registerSubject` call, and an icon and description for the picker.
+
+Simultaneous Interpretation uses fill-in-the-gap questions (shown with a real blank and the answer in colour), 20 multiple-choice questions, 20 essay questions with memory tricks, ten key concepts, funny memory pictures, games, lessons and balanced exams of 36 gap questions and 4 essays.

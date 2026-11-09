@@ -15,6 +15,7 @@
     UN.terms.forEach(function (t) { t.kind = 'term'; UN.itemsById[t.id] = t; });
     UN.written.forEach(function (w) { w.kind = 'wq'; UN.itemsById[w.id] = w; });
     UN.subs.forEach(function (s) { s.kind = 'sub'; UN.itemsById[s.id] = s; });
+    (UN.gaps || []).forEach(function (g) { g.kind = 'gap'; UN.itemsById[g.id] = g; });
     UN.itemIds = Object.keys(UN.itemsById);
     // terms that share an Arabic form (e.g. "tour" and "trip" are both رحلة) must not be used as each other's distractors
     var byAr = {};
@@ -59,6 +60,35 @@
     return out;
   }
 
+  // Distractors for a fill-in-the-gap question: other questions' answers that cannot also fit this blank.
+  function gapKey(a) { return UN.check.normEn(a).replace(/s$/, ''); }
+  function clashes(a, b) {
+    var x = UN.check.normEn(a), y = UN.check.normEn(b);
+    return (UN.cfg.clash || []).some(function (set) { return set.indexOf(x) !== -1 && set.indexOf(y) !== -1; });
+  }
+  function distractGaps(id, n, rng) {
+    var it = UN.itemsById[id], num = /^\d/.test(it.answer), art = /\ba __/.test(it.q) ? 'a' : /\ban __/.test(it.q) ? 'an' : '';
+    var plural = /s$/i.test(it.answer) && it.answer.length > 3;
+    var pool = shuffle(UN.gaps.filter(function (g) {
+      if (g.id === id || gapKey(g.answer) === gapKey(it.answer) || clashes(g.answer, it.answer)) return false;
+      if (/^\d/.test(g.answer) && !num) return false;
+      if (art) { var vowel = /^[aeiou]/i.test(g.answer); if ((art === 'an') !== vowel) return false; }
+      return true;
+    }), rng);
+    pool.sort(function (a, b) {
+      var s = function (g) { return (num && /^\d/.test(g.answer) ? -4 : 0) + (g.group === it.group ? 0 : 2) + ((/s$/i.test(g.answer) && g.answer.length > 3) === plural ? 0 : 1); };
+      return s(a) - s(b);
+    });
+    var out = [], seen = {}; seen[gapKey(it.answer)] = 1;
+    pool.forEach(function (g) {
+      var k = gapKey(g.answer);
+      if (out.length >= n || seen[k] || out.some(function (o) { return clashes(o.answer, g.answer); })) return;
+      seen[k] = 1; out.push(g);
+    });
+    return out;
+  }
+  function gapPrompt(it) { return it.q.replace('__', '______'); }
+
   function mcq(item, fmt, prompt, promptLang, correct, wrongs, optLang, rng, extra) {
     var opts = shuffle([{ id: 'c', text: correct }].concat(wrongs.map(function (w, i) { return { id: 'w' + i, text: w }; })), rng);
     opts.forEach(function (o) { o.lang = optLang; });
@@ -72,6 +102,11 @@
   // formats available for each item
   function formatsFor(id) {
     var it = UN.itemsById[id];
+    if (it.kind === 'gap') {
+      var gf = ['mcq-gap', 'type-gap'];
+      UN.bank.mcq.forEach(function (b) { if (b.item === id) gf.push('bank:' + b.id); });
+      return gf;
+    }
     if (it.kind === 'term') {
       var f = ['mcq-en2ar', 'mcq-ar2en', 'type-ar', 'type-en', 'tf-term'];
       if (it.en.split(' ').length > 1 && contentWords(it.en).length) f.push('fill');
@@ -108,6 +143,12 @@
     }
     var m, i;
     switch (fmt) {
+      case 'mcq-gap': {
+        var gd = distractGaps(id, 3, rng);
+        return mcq(id, fmt, gapPrompt(it), 'en', it.answer, gd.map(function (x) { return x.answer; }), 'en', rng, { note: it.note, q: it.q, ans: it.answer });
+      }
+      case 'type-gap':
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', answerKind: 'gap', prompt: gapPrompt(it), promptLang: 'en', correctText: it.answer, extra: { note: it.note, q: it.q, ans: it.answer } };
       case 'mcq-en2ar': {
         var d = distractTerms(id, 3, rng);
         return mcq(id, fmt, it.en, 'en', it.arShow, d.map(function (x) { return x.arShow; }), 'ar', rng);
@@ -159,7 +200,8 @@
         var key = UN.keys.mcq[bid];
         var ids = shuffle(Object.keys(b.opts), rng);
         return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'mcq', prompt: b.text, promptLang: 'en',
-          options: ids.map(function (k) { return { id: k, text: b.opts[k], lang: 'en' }; }), answer: key, correctText: b.opts[key] };
+          options: ids.map(function (k) { return { id: k, text: b.opts[k], lang: 'en' }; }), answer: key, correctText: b.opts[key],
+          extra: it.kind === 'gap' ? { note: it.note, q: it.q, ans: it.answer } : null };
       }
       for (i = 0; i < UN.bank.cloze.length; i++) if (UN.bank.cloze[i].id === bid) {
         b = UN.bank.cloze[i];
@@ -193,6 +235,7 @@
     if (q.type === 'tf') return given === q.answer ? 1 : 0;
     if (q.type === 'type') {
       if (q.answerKind === 'name') return UN.check.matchName(given, q.correctText) ? 1 : 0;
+      if (q.answerKind === 'gap') return UN.check.matchGap(given, UN.itemsById[q.item]) ? 1 : 0;
       var tm = UN.itemsById[q.item];
       if (UN.check.matchTerm(given, tm, q.answerLang)) return 1;
       if (q.answerLang === 'en' && (tm.same || []).some(function (id) { return UN.check.matchTerm(given, UN.itemsById[id], 'en'); })) return 1;

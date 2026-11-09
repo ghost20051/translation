@@ -25,7 +25,7 @@
     var page = h('div', { class: 'page' }, h('h1', null, t('games.title')), h('p', { class: 'lead' }, t('games.lead')));
     var grid = h('div', { class: 'grid3' });
     [[1, '🎮', 'game1'], [2, '🔧', 'game2'], [3, '⚔️', 'game3']].forEach(function (g) {
-      var played = g[0] === 1 ? UN.prog.actsDone() + '/5' : (gm()['g' + g[0]] || 0) + '×';
+      var played = g[0] === 1 ? UN.prog.actsDone() + '/' + (UN.cfg.acts ? UN.cfg.acts.length : 5) : (gm()['g' + g[0]] || 0) + '×';
       grid.appendChild(h('div', { class: 'card game-card g' + g[0] }, h('div', { class: 'big-emoji' }, g[1]), h('h2', null, t(g[2] + '.name')), h('p', null, t(g[2] + '.desc')),
         h('div', { class: 'muted' }, t('games.played') + ': ' + played), h('a', { class: 'btn primary', href: '#/game/' + g[0] }, '▶ ' + t('games.play'))));
     });
@@ -68,6 +68,7 @@
     box.appendChild(h('div', { class: 'card result center' },
       h('div', { class: 'big-emoji' }, right === results.length ? '🎉' : '👏'),
       h('h2', null, t('sum.done')), h('p', null, t('sum.score', { r: right, n: results.length }) + ' · +' + xp + ' XP'),
+      UN.fun ? h('p', { class: 'quip' }, UN.fun.band(Math.round(100 * right / Math.max(1, results.length)))) : null,
       missed.length ? h('div', null, h('p', null, t('sum.review')), h('ul', { class: 'list' }, missed.filter(function (x, k) { return missed.indexOf(x) === k; }).map(function (id) { return h('li', null, ui.termLabel(id)); }))) : null,
       h('div', { class: 'row center' }, h('button', { class: 'btn primary', onclick: again }, '🔁 ' + t('sum.again')), (onBack ? h('button', { class: 'btn ghost', onclick: onBack }, t('back')) : h('a', { class: 'btn ghost', href: backHref }, t('back'))))));
   }
@@ -83,16 +84,18 @@
     function menu() {
       box.textContent = '';
       box.appendChild(h('p', { class: 'lead' }, t('game1.lead')));
+      var gapMode = UN.cfg.flipKind === 'gap';
       var list = [
-        ['flip', '🃏', 'g1.flip', flip], ['match1', '🔗', 'g1.matchEnAr', function () { match('en2ar'); }], ['match2', '🔗', 'g1.matchArEn', function () { match('ar2en'); }],
-        ['match3', '📖', 'g1.matchDef', function () { match('def'); }], ['speed', '⚡', 'g1.speed', speed], ['fill', '✏️', 'g1.fill', fill], ['body', '🏛️', UN.cfg.bodyKey, body]];
+        ['flip', '🃏', gapMode ? 'g1.gflip' : 'g1.flip', flip], ['match1', '🔗', 'g1.matchEnAr', function () { match('en2ar'); }], ['match2', '🔗', 'g1.matchArEn', function () { match('ar2en'); }],
+        ['match3', '📖', 'g1.matchDef', function () { match('def'); }], ['speed', '⚡', 'g1.speed', speed], ['fill', '✏️', 'g1.fill', fill], ['body', '🏛️', UN.cfg.bodyKey, body], ['type', '🎯', 'g1.gtype', gapType]];
+      if (UN.cfg.acts) list = list.filter(function (a) { return UN.cfg.acts.indexOf(a[0]) !== -1; });
       var grid = h('div', { class: 'grid3' });
       list.forEach(function (a) {
         var key = a[0].replace(/\d/, ''); var done = acts[key];
         grid.appendChild(h('button', { class: 'card act', onclick: a[3] }, h('div', { class: 'big-emoji' }, a[1]), h('b', null, t(a[2])), h('span', { class: 'muted small' }, t(a[2] + '.d')), done ? h('span', { class: 'pill good' }, '✓') : null));
       });
       box.appendChild(grid);
-      box.appendChild(h('p', { class: 'muted' }, t('game1.progress', { n: UN.prog.actsDone() })));
+      box.appendChild(h('p', { class: 'muted' }, UN.cfg.acts ? t('game1.progress2', { n: UN.prog.actsDone(), m: UN.cfg.acts.length }) : t('game1.progress', { n: UN.prog.actsDone() })));
     }
     function finishAct(name, results, xp, again) {
       mark(name); reward(xp);
@@ -101,14 +104,17 @@
 
     // --- flip cards
     function flip() {
-      var deck = shuffle(UN.terms.slice()).slice(0, UN.cfg.flipDeck), known = 0, total = deck.length, flipped = false;
+      var gapMode = UN.cfg.flipKind === 'gap';
+      var deck = shuffle((gapMode ? UN.gaps : UN.terms).slice()).slice(0, UN.cfg.flipDeck), known = 0, total = deck.length, flipped = false;
       function show() {
         box.textContent = '';
         if (!deck.length) { mark('flip'); reward(total * 2); return summary(box, new Array(total).fill({ v: 1, q: { item: 'T1' } }), total * 2, flip, '#/game/1', menu); }
         var it = deck[0];
         S().flipped[it.id] = 1; UN.store.save();
-        var front = h('div', { class: 'face front' }, h('small', null, t('flip.tap')), h('div', { class: 'big-term' }, L(it.en, 'en')), ui.speakBtn(it.en));
-        var back = h('div', { class: 'face back' }, h('small', null, UN.groups[it.group][S().lang]), h('div', { class: 'big-term' }, L(it.arShow, 'ar')));
+        var front = gapMode ? h('div', { class: 'face front' }, h('small', null, t('flip.tap')), h('div', { class: 'gapsent' }, ui.gapSentence(it.q)))
+          : h('div', { class: 'face front' }, h('small', null, t('flip.tap')), h('div', { class: 'big-term' }, L(it.en, 'en')), ui.speakBtn(it.en));
+        var back = gapMode ? h('div', { class: 'face back' }, h('small', null, UN.groups[it.group][S().lang]), h('div', { class: 'big-term' }, L(it.answer, 'en')), h('div', { class: 'gapsent small' }, ui.mixed(it.note)))
+          : h('div', { class: 'face back' }, h('small', null, UN.groups[it.group][S().lang]), h('div', { class: 'big-term' }, L(it.arShow, 'ar')));
         var card = h('div', { class: 'flipcard', role: 'button', tabindex: '0', onclick: function () { card.classList.toggle('flipped'); if (UN.sfx) UN.sfx.play('flip'); } }, h('div', { class: 'inner' }, front, back));
         card.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('flipped'); } });
         box.appendChild(h('div', { class: 'row between' }, h('b', null, t('flip.left', { n: deck.length })), ui.bar((total - deck.length) / total, 'good')));
@@ -218,7 +224,13 @@
     }
 
     // --- missing word
+    function gapQuiz(fmt, name, again) {
+      var qs = shuffle(UN.gaps.slice()).slice(0, 8).map(function (x) { return G().make(x.id, fmt); });
+      quiz(box, qs, { src: 'game1', onDone: function (res) { finishAct(name, res, res.length * 6, again); } });
+    }
+    function gapType() { gapQuiz('type-gap', 'type', gapType); }
     function fill() {
+      if (UN.cfg.flipKind === 'gap') return gapQuiz('mcq-gap', 'fill', fill);
       var terms = shuffle(UN.terms.filter(function (x) { return G().formatsFor(x.id).indexOf('fill') !== -1; })).slice(0, 8 - UN.bank.cloze.length).map(function (x) { return G().make(x.id, 'fill'); });
       var cl = UN.bank.cloze.map(function (c) { return G().make(c.item, 'bank:' + c.id); });
       var qs = shuffle(terms.concat(cl));
@@ -257,6 +269,10 @@
       card.appendChild(h('div', { class: 'big-term ar' }, L(it.arShow, 'ar')));
       card.appendChild(h('p', { class: 'muted' }, UN.groups[it.group][S().lang]));
       if (near.length) card.appendChild(h('div', { class: 'tip' }, '⚠️ ' + t('lab.confused') + ' ', near.map(function (x) { return h('span', { class: 'pill' }, L(UN.itemsById[x].en, 'en'), ' = ', L(UN.itemsById[x].arShow, 'ar')); })));
+    } else if (it.kind === 'gap') {
+      card.appendChild(h('div', { class: 'gapsent' }, ui.gapSentence(it.q)));
+      card.appendChild(h('div', { class: 'big-term' }, L(it.answer, 'en')));
+      card.appendChild(h('p', { class: 'muted' }, it.note));
     } else if (it.kind === 'sub') {
       card.appendChild(h('div', { class: 'big-term' }, L(it.name, 'en'))); card.appendChild(h('p', null, L(it.def, 'en')));
     } else {

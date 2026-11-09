@@ -21,15 +21,16 @@
   }
 
   // n terms spread evenly over the term groups, weakest / least-seen first, preferring items not asked last time
-  function stratified(n, r, prev) {
+  function stratified(n, r, prev, kind) {
     var byGroup = {}, order = [];
     r.ids.forEach(function (id) {
       var it = UN.itemsById[id];
-      if (it.kind !== 'term') return;
+      if (it.kind !== (kind || 'term')) return;
       if (!byGroup[it.group]) { byGroup[it.group] = []; order.push(it.group); }
       byGroup[it.group].push(id);
     });
-    var total = UN.terms.length, quota = {}, used = 0;
+    var total = 0, quota = {}, used = 0;
+    order.forEach(function (g) { total += byGroup[g].length; });
     order.forEach(function (g) { var exact = n * byGroup[g].length / total; quota[g] = { q: Math.floor(exact), rem: exact - Math.floor(exact) }; used += quota[g].q; });
     order.slice().sort(function (a, b) { return quota[b].rem - quota[a].rem; }).forEach(function (g) { if (used < n) { quota[g].q++; used++; } });
     var out = [];
@@ -46,7 +47,8 @@
       last.rows.forEach(function (row) { prevTerms[row.item] = 1; });
       prevExtras = last.extras || []; prevWritten = last.writtenIds || [];
     }
-    var termIds = c.terms === 'all' ? UN.terms.map(function (t) { return t.id; }) : stratified(c.terms, r, prevTerms);
+    var termIds = c.terms === 'all' ? UN.terms.map(function (t) { return t.id; }) : (c.terms ? stratified(c.terms, r, prevTerms, 'term') : []);
+    var gapIds = c.gaps ? stratified(c.gaps, r, prevTerms, 'gap') : [];
 
     var allW = r.ids.filter(function (id) { return UN.itemsById[id].kind === 'wq'; });
     var wIds = allW;
@@ -60,7 +62,7 @@
     var extras = freshE.concat(cands.filter(function (id) { return freshE.indexOf(id) === -1; })).slice(0, c.extras);
 
     var qs = [];
-    termIds.forEach(function (id) { qs.push(qFor(id, rng, ['written'])); });
+    termIds.concat(gapIds).forEach(function (id) { qs.push(qFor(id, rng, ['written'])); });
     wIds.forEach(function (id) { qs.push(G().make(id, 'written', rng)); });
     extras.forEach(function (id) { qs.push(qFor(id, rng, ['written'])); });
     return { mode: 'full', qs: G().shuffle(qs, rng), extras: extras, writtenIds: wIds, targeted: [] };
@@ -101,7 +103,7 @@
     var rows = built.qs.map(function (q, i) {
       var given = answers[i];
       var row = { item: q.item, fmt: q.fmt, type: q.type, prompt: q.prompt, pl: q.promptLang, given: givenText(q, given),
-        correct: q.correctText, v: valueOf(q, given), est: null, graded: q.type !== 'written' };
+        correct: q.correctText, v: valueOf(q, given), est: null, graded: q.type !== 'written', note: q.extra && q.extra.note || null, gapQ: q.extra && q.extra.q || null, gapA: q.extra && q.extra.ans || null };
       if (q.type === 'written') {
         if (q.fmt === 'define') { var di = UN.itemsById[q.item]; row.est = UN.check.estimateBy(given || '', [di.def, di.orig]); row.orig = di.orig; }
         else row.est = UN.check.estimateWritten(given || '', UN.keys.written[q.item].phrases).pct;

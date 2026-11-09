@@ -94,6 +94,8 @@
     id: 'tour',
     name: { en: 'Tourist Translation', ar: 'الترجمة السياحية' },
     short: { en: 'Tourism', ar: 'السياحة' },
+    icon: 'globe',
+    desc: { en: 'Tourism, hotels and travel terms, definitions and etiquette', ar: 'مصطلحات السياحة والفنادق والسفر والتعريفات والإتيكيت' },
     subNoun: 'term',
     exam: { terms: 28, written: 4, extras: 8, extraPool: subIds.concat(['RW1', 'RW2', 'RW3', 'RW4', 'RW5', 'RW6', 'RW7', 'RW8']), sample: true, adaptive: { total: 20, targeted: 15 }, fullTotal: 40 },
     flipGoal: 30, flipDeck: 20, termGroups: T.termGroups, bodyGroups: ['hotels', 'places', 'tours', 'food'], bodyKey: 'g1.body2', reading: true, waveCap: 5
