@@ -140,7 +140,8 @@
         cov ? h('figure', { class: 'vcover kb-in', 'aria-hidden': 'true' }, photoImg(cov, function (e) { e.target.parentNode.remove(); })) : null,
         h('div', { class: 'vnumbadge pop', style: stagger(0) }, String(n)),
         h('div', { class: 'vbigemoji pop', style: stagger(1) }, em(sc.emoji)),
-        h('h2', { class: 'pop', style: stagger(2) }, v.title), (v.gist || sc.sub) ? h('p', { class: 'vsub pop', style: stagger(3) }, v.gist || sc.sub) : null);
+        h('h2', { class: 'pop', style: stagger(2) }, v.title), (v.gist || sc.sub) ? h('p', { class: 'vsub pop', style: stagger(3) }, v.gist || sc.sub) : null,
+        v.terms ? h('div', { class: 'vterms pop', style: stagger(4) }, v.terms.map(function (p) { return h('span', { class: 'vterm' }, h('b', { lang: 'ar', dir: 'rtl' }, p[1]), h('i', null, ' = '), h('span', { lang: 'en', dir: 'ltr' }, p[0])); })) : null);
     },
     def: function (sc) {
       var kids = [];
@@ -292,12 +293,14 @@
         langBox.appendChild(h('button', { type: 'button', lang: o[0], class: o[0] === nlang ? 'on' : '', 'aria-pressed': String(o[0] === nlang), onclick: function () {
           if (o[0] === nlang) return;
           var wasPlaying = playing; stopVoices(); playing = false;
-          nlang = o[0]; tl = timeline(v, sayOf); audio = null; boundsMs = null; chooseMode(); drawLang();
+          nlang = o[0]; tl = timeline(v, sayOf); audio = null; boundsMs = null; chooseMode(); drawLang(); drawArNote();
           if (wasPlaying) { playing = true; setPlayingUI(); playScene(cur < 0 ? 0 : cur); } else { show(cur < 0 ? 0 : cur); setPlayingUI(); }
         } }, o[1]));
       });
     }
     drawLang();
+    var arNote = h('p', { class: 'vnote-ar', lang: 'ar', dir: 'rtl' });
+    function drawArNote() { arNote.textContent = nlang === 'ar' ? t('vid.arNote') : ''; arNote.classList.toggle('hidden', nlang !== 'ar'); }
     var ctrl = h('div', { class: 'vctrl' }, bPrev, bPlay, bNext, bRe, bCC, bVoice, langBox);
 
     // floating sparkles in the background and a burst of confetti at the end
@@ -430,7 +433,10 @@
     function pause() { playing = false; stopVoices(); setPlayingUI(); }
     function toggle() { if (playing) pause(); else play(); }
 
-    bPlay.onclick = toggle; big.onclick = toggle;
+    bPlay.onclick = toggle; big.onclick = function (e) { e.stopPropagation(); toggle(); };
+    stage.addEventListener('click', function (e) { if (e.target.closest('a, button')) return; toggle(); });
+    stage.setAttribute('tabindex', '0'); stage.setAttribute('role', 'button'); stage.setAttribute('aria-label', t('vid.play') + ' / ' + t('vid.pause'));
+    stage.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); } });
     bPrev.onclick = function () { goto(cur - 1, true); };
     bNext.onclick = function () { if (cur + 1 < v.scenes.length) goto(cur + 1, true); };
     bRe.onclick = function () { finished = false; nextCard.classList.add('hidden'); playing = true; setPlayingUI(); playScene(0); };
@@ -474,7 +480,7 @@
       h('a', { class: 'btn ghost', href: '#/videos' }, t('vid.all')));
 
     page.appendChild(h('div', { class: 'pagehead' }, h('h1', null, h('span', { class: 'vhn' }, (idx0 + 1) + '.'), ' ', v.title), h('a', { class: 'btn ghost small', href: '#/videos' }, [ic('arrow-left'), t('vid.all')])));
-    page.appendChild(stage); page.appendChild(ctrl); page.appendChild(dots); page.appendChild(modeNote); page.appendChild(nextCard);
+    page.appendChild(stage); page.appendChild(ctrl); page.appendChild(arNote); page.appendChild(dots); page.appendChild(modeNote); drawArNote(); page.appendChild(nextCard);
 
     function stopAll() { if (capTimer) { clearInterval(capTimer); capTimer = null; } playing = false; stopVoices(); window.removeEventListener('hashchange', stopAll); }
     window.addEventListener('hashchange', stopAll);

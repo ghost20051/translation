@@ -283,7 +283,9 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
   Object.keys(P).forEach(k => { assert.ok(P[k].license && P[k].by && /^https:\/\/commons\.wikimedia\.org\//.test(P[k].source), k); assert.ok(fsx.existsSync(path.join(__dirname, '..', 'media', 'img', 'si', P[k].file)), 'missing photo file ' + k); });
   V.forEach(v => v.scenes.forEach(sc => { if (sc.photo) assert.ok(P[sc.photo], v.id + ' unknown photo ' + sc.photo); }));
   V.forEach(v => { if (v.cover) assert.ok(P[v.cover], v.id + ' unknown cover ' + v.cover); });
-  assert.ok(V.filter(v => v.scenes.some(sc => sc.photo) || v.cover).length >= 17, 'most videos use a real photo'); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
+  assert.ok(V.filter(v => v.scenes.some(sc => sc.photo) || v.cover).length >= 17, 'most videos use a real photo');
+  assert.ok(!P.tango && !P.backpack && P.clockwork && P.weights, 'replaced photos');
+  V.forEach(v => { assert.ok(Array.isArray(v.terms) && v.terms.length >= 2, v.id + ' key terms'); v.terms.forEach(p => assert.ok(p[0] && /[\u0600-\u06FF]/.test(p[1]), v.id + ' term pair')); }); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
 });
 
 console.log('\n' + n + ' interpretation test groups passed');

@@ -481,3 +481,10 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .vkw { transition: color .15s, background .15s; padding: 0 .08em; border-radius: 4px; } .vkw.done { color: #fff; } .vkw:not(.done):not(.now) { color: rgba(255, 255, 255, .78); }
 .vkw.now { color: #111; background: #fde047; box-shadow: 0 0 0 2px #fde047; }
 .vstage .vcap { font-size: 1.2em; padding-bottom: 14px; }
+
+/* key terms on the title: Arabic meaning = English word */
+.vterms { display: flex; flex-wrap: wrap; justify-content: center; gap: .4em; max-width: 95%; margin-top: .3em; }
+.vterm { display: inline-flex; align-items: baseline; gap: .25em; padding: .2em .65em; border-radius: 999px; background: rgba(0, 0, 0, .35); border: 1px solid rgba(255, 255, 255, .35); font-size: .82em; }
+.vterm b { color: #fde68a; } .vterm i { font-style: normal; opacity: .7; }
+.vnote-ar { margin: 8px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--bg); border: 1px dashed var(--line); font-size: .9rem; } .vnote-ar.hidden { display: none; }
+.vstage { cursor: pointer; } .vstage:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
