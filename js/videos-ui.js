@@ -101,6 +101,13 @@
     return null;
   }
   function photoImg(ph, onFail) {
+    if (ph.clip) {
+      // a short silent clip made from this photo; if it cannot play, the still photo is shown instead
+      var vid = h('video', { src: 'media/video/si/' + ph.clip, poster: 'media/img/si/' + ph.file, preload: 'metadata', playsinline: '', 'aria-label': ph.title });
+      vid.muted = true; vid.loop = true; vid.playsInline = true;
+      vid.addEventListener('error', function () { if (vid.parentNode) vid.replaceWith(photoImg(Object.assign({}, ph, { clip: null }), onFail)); });
+      return vid;
+    }
     var img = h('img', { src: 'media/img/si/' + ph.file, alt: ph.title, loading: 'lazy' });
     if (onFail) img.addEventListener('error', onFail);
     return img;
@@ -198,8 +205,7 @@
       if (ph) {
         // a real photo that slowly moves (pan and zoom); if the file is missing, fall back to the drawing
         var fallback = function () { var alt = R.picture(Object.assign({}, sc, { photo: null })); fig.replaceWith(alt.firstChild); };
-        var img = h('img', { src: 'media/img/si/' + ph.file, alt: ph.title || sc.caption, loading: 'lazy' });
-        img.addEventListener('error', fallback);
+        var img = photoImg(ph, fallback);
         var fig = h('figure', { class: 'vphoto pop kb-' + (sc.kb || 'in'), style: stagger(0) }, img, credit(ph));
         return h('div', { class: 'vs vs-picture' }, fig, h('p', { class: 'vcaption pop', style: stagger(1.5) }, sc.caption));
       }
@@ -312,7 +318,14 @@
       for (var q = 0; q < 36; q++) box.appendChild(h('i', { style: 'left:' + Math.round(Math.random() * 100) + '%;background:' + colors[q % 5] + ';animation-delay:' + (Math.random() * 0.6).toFixed(2) + 's;animation-duration:' + (1.8 + Math.random() * 1.4).toFixed(2) + 's;transform:rotate(' + Math.round(Math.random() * 360) + 'deg)' }));
       stage.appendChild(box); setTimeout(function () { box.remove(); }, 3600);
     }
+    // moving photo clips play only while the video plays
+    function syncClips() {
+      Array.prototype.forEach.call(stage.querySelectorAll('video'), function (m) {
+        if (playing) { var p = m.play(); if (p && p.catch) p.catch(function () { /* blocked: the photo stays */ }); } else m.pause();
+      });
+    }
     function setPlayingUI() {
+      syncClips();
       stage.classList.toggle('paused', !playing);
       big.classList.toggle('hidden', playing);
       bPlay.textContent = ''; bPlay.appendChild(ic(playing ? 'x-circle' : 'play-circle')); bPlay.appendChild(document.createTextNode(' ' + t(playing ? 'vid.pause' : (finished ? 'vid.replay' : 'vid.play'))));
@@ -350,6 +363,7 @@
       var el = (R[sc.t] || R.title)(sc, v, i, idx0 + 1);
       el.style.setProperty('--d', sceneLength(i).toFixed(2) + 's');
       sceneBox.textContent = ''; sceneBox.appendChild(el);
+      syncClips();
       cap.textContent = '';
       capWords = []; capSpoken = -1; capStart = Date.now();
       var spoken = nlang === 'ar' ? arOf(i) || v.scenes[i].say : v.scenes[i].say;

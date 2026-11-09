@@ -15,18 +15,15 @@
     conference: {"file":"conference.jpg","title":"Hearing of Commissioner-designate Thierry Breton (cropped)","by":"European Parliament","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Hearing_of_Commissioner-designate_Thierry_Breton_(49068586441).jpg"},
     pizza: {"file":"pizza.jpg","title":"Pizza (edited: a glass removed)","by":"igorovsyannykov","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Pizza-3007395.jpg"},
     traffic: {"file":"traffic.jpg","title":"LED traffic light on red","by":"Kevin Payravi","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:LED_traffic_light_on_red.jpg"},
-    echo: {"file":"echo.jpg","title":"Echo Point Lookout","by":"MilaKampus","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Echo_Point_Lookout.jpg"},
     lightning: {"file":"lightning.jpg","title":"Lightning strike in the evening","by":"Валерия Бобыленко","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Lightning_strike_in_the_evening.jpg"},
     parrot: {"file":"parrot.jpg","title":"Scarlet macaw","by":"David E. Lucas","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Scarlet_macaw_-_DPLA_-_34c7c384feb3d71d9831fd28f62a1d5b.jpg"},
     weights: {"file":"weights.jpg","title":"Weight plates in gym","by":"Santeri Viinamäki","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Weight_plates_in_gym_20180112.jpg"},
-    juggler: {"file":"juggler.jpg","title":"Juggling balls","by":"Richard Leonard","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Juggling_Balls_(81706016).jpg"},
     scales: {"file":"scales.jpg","title":"Justice scale and flag","by":"St. Louis Circuit Attorney's Office","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Justice_scale_and_flag.jpg"},
     puzzle: {"file":"puzzle.jpg","title":"Jigsaw puzzle solving (cropped)","by":"kallerna","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Jigsaw_puzzle_solving_2.jpg"},
     seedling: {"file":"seedling.jpg","title":"Tomato seedlings grow in Plant Habitat-06","by":"NASA Johnson Space Center","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Tomato_Seedlings_Grow_in_Plant_Habitat-06_(iss070e064263).jpg"},
     brain: {"file":"brain.jpg","title":"MRI of human brain","by":"Asnaebsa","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:MRI_of_Human_Brain.jpg"},
     stopwatch: {"file":"stopwatch.jpg","title":"Stopwatch","by":"Ansgar Koreng","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Stopwatch%2C_1810201155%2C_ako.jpg"},
     babel: {"file":"babel.jpg","title":"The Tower of Babel (Vienna)","by":"Pieter Bruegel the Elder","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_The_Tower_of_Babel_(Vienna)_-_Google_Art_Project_-_edited.jpg"},
-    sign: {"file":"sign.jpg","title":"Arabic-English street sign \"Sidi El Wasti St.\" in Alexandria","by":"Marsupium","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Arabic-English_street_sign_%22Sidi_El_Wasti_St.%22_in_Alexandria.jpg"},
     bridge: {"file":"bridge.jpg","title":"Cairo's Qasr El Nil Bridge","by":"سها القاضي","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Cairo%E2%80%99s_Qasr_El_Nil_Bridge.jpg"},
     bricks: {"file":"bricks.jpg","title":"Bricklayer","by":"Brice Blondel for HDPTCAR","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Bricklayer.jpg"},
     racecar: {"file":"racecar.jpg","title":"Renault Formula One racing car","by":"Ivan Radic","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Renault_Formula_One_racing_car_(49667991997).jpg"},
@@ -70,7 +67,7 @@
         { t: 'recap', points: ['Synchronicity = input and output, almost at the same time', 'The time gap keeps changing'], say: 'Remember: same time, and a changing time gap.' }
       ] },
 
-    { id: 'v04', terms: [["ear-voice span (EVS)","المسافة بين السمع والكلام"],["décalage / time lag","التأخير الزمني"],["content words","الكلمات ذات المعنى"]], title: "What is the ear-voice span (EVS)?", gist: "The time gap between hearing the speaker and speaking the interpretation.", ar: 'EVS = الفجوة الزمنية بين ما بتسمعه وما بتقوله، وتتقاس بالثواني أو بعدد الكلمات.', tone: 'blue', cover: 'echo', refs: { gaps: [16, 54, 61, 62, 63, 64, 65, 66, 67, 69, 75], mcq: [8], essay: [3, 4, 5, 6, 7] },
+    { id: 'v04', terms: [["ear-voice span (EVS)","المسافة بين السمع والكلام"],["décalage / time lag","التأخير الزمني"],["content words","الكلمات ذات المعنى"]], title: "What is the ear-voice span (EVS)?", gist: "The time gap between hearing the speaker and speaking the interpretation.", ar: 'EVS = الفجوة الزمنية بين ما بتسمعه وما بتقوله، وتتقاس بالثواني أو بعدد الكلمات.', tone: 'blue', refs: { gaps: [16, 54, 61, 62, 63, 64, 65, 66, 67, 69, 75], mcq: [8], essay: [3, 4, 5, 6, 7] },
       scenes: [
         { t: 'title', emoji: '🗣️', sub: 'Ear-voice span, or EVS', say: "Video four. What is the ear-voice span, or E V S?" },
         { t: 'story', say: "The speaker says a word. The interpreter hears it, but he waits a moment to understand it. Then he speaks. That small gap, between his ear and his voice, is the ear-voice span.", beats: [{"who":"speaker","text":"Water"},{"who":"note","text":"EVS: the gap, about 2 to 4 seconds"},{"who":"interp","text":"المياه"}] },
@@ -254,7 +251,7 @@
         { t: 'recap', points: ['Shadowing = Repeat', 'Interpreting = Understand + Translate', 'Interpreting needs more mental effort'], say: 'Remember: shadowing is repeat. Interpreting is understand and translate.' }
       ] },
 
-    { id: 'v10', terms: [["cognitive load","الحمل الذهني"],["formulaic","عبارات جاهزة"],["lexical density","كثافة المفردات"]], title: "What is cognitive load?", gist: "How much mental effort interpreting takes.", ar: 'الحمل المعرفي = كمية الجهد الذهني، وكل ما زاد زادت الأخطاء وقلّت الطلاقة.', tone: 'amber', cover: 'juggler', refs: { gaps: [69, 73, 74], mcq: [], essay: [9, 10] },
+    { id: 'v10', terms: [["cognitive load","الحمل الذهني"],["formulaic","عبارات جاهزة"],["lexical density","كثافة المفردات"]], title: "What is cognitive load?", gist: "How much mental effort interpreting takes.", ar: 'الحمل المعرفي = كمية الجهد الذهني، وكل ما زاد زادت الأخطاء وقلّت الطلاقة.', tone: 'amber', refs: { gaps: [69, 73, 74], mcq: [], essay: [9, 10] },
       scenes: [
         { t: 'title', emoji: '🎒', sub: 'Cognitive load', say: "Video ten. What is cognitive load?" },
         { t: 'story', say: "Now imagine the booth when the speaker talks fast about a very difficult topic. The interpreter must listen, understand, remember, translate, and speak, all at once. His brain is working very hard.", beats: [{"who":"speaker","text":"Inflation, tariffs and fiscal policy…","badge":{"text":"fast!","tone":"bad"}},{"who":"interp","text":"Hmm… 😓"},{"who":"note","text":"High cognitive load"}] },
@@ -288,7 +285,7 @@
         { t: 'recap', points: ['Balanced = Equal', 'Dominant = One is stronger', 'Interpreters need high proficiency in SL and TL'], say: 'Remember: balanced is equal. Dominant is one stronger.' }
       ] },
 
-    { id: 'v13', terms: [["natural translation","الترجمة الطبيعية"],["bilingual","ثنائي اللغة"]], title: "What is natural translation?", gist: "Translating without any training, just because you know two languages (Harris, 1977).", ar: 'أي ثنائي اللغة عنده قدرة طبيعية على الترجمة من غير تدريب متخصص (هاريس 1977).', tone: 'amber', cover: 'sign', refs: { gaps: [32, 33], mcq: [], essay: [14] },
+    { id: 'v13', terms: [["natural translation","الترجمة الطبيعية"],["bilingual","ثنائي اللغة"]], title: "What is natural translation?", gist: "Translating without any training, just because you know two languages (Harris, 1977).", ar: 'أي ثنائي اللغة عنده قدرة طبيعية على الترجمة من غير تدريب متخصص (هاريس 1977).', tone: 'amber', refs: { gaps: [32, 33], mcq: [], essay: [14] },
       scenes: [
         { t: 'title', emoji: '👦', sub: 'Natural translation / interpreting', say: "Video thirteen. What is natural translation?" },
         { t: 'def', parts: ['Harris said any bilingual has a ', M('natural ability to translate'), ' without receiving specialized training.'], say: 'Harris, in 1977, said that any bilingual has a natural ability to translate, without receiving any specialized training.' },
@@ -341,7 +338,7 @@
         { t: 'recap', points: ['Interpreters do more than speak two languages'], say: 'Remember: interpreters do more than speak two languages.' }
       ] },
 
-    { id: 'v18', terms: [["early sequential bilingual","ثنائي اللغة المتتابع المبكر"],["late bilingual","ثنائي اللغة المتأخر"],["simultaneous bilingual","ثنائي اللغة المتزامن"]], title: "What are early sequential and late bilinguals?", gist: "Early sequential = both languages from birth. Late = the second language later in life.", ar: 'الثنائي المبكر (early sequential) اتعرّض للغتين من الولادة، والمتأخر اتعلّم التانية بعد الأولى.', tone: 'green', cover: 'seedling', refs: { gaps: [79], mcq: [], essay: [] },
+    { id: 'v18', terms: [["early sequential bilingual","ثنائي اللغة المتتابع المبكر"],["late bilingual","ثنائي اللغة المتأخر"],["simultaneous bilingual","ثنائي اللغة المتزامن"]], title: "What are early sequential and late bilinguals?", gist: "Early sequential = both languages from birth. Late = the second language later in life.", ar: 'الثنائي المبكر (early sequential) اتعرّض للغتين من الولادة، والمتأخر اتعلّم التانية بعد الأولى.', tone: 'green', refs: { gaps: [79], mcq: [], essay: [] },
       scenes: [
         { t: 'title', emoji: '⏳', sub: 'When bilinguals learn their languages', say: "Video eighteen. What are early sequential and late bilinguals?" },
         { t: 'steps', items: [{ emoji: '👶', text: 'Simultaneous bilingual' }, { emoji: '🍼', text: 'Early sequential: exposed to the two languages from birth' }, { emoji: '🧑‍🎓', text: 'Late bilingual: learns a second language later, after the first' }],

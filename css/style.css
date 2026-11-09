@@ -436,6 +436,7 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 /* real photos that move slowly inside the video (pan and zoom) */
 .vphoto { position: relative; margin: 0; width: min(78%, 520px); aspect-ratio: 16 / 10; overflow: hidden; border-radius: 14px; box-shadow: 0 10px 24px rgba(0, 0, 0, .35); border: 3px solid rgba(255, 255, 255, .85); }
 .vphoto img { width: 100%; height: 100%; object-fit: cover; display: block; animation: vkbin 14s ease-in-out infinite alternate; }
+.vphoto video, .vcover video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .vphoto.kb-left img { animation-name: vkbleft; } .vphoto.kb-right img { animation-name: vkbright; } .vphoto.kb-up img { animation-name: vkbup; }
 .vphoto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .28) 45%, transparent 60%); transform: translateX(-120%); animation: vsweep 6s ease-in-out infinite; }
 .vphoto figcaption { position: absolute; right: 6px; bottom: 4px; padding: 1px 6px; border-radius: 6px; font-size: .55em; background: rgba(0, 0, 0, .55); color: #fff; }
