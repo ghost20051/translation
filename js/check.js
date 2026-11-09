@@ -14,17 +14,18 @@
       .replace(/\s+/g, ' ').trim();
   }
 
-  function normEn(s) {
+  function normWords(s) {
     return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[\-–—_\/]/g, ' ')
       .replace(/[^a-z0-9\s]/g, '')
-      .replace(/\s+/g, ' ').trim()
-      .replace(/^the /, '');
+      .replace(/\s+/g, ' ').trim();
   }
+  function normEn(s) { return normWords(s).replace(/^the /, ''); }
 
   /* Typos: a typed answer that is one or two letters off still counts. Short answers must be exact, so a different
-     short word is never accepted by accident (land / hand). lastFuzzy holds the correct spelling when a typo was forgiven. */
-  var lastFuzzy = null;
+     short word is never accepted by accident (land / hand). lastFuzzy holds the correct spelling when a typo was forgiven
+     (lastKind 'typo'), or the full term when a short form of it was accepted (lastKind 'short'). */
+  var lastFuzzy = null, lastKind = 'typo';
   function editDistance(a, b) {
     if (a === b) return 0;
     var prev = [], cur, i, j;
@@ -45,7 +46,7 @@
   }
 
   function matchTerm(input, term, lang) {
-    lastFuzzy = null;
+    lastFuzzy = null; lastKind = 'typo';
     if (!input || !String(input).trim()) return false;
     var ar = lang === 'ar';
     var raw = ar ? term.ar.concat([term.arShow || term.ar.join(' / ')]) : [term.en].concat(term.enAlt || []);
@@ -58,21 +59,64 @@
 
   // Fill-in-the-gap answers: the answer or any listed alternative; a plural "s" or a leading "the" does not matter.
   function gapStem(s) { return normEn(s).replace(/s$/, ''); }
+  // Words the sentence already has right next to the blank may be typed too: "early sequential" for "an __ sequential bilingual".
+  function dropContext(g, q) {
+    var parts = String(q || '').split('__');
+    if (parts.length < 2) return g;
+    var before = normWords(parts[0]).split(' '), after = normWords(parts[1]).split(' '), w = g.split(' '), k;
+    for (k = Math.min(before.length, w.length - 1); k > 0; k--) if (w.slice(0, k).join(' ') === before.slice(before.length - k).join(' ')) { w = w.slice(k); break; }
+    for (k = Math.min(after.length, w.length - 1); k > 0; k--) if (w.slice(w.length - k).join(' ') === after.slice(0, k).join(' ')) { w = w.slice(0, w.length - k); break; }
+    return w.join(' ');
+  }
   function matchGap(input, it) {
-    lastFuzzy = null;
+    lastFuzzy = null; lastKind = 'typo';
     var g = normEn(input); if (!g) return false;
-    var all = [it.answer].concat(it.alt || []), i;
-    for (i = 0; i < all.length; i++) { var n = normEn(all[i]); if (n === g || gapStem(all[i]) === gapStem(g)) return true; }
-    for (i = 0; i < all.length; i++) if (nearMiss(g, normEn(all[i]), false) || nearMiss(gapStem(g), gapStem(all[i]), false)) { lastFuzzy = all[i]; return true; }
+    var all = [it.answer].concat(it.alt || []), tries = [g], i, j, core = dropContext(g, it.q);
+    if (core && core !== g) tries.push(core);
+    for (j = 0; j < tries.length; j++) for (i = 0; i < all.length; i++) { var n = normEn(all[i]); if (n === tries[j] || gapStem(all[i]) === gapStem(tries[j])) return true; }
+    for (j = 0; j < tries.length; j++) for (i = 0; i < all.length; i++) if (nearMiss(tries[j], normEn(all[i]), false) || nearMiss(gapStem(tries[j]), gapStem(all[i]), false)) { lastFuzzy = all[i]; return true; }
     return false;
   }
 
-  function matchName(input, name) {
-    lastFuzzy = null;
+  /* Concept names: the full name, a listed alternative, or a short form that keeps the key word: "dominant" for
+     "Dominant bilingual", "interference" for "Language interference", "pilgrimage" for "Pilgrimage and spiritual tourism".
+     Little words and words that several answers share ("bilingual", "tourism") may be left out. A word that tells the
+     concepts apart may not ("bilingual" alone is not enough), and the full name of a different answer is never
+     accepted ("etiquette" is not "business etiquette"). pool = all the names the question could be about.
+     A short form counts as correct, and the full name is then shown (lastKind 'short') so it can be learnt. */
+  var LITTLE = { a: 1, an: 1, the: 1, of: 1, and: 1, or: 1, in: 1, to: 1, for: 1 }, GENERIC = { language: 1, languages: 1 };
+  function nameForms(name) {
+    var out = [String(name)], m = out[0].match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+    if (m) out.push(m[1], m[2]);   // "Ear-voice span (EVS)" -> "Ear-voice span", "EVS"
+    out.slice().forEach(function (f) {   // "Pilgrimage and spiritual tourism" -> "pilgrimage tourism", "spiritual tourism"
+      var w = normWords(f).split(' '), k = w.indexOf('and') > 0 ? w.indexOf('and') : w.indexOf('or');
+      if (k > 0 && k < w.length - 1) out.push(w.slice(0, k).concat(w.slice(k + 2)).join(' '), w.slice(k + 1).join(' '));
+    });
+    return out;
+  }
+  function sameWord(a, b) { return a === b || a.replace(/s$/, '') === b.replace(/s$/, '') || nearMiss(a, b, false); }
+  function sharedWords(pool) {
+    var count = {}, out = {};
+    (pool || []).forEach(function (n) { var seen = {}; normWords(n).split(' ').forEach(function (w) { if (w && !seen[w]) { seen[w] = 1; count[w] = (count[w] || 0) + 1; } }); });
+    Object.keys(count).forEach(function (w) { if (count[w] > 1) out[w] = 1; });
+    return out;
+  }
+  function shortFormOf(given, form, shared) {
+    var g = normWords(given).split(' ').filter(function (w) { return w && !LITTLE[w]; }), f = normWords(form).split(' '), i, j = 0;
+    if (!g.length || g.length >= f.length) return false;
+    for (i = 0; i < g.length; i++) { while (j < f.length && !sameWord(g[i], f[j])) j++; if (j === f.length) return false; j++; }   // only words of the name, in order
+    var key = f.filter(function (w) { return !LITTLE[w] && !GENERIC[w] && !shared[w]; });
+    return key.length > 0 && key.every(function (w) { return g.some(function (x) { return sameWord(x, w); }); });
+  }
+  function matchName(input, name, pool, alts) {
+    lastFuzzy = null; lastKind = 'typo';
     if (!input) return false;
-    var g = normEn(input), n = normEn(name);
-    if (g === n) return true;
-    if (nearMiss(g, n, false)) { lastFuzzy = name; return true; }
+    var g = normEn(input), forms = nameForms(name).concat(alts || []), nw = normEn(name).split(' ').length, i;
+    for (i = 0; i < forms.length; i++) if (g === normEn(forms[i])) { if (g.split(' ').length < nw) { lastFuzzy = name; lastKind = 'short'; } return true; }
+    for (i = 0; i < forms.length; i++) if (nearMiss(g, normEn(forms[i]), false)) { lastFuzzy = forms[i]; return true; }
+    if ((pool || []).some(function (n) { return normEn(n) === g; })) return false;   // the full name of a different answer
+    var shared = sharedWords(pool);
+    for (i = 0; i < forms.length; i++) if (shortFormOf(g, forms[i], shared)) { lastFuzzy = name; lastKind = 'short'; return true; }
     return false;
   }
 
@@ -116,5 +160,5 @@
 
   function estimateLabel(pct) { return pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low'; }
 
-  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, matchGap: matchGap, nearMiss: nearMiss, editDistance: editDistance, fuzzy: function () { return lastFuzzy; }, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
+  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, matchGap: matchGap, nearMiss: nearMiss, editDistance: editDistance, fuzzy: function () { return lastFuzzy; }, fuzzyKind: function () { return lastKind; }, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
 })();

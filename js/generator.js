@@ -234,7 +234,7 @@
     if (q.type === 'mcq') return given === q.answer ? 1 : 0;
     if (q.type === 'tf') return given === q.answer ? 1 : 0;
     if (q.type === 'type') {
-      if (q.answerKind === 'name') return UN.check.matchName(given, q.correctText) ? 1 : 0;
+      if (q.answerKind === 'name') { var nm = UN.itemsById[q.item]; return UN.check.matchName(given, q.correctText, UN.subs.map(function (s) { return s.name; }), nm && nm.alt) ? 1 : 0; }
       if (q.answerKind === 'gap') return UN.check.matchGap(given, UN.itemsById[q.item]) ? 1 : 0;
       var tm = UN.itemsById[q.item];
       if (UN.check.matchTerm(given, tm, q.answerLang)) return 1;

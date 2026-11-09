@@ -151,6 +151,7 @@
     page.appendChild(h('section', { class: 'card' }, h('h2', null, '🎯 ' + t('res.next')),
       weakIds.length ? h('p', null, t('res.weakCount', { n: weakIds.length })) : h('p', null, t('res.noWeak')),
       recs.length ? h('ul', { class: 'list' }, recs.map(function (r) { return h('li', null, h('a', { href: '#/lesson/' + r.id }, '📚 ' + r.title[S().lang])); })) : null,
+      UN.revise && UN.revise.button(att) ? h('div', { class: 'row' }, UN.revise.button(att)) : null,
       h('div', { class: 'row' }, h('a', { class: 'btn primary', href: next[0] }, '▶ ' + t(next[1])), h('a', { class: 'btn ghost', href: '#/exams' }, t('nav.exams')),
         h('a', { class: 'btn ghost', href: '#/dashboard' }, t('nav.progress')))));
 
@@ -175,7 +176,7 @@
       } else {
         card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), ' ', r.given ? ui.mixed(r.given) : h('i', null, t('res.blank'))));
         if (r.v < 0.99) card.appendChild(h('div', { class: 'given right' }, h('small', null, t('fb.answer')), ' ', ui.mixed(String(r.correct))));
-        if (r.typo) card.appendChild(h('div', { class: 'typo' }, '✏️ ' + t('fb.typo') + ' ', ui.mixed(String(r.typo))));
+        if (r.typo) card.appendChild(h('div', { class: 'typo' }, '✏️ ' + t(r.typoKind === 'short' ? 'fb.short' : 'fb.typo') + ' ', h('b', null, ui.mixed(String(r.typo)))));
         if (r.gapQ) card.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(r.gapQ, r.gapA)));
         if (r.note) card.appendChild(h('div', { class: 'muted small' }, r.note));
       }

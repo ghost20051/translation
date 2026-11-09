@@ -288,4 +288,25 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
   V.forEach(v => { assert.ok(Array.isArray(v.terms) && v.terms.length >= 2, v.id + ' key terms'); v.terms.forEach(p => assert.ok(p[0] && /[\u0600-\u06FF]/.test(p[1]), v.id + ' term pair')); }); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
 });
 
+ok('A short answer that keeps the key word counts (dominant = Dominant bilingual), and the full answer is shown', () => {
+  const C = UN.check, pool = UN.subs.map(s => s.name);
+  assert.ok(C.matchName('dominant', 'Dominant bilingual', pool)); assert.strictEqual(C.fuzzyKind(), 'short'); assert.strictEqual(C.fuzzy(), 'Dominant bilingual');
+  assert.ok(C.matchName('Balanced', 'Balanced bilingual', pool) && C.matchName('a dominant', 'Dominant bilingual', pool) && C.matchName('dominent', 'Dominant bilingual', pool));
+  assert.ok(C.matchName('interference', 'Language interference', pool));
+  assert.ok(!C.matchName('bilingual', 'Dominant bilingual', pool), 'bilingual alone does not say which one');
+  assert.ok(!C.matchName('balanced', 'Dominant bilingual', pool));
+  assert.ok(!C.matchName('load', 'Cognitive load', pool) && !C.matchName('cognitive', 'Cognitive load', pool), 'both words are needed');
+  assert.ok(C.matchName('dominant bilingual', 'Dominant bilingual', pool) && !C.fuzzy(), 'the full answer needs no note');
+  assert.ok(C.matchName('ear-voice span', 'EVS', pool, ['Ear-voice span']) && C.matchName('evs', 'EVS', pool));
+  // through the real question: "Which concept means: Stronger in one language?"
+  const sub = UN.subs.filter(s => s.name === 'Dominant bilingual')[0], q = UN.gen.make(sub.id, 'type-name');
+  assert.strictEqual(UN.gen.grade(q, 'dominant'), 1); assert.strictEqual(UN.gen.grade(q, 'Dominant Bilingual'), 1); assert.strictEqual(UN.gen.grade(q, 'bilingual'), 0);
+  const evs = UN.subs.filter(s => s.name === 'EVS')[0];
+  assert.strictEqual(UN.gen.grade(UN.gen.make(evs.id, 'type-name'), 'Ear voice span'), 1);
+  // fill in the gap: words that are already next to the blank may be typed too
+  const g79 = UN.gaps[78];
+  assert.ok(C.matchGap('early sequential', g79) && C.matchGap('early sequential bilingual', g79) && C.matchGap('an early', g79));
+  assert.ok(!C.matchGap('sequential', g79) && !C.matchGap('late', g79));
+});
+
 console.log('\n' + n + ' interpretation test groups passed');

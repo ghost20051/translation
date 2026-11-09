@@ -527,6 +527,7 @@
   UN.routes.learn = function (arg) {
     var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
     if (UN.videos && UN.videos.length) page.appendChild(h('a', { class: 'card vbanner', href: '#/videos' }, UN.art ? UN.art.make('si', 40) : ic('play-circle'), h('span', { class: 'vbt' }, h('b', null, t('vid.title')), h('small', { class: 'muted' }, t('vid.bannerSub', { n: UN.videos.length }))), ic('chevron-right', 'flip')));
+    var revCard = UN.revise ? UN.revise.card() : null; if (revCard) page.appendChild(revCard);
     var byPart = UN.cfg.parts && UN.gaps && UN.gaps.length;
     if (byPart) page.appendChild(learnParts());
     var weak = UN.adapt.weakIds();

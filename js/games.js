@@ -43,6 +43,7 @@
   /* ---------- shared: run a list of questions with instant feedback ---------- */
   function quiz(box, qs, o) {
     var att = UN.store.nextId(), i = 0, results = [];
+    if (UN.revise) UN.revise.start();
     function next() {
       if (i >= qs.length) { UN.store.save(); return o.onDone(results); }
       var q = qs[i];
@@ -69,7 +70,7 @@
       h('div', { class: 'big-emoji' }, right === results.length ? '🎉' : '👏'),
       h('h2', null, t('sum.done')), h('p', null, t('sum.score', { r: right, n: results.length }) + ' · +' + xp + ' XP'),
       UN.fun ? h('p', { class: 'quip' }, UN.fun.band(Math.round(100 * right / Math.max(1, results.length)))) : null,
-      missed.length ? h('div', null, h('p', null, t('sum.review')), h('ul', { class: 'list' }, missed.filter(function (x, k) { return missed.indexOf(x) === k; }).map(function (id) { return h('li', null, ui.termLabel(id)); }))) : null,
+      UN.revise && UN.revise.button() ? h('div', { class: 'row center' }, UN.revise.button()) : missed.length ? h('div', null, h('p', null, t('sum.review')), h('ul', { class: 'list' }, missed.filter(function (x, k) { return missed.indexOf(x) === k; }).map(function (id) { return h('li', null, ui.termLabel(id)); }))) : null,
       h('div', { class: 'row center' }, h('button', { class: 'btn primary', onclick: again }, '🔁 ' + t('sum.again')), (onBack ? h('button', { class: 'btn ghost', onclick: onBack }, t('back')) : h('a', { class: 'btn ghost', href: backHref }, t('back'))))));
   }
 
@@ -182,6 +183,7 @@
         pairs.forEach(function (p) {
           var v = missed[p.id] ? 0 : 1; var item = kind === 'def' ? p.id : p.id;
           UN.adapt.recordEvent(att, item, 'match-' + kind, v, 'game1'); results.push({ v: v, q: { item: item } });
+          if (UN.revise) UN.revise.noteItem(item, v);
         });
         UN.store.save();
         var xp = 10 * pairs.length - mistakes * 3 + Math.max(0, 40 - secs); xp = Math.max(10, xp);
@@ -192,6 +194,7 @@
     // --- speed round
     function speed() {
       var att = UN.store.nextId(), secs = 60, started = Date.now(), score = 0, combo = 0, maxCombo = 0, results = [], over = false, ended = false;
+      if (UN.revise) UN.revise.start();
       var pool = UN.itemIds.filter(function (id) { return G().drillFormatsFor(id).some(function (f) { return f !== 'recall' && f.indexOf('type') !== 0; }); });
       var timer = h('span', { class: 'chip big' }, '⏱ 60'), cmb = h('span', { class: 'chip' }, 'x0'), scoreEl = h('span', { class: 'chip' }, '⭐ 0'), area = h('div', { class: 'card qarea' });
       box.textContent = '';
@@ -292,6 +295,7 @@
       var ids = mode === 'rec' ? UN.adapt.targeted(8) : shuffle(UN.itemIds.slice());
       var need = mode === 'rec' ? 2 : 1;
       var queue = ids.slice(), idx = 0, fixed = [], stuck = [], xp = 0;
+      if (UN.revise) UN.revise.start();
       var att = UN.store.nextId();
 
       function nextItem() {
@@ -331,6 +335,7 @@
         box.appendChild(h('div', { class: 'card result center' }, h('div', { class: 'big-emoji' }, '🔧'), h('h2', null, t('lab.done')),
           h('p', null, t('lab.fixed', { r: fixed.length, n: queue.length }) + ' · +' + (xp + 20) + ' XP'),
           stuck.length ? h('div', null, h('p', null, t('lab.stuck')), h('ul', { class: 'list' }, stuck.map(function (id) { return h('li', null, ui.termLabel(id)); }))) : null,
+          UN.revise && UN.revise.button() ? h('div', { class: 'row center' }, UN.revise.button()) : null,
           h('div', { class: 'row center' }, h('button', { class: 'btn primary', onclick: function () { UN.ui.render(); } }, '🔁 ' + t('sum.again')),
             h('a', { class: 'btn ghost', href: '#/exam/2' }, '📝 ' + t('exam2.name')), h('a', { class: 'btn ghost', href: '#/learn' }, '📚 ' + t('nav.learn')))));
       }
@@ -359,6 +364,7 @@
       }
       waves = waves.filter(function (w) { return w.ids.length; });
       var hearts = 3, wi = 0, missed = [], att = UN.store.nextId(), correct = 0, asked = 0, xp = 0;
+      if (UN.revise) UN.revise.start();
 
       function heartsEl() { return h('span', { class: 'hearts', 'aria-label': hearts + ' ' + t('boss.lives') }, new Array(3).fill(0).map(function (x, i) { return i < hearts ? '❤️' : '🖤'; }).join('')); }
 
@@ -391,6 +397,7 @@
               clearInterval(tick);
               Array.prototype.forEach.call(holder.querySelectorAll('button,input,textarea'), function (b) { b.disabled = true; });
               holder.appendChild(h('div', { class: 'feedback show bad' }, h('b', null, '⏰ ' + t('boss.timeup')), h('div', null, t('fb.answer') + ' ', UN.ui.mixed(String(q.correctText)))));
+              if (UN.revise) UN.revise.note(q, 0, '');
               done(0);
             }
           }, 1000);
@@ -430,6 +437,7 @@
         box.textContent = '';
         box.appendChild(h('div', { class: 'card result center' }, h('div', { class: 'big-emoji' }, victory ? '🏆' : '💔'), h('h2', null, victory ? t('boss.win') : t('boss.lose')),
           h('p', null, t('sum.score', { r: correct, n: asked }) + ' · +' + (xp + bonus) + ' XP'),
+          UN.revise && UN.revise.button() ? h('div', { class: 'row center' }, UN.revise.button()) : null,
           h('div', { class: 'row center' }, h('button', { class: 'btn primary', onclick: function () { UN.ui.render(); } }, '🔁 ' + t('sum.again')),
             h('a', { class: 'btn ghost', href: '#/exam/3' }, '🏁 ' + t('exam3.name')), h('a', { class: 'btn ghost', href: '#/dashboard' }, t('nav.progress')))));
       }

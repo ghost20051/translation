@@ -109,7 +109,7 @@
   /* ---------- "Important things to memorize": ten key concepts ---------- */
   var KEY = [
     ['Synchronicity', 'Listening and speaking at almost the same time'],
-    ['EVS', 'Time gap between hearing and speaking'],
+    ['EVS', 'Time gap between hearing and speaking', ['Ear-voice span']],
     ['Shadowing', 'Repeating in the same language'],
     ['Segmentation', 'Dividing speech into meaningful units'],
     ['Chunking', 'Helps memory storage'],
@@ -119,5 +119,5 @@
     ['Cognitive load', 'Mental effort'],
     ['Psycholinguistics', 'Language and the mind']
   ];
-  SI.subs = KEY.map(function (k, i) { return { id: 'SK' + (i + 1), group: 'key', name: k[0], def: k[1] }; });
+  SI.subs = KEY.map(function (k, i) { return { id: 'SK' + (i + 1), group: 'key', name: k[0], def: k[1], alt: k[2] || [] }; });
 })();
