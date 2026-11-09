@@ -90,7 +90,7 @@
       var done = qs.filter(function (x, i) { return answered(i); }).length;
       head.appendChild(ui.bar(done / qs.length, 'good'));
       area.textContent = '';
-      area.appendChild(h('div', { class: 'qtype' }, t('qt.' + q.type)));
+      area.appendChild(h('div', { class: 'qtype' }, (q.part ? ui.partText({ part: q.part, n: q.pn }, true) + ' · ' : '') + t('qt.' + q.type)));
       area.appendChild(UN.qview.render(q, { mode: 'exam', value: ex.answers[ex.idx], onChange: function (v) { ex.answers[ex.idx] = v; drawNav(); var d = qs.filter(function (x, i) { return answered(i); }).length; head.lastChild.querySelector('.fill').style.width = (100 * d / qs.length) + '%'; } }));
       ctrl.textContent = '';
       ctrl.appendChild(h('button', { class: 'btn ghost', disabled: ex.idx === 0, onclick: function () { ex.idx--; show(); } }, [ui.ic('arrow-left'), t('prev')]));
@@ -160,7 +160,7 @@
     att.rows.forEach(function (r, i) {
       var cls = !r.graded ? 'pending' : r.v >= 0.99 ? 'ok' : r.v > 0 ? 'part' : 'bad';
       var card = h('div', { class: 'card corr ' + cls },
-        h('div', { class: 'row between' }, h('b', null, '#' + (i + 1) + ' · ' + t('qt.' + r.type)), h('span', { class: 'badge ' + cls }, !r.graded ? '✍️' : r.v >= 0.99 ? '✅' : r.v > 0 ? '🟡' : '❌')),
+        h('div', { class: 'row between' }, h('b', null, (r.part ? ui.partText({ part: r.part, n: r.pn }, true) : '#' + (i + 1)) + ' · ' + t('qt.' + r.type)), h('span', { class: 'badge ' + cls }, !r.graded ? '✍️' : r.v >= 0.99 ? '✅' : r.v > 0 ? '🟡' : '❌')),
         h('div', { class: 'qprompt' }, r.pl === 'ar' ? L(r.prompt, 'ar') : ui.mixed(r.prompt)));
       if (r.type === 'written') {
         card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), h('div', { class: 'quote' }, r.given ? L(r.given, 'en') : h('i', null, t('res.blank')))));
@@ -175,6 +175,7 @@
       } else {
         card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), ' ', r.given ? ui.mixed(r.given) : h('i', null, t('res.blank'))));
         if (r.v < 0.99) card.appendChild(h('div', { class: 'given right' }, h('small', null, t('fb.answer')), ' ', ui.mixed(String(r.correct))));
+        if (r.typo) card.appendChild(h('div', { class: 'typo' }, '✏️ ' + t('fb.typo') + ' ', ui.mixed(String(r.typo))));
         if (r.gapQ) card.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(r.gapQ, r.gapA)));
         if (r.note) card.appendChild(h('div', { class: 'muted small' }, r.note));
       }

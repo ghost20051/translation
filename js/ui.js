@@ -52,6 +52,13 @@
     });
     return out;
   }
+  // "Part 1 · Fill in the gap · Q12" (full) or "Part 1 · Q12"
+  function partText(info, full) {
+    if (!info || !UN.cfg.parts) return '';
+    var lang = S().lang, p = UN.cfg.parts[info.part - 1], q = lang === 'ar' ? 'س' : 'Q';
+    if (info.part === 4) return p.name[lang] + (info.n != null ? ' · ' + info.n : '');
+    return (lang === 'ar' ? 'الجزء ' : 'Part ') + info.part + (full ? ' · ' + p.name[lang] : '') + (info.n != null ? ' · ' + q + info.n : '');
+  }
   // A fill-in-the-gap sentence: a visible blank box, or (when the answer is given) the answer in colour.
   function gapSentence(text, ans) {
     var parts = String(text).split('__');
@@ -163,12 +170,12 @@
     var inExam = !!(UN.state.exam && UN.state.exam.running);
     document.body.classList.toggle('exam-mode', inExam);
 
-    hdr.appendChild(h('a', { class: 'brand', href: inExam ? '#/exam-run' : '#/home' }, h('span', { class: 'logo' }, ic('globe')),
+    hdr.appendChild(h('a', { class: 'brand', href: inExam ? '#/exam-run' : '#/home' }, h('span', { class: 'logo' }, UN.art ? UN.art.make('brand', 38) : ic('globe')),
       h('span', { class: 'bt' }, h('b', null, t('app.short')), h('small', null, t('brand.tag')))));
     var lang = S().lang, dark = resolvedTheme() === 'dark';
     hdr.appendChild(h('div', { class: 'tools' },
       (inExam || UN.subjectOrder.length < 2) ? null : h('button', { type: 'button', class: 'subjbtn', 'aria-haspopup': 'dialog', title: t('subject.pick'), 'aria-label': t('subject.pick') + ': ' + UN.cfg.name[lang], onclick: openSubjects },
-        ic(UN.cfg.icon || 'book-open'), h('span', { class: 'sn' }, UN.cfg.name[lang]), ic('chevron-right', 'down')),
+        UN.art ? UN.art.make(UN.cfg.art, 24) : ic(UN.cfg.icon || 'book-open'), h('span', { class: 'sn' }, UN.cfg.name[lang]), ic('chevron-right', 'down')),
       h('div', { class: 'seg lang', role: 'group', 'aria-label': t('set.lang') },
         [['en', 'English'], ['ar', 'العربية']].map(function (o) { return h('button', { type: 'button', lang: o[0], class: o[0] === lang ? 'on' : '', 'aria-pressed': String(o[0] === lang), onclick: function () { if (o[0] !== S().lang) setLang(o[0]); } }, o[1]); })),
       h('button', { class: 'icon-btn round', type: 'button', 'data-nosfx': '1', 'aria-pressed': String(!UN.sfx || UN.sfx.enabled()), onclick: toggleSound, 'aria-label': t('sfx.toggle'), title: t('sfx.toggle') }, ic(UN.sfx && !UN.sfx.enabled() ? 'volume-x' : 'volume')),
@@ -193,7 +200,7 @@
       UN.subjectOrder.map(function (id, i) {
         var c = UN.subjects[id].cfg, cur = id === UN.subjectId;
         return h('button', { type: 'button', class: 'subjrow' + (cur ? ' on' : ''), 'aria-pressed': String(cur), onclick: function () { close(); if (!cur) switchSubject(id); } },
-          tile(c.icon || 'book-open', ['blue', 'green', 'purple', 'amber'][i % 4]),
+          UN.art ? UN.art.make(c.art, 44) : tile(c.icon || 'book-open', ['blue', 'green', 'purple', 'amber'][i % 4]),
           h('span', { class: 'sjt' }, h('b', null, c.name[lang]), h('small', { class: 'muted' }, (c.desc && c.desc[lang]) || '')),
           cur ? h('span', { class: 'pill good' }, ic('check'), t('subject.current')) : ic('chevron-right', 'flip'));
       })));
@@ -307,7 +314,7 @@
     page.appendChild(h('section', { class: 'card welcome' }, h('div', null, h('h1', null, t('dash.welcome')), h('p', { class: 'lead' }, t('dash.welcomeSub')),
       UN.subjectOrder.length < 2 ? null : h('div', { class: 'subjnow' }, h('span', { class: 'muted' }, t('subject.now') + ':'), h('b', null, UN.cfg.name[S().lang]),
         h('button', { type: 'button', class: 'btn ghost small', onclick: openSubjects }, t('subject.change')))),
-      h('span', { class: 'emblem', 'aria-hidden': 'true' }, ic(UN.cfg.icon || 'globe'))));
+      h('span', { class: 'emblem', 'aria-hidden': 'true' }, UN.art ? UN.art.make(UN.cfg.art, 76) : ic(UN.cfg.icon || 'globe'))));
 
     page.appendChild(h('section', { class: 'grid4' },
       stat('star', 'amber', t('stat.xp'), String(info.xp), [t('xp.next', { n: info.per - info.into }), 'muted']),
@@ -476,13 +483,13 @@
     function norm(s) { return UN.check.normEn(s) + ' ' + UN.check.normAr(s); }
     function drawTabs() {
       tabs.textContent = '';
-      (gapMode ? [['gaps', 'vocab.gaps'], ['defs', 'vocab.defs'], ['written', 'vocab.written']] : [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']]).forEach(function (x) {
+      (gapMode ? [['gaps', 'vocab.part1'], ['mcq', 'vocab.part2'], ['written', 'vocab.part3'], ['defs', 'vocab.part4']] : [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']]).forEach(function (x) {
         tabs.appendChild(h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === x[0]), class: 'tab' + (tab === x[0] ? ' on' : ''), onclick: function () { tab = x[0]; draw(); } }, t(x[1])));
       });
     }
     function drawChips() {
       chips.textContent = '';
-      if (tab !== 'terms' && tab !== 'gaps') return;
+      if (tab !== 'terms' && tab !== 'gaps' && !(gapMode && tab === 'written')) return;
       [['all']].concat(UN.cfg.termGroups.map(function (g) { return [g]; })).forEach(function (x) {
         chips.appendChild(h('button', { type: 'button', class: 'chipbtn' + (grp === x[0] ? ' on' : ''), onclick: function () { grp = x[0]; draw(); } }, x[0] === 'all' ? t('vocab.all') : UN.groups[x[0]][lang]));
       });
@@ -490,7 +497,15 @@
     function draw() {
       drawTabs(); drawChips(); list.textContent = '';
       var needle = norm(q), n = 0;
-      if (tab === 'gaps') {
+      if (tab === 'mcq') {
+        UN.bank.mcq.forEach(function (b, i) {
+          var key = UN.keys.mcq[b.id];
+          if (needle && norm(b.text + ' ' + Object.keys(b.opts).map(function (k) { return b.opts[k]; }).join(' ')).indexOf(needle) === -1) return;
+          n++;
+          list.appendChild(h('div', { class: 'vrow card def mcqrow' }, h('span', { class: 'vnum' }, i + 1), h('div', { class: 'vdef' }, h('b', null, b.text),
+            h('ul', { class: 'mopts' }, Object.keys(b.opts).map(function (k) { return h('li', { class: k === key ? 'right' : '' }, h('span', { class: 'letter' }, k.toUpperCase()), k === key ? h('mark', { class: 'gans' }, b.opts[k]) : b.opts[k]); })))));
+        });
+      } else if (tab === 'gaps') {
         UN.gaps.forEach(function (it) {
           if (grp !== 'all' && it.group !== grp) return;
           if (needle && norm(it.q + ' ' + it.answer + ' ' + it.note).indexOf(needle) === -1) return;
@@ -513,9 +528,10 @@
       } else {
         UN.written.forEach(function (w) {
           var m = UN.keys.written[w.id].model;
+          if (gapMode && grp !== 'all' && w.group !== grp) return;
           if (needle && norm(w.q + ' ' + m).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'card' }, h('b', null, L(w.q, 'en')), h('p', { class: 'quote model' }, L(m, 'en')), UN.keys.written[w.id].trick ? h('div', { class: 'tip' }, ic('lightbulb'), h('span', null, UN.keys.written[w.id].trick)) : null));
+          list.appendChild(h('div', { class: 'card' }, h('b', null, w.n ? w.n + '. ' : '', L(w.q, 'en')), h('p', { class: 'quote model' }, L(m, 'en')), UN.keys.written[w.id].trick ? h('div', { class: 'tip' }, ic('lightbulb'), h('span', null, UN.keys.written[w.id].trick)) : null));
         });
       }
       if (!n) list.appendChild(empty('search', t('vocab.none'), t('vocab.noneText')));
@@ -647,6 +663,6 @@
   };
 
   UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
-    gapSentence: gapSentence, openSubjects: openSubjects, confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
+    partText: partText, gapSentence: gapSentence, openSubjects: openSubjects, confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
     defBox: defBox, applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
 })();

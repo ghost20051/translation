@@ -22,23 +22,59 @@
       .replace(/^the /, '');
   }
 
+  /* Typos: a typed answer that is one or two letters off still counts. Short answers must be exact, so a different
+     short word is never accepted by accident (land / hand). lastFuzzy holds the correct spelling when a typo was forgiven. */
+  var lastFuzzy = null;
+  function editDistance(a, b) {
+    if (a === b) return 0;
+    var prev = [], cur, i, j;
+    for (j = 0; j <= b.length; j++) prev[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      cur = [i];
+      for (j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1));
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+  function allowedTypos(len, ar) { return ar ? (len <= 5 ? 0 : len <= 10 ? 1 : 2) : (len <= 4 ? 0 : len <= 8 ? 1 : 2); }
+  // true when given is within the allowed number of typos of cand (both already normalised)
+  function nearMiss(given, cand, ar) {
+    if (!given || !cand || given === cand) return given === cand;
+    if (/\d/.test(given) || /\d/.test(cand)) return false;   // numbers must be exact (2 seconds is not 6 seconds)
+    return Math.abs(given.length - cand.length) <= 2 && editDistance(given, cand) <= allowedTypos(cand.length, ar);
+  }
+
   function matchTerm(input, term, lang) {
+    lastFuzzy = null;
     if (!input || !String(input).trim()) return false;
-    var cand = lang === 'ar'
-      ? term.ar.map(normAr).concat(normAr(term.arShow || term.ar.join(' / ')))
-      : [term.en].concat(term.enAlt || []).map(normEn);
-    var given = lang === 'ar' ? normAr(input) : normEn(input);
-    return cand.indexOf(given) !== -1;
+    var ar = lang === 'ar';
+    var raw = ar ? term.ar.concat([term.arShow || term.ar.join(' / ')]) : [term.en].concat(term.enAlt || []);
+    var cand = raw.map(ar ? normAr : normEn);
+    var given = ar ? normAr(input) : normEn(input);
+    if (cand.indexOf(given) !== -1) return true;
+    for (var i = 0; i < cand.length; i++) if (nearMiss(given, cand[i], ar)) { lastFuzzy = raw[i]; return true; }
+    return false;
   }
 
   // Fill-in-the-gap answers: the answer or any listed alternative; a plural "s" or a leading "the" does not matter.
   function gapStem(s) { return normEn(s).replace(/s$/, ''); }
   function matchGap(input, it) {
+    lastFuzzy = null;
     var g = normEn(input); if (!g) return false;
-    return [it.answer].concat(it.alt || []).some(function (c) { var n = normEn(c); return n === g || gapStem(c) === gapStem(g); });
+    var all = [it.answer].concat(it.alt || []), i;
+    for (i = 0; i < all.length; i++) { var n = normEn(all[i]); if (n === g || gapStem(all[i]) === gapStem(g)) return true; }
+    for (i = 0; i < all.length; i++) if (nearMiss(g, normEn(all[i]), false) || nearMiss(gapStem(g), gapStem(all[i]), false)) { lastFuzzy = all[i]; return true; }
+    return false;
   }
 
-  function matchName(input, name) { return !!input && normEn(input) === normEn(name); }
+  function matchName(input, name) {
+    lastFuzzy = null;
+    if (!input) return false;
+    var g = normEn(input), n = normEn(name);
+    if (g === n) return true;
+    if (nearMiss(g, n, false)) { lastFuzzy = name; return true; }
+    return false;
+  }
 
   // Estimate only: share of key-phrase groups found in the student's text.
   function estimateWritten(input, phrases) {
@@ -80,5 +116,5 @@
 
   function estimateLabel(pct) { return pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low'; }
 
-  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, matchGap: matchGap, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
+  UN.check = { normAr: normAr, normEn: normEn, matchTerm: matchTerm, matchName: matchName, matchGap: matchGap, nearMiss: nearMiss, editDistance: editDistance, fuzzy: function () { return lastFuzzy; }, estimateWritten: estimateWritten, estimateBy: estimateBy, estimateLabel: estimateLabel };
 })();

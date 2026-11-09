@@ -84,27 +84,40 @@ ok('Multiple choice: 4 distinct options, one correct, no clashing distractors, a
   });
 });
 
-ok('Exam 1: 36 gap questions (balanced over the 5 topics) + 4 essays; Exam 3 asks fresh items', () => {
+ok('Exam 1: Part 1 fill in the gap (24), Part 2 multiple choice (12), Part 3 written (4), in that order and numbered', () => {
   UN.store.reset();
   const e1 = UN.exam.buildFull();
   assert.strictEqual(e1.qs.length, 40);
-  assert.strictEqual(new Set(e1.qs.map(q => q.item)).size, 40);
-  const gapQs = e1.qs.filter(q => UN.itemsById[q.item].kind === 'gap');
-  assert.strictEqual(gapQs.length, 36);
-  assert.strictEqual(e1.qs.filter(q => q.fmt === 'written').length, 4);
-  const per = {}; gapQs.forEach(q => { const g = UN.itemsById[q.item].group; per[g] = (per[g] || 0) + 1; });
-  assert.strictEqual(Object.keys(per).length, 5, 'every topic covered');
-  assert.ok(per.segm >= 5 && per.study >= 5 && per.time >= 6 && per.evs >= 7 && per.bil >= 10, JSON.stringify(per));
-  assert.ok(gapQs.every(q => q.type === 'mcq' || q.type === 'type'));
+  assert.strictEqual(new Set(e1.qs.map(q => q.item)).size, 40, 'every question asks a different item');
+  const part = p => e1.qs.filter(q => q.part === p);
+  assert.strictEqual(part(1).length, 24); assert.strictEqual(part(2).length, 12); assert.strictEqual(part(3).length, 4);
+  assert.deepStrictEqual(e1.qs.map(q => q.part), [].concat(Array(24).fill(1), Array(12).fill(2), Array(4).fill(3)), 'parts come in order');
+  assert.deepStrictEqual(part(1).map(q => q.pn), Array.from({ length: 24 }, (_, i) => i + 1), 'numbered 1..24 inside the part');
+  assert.deepStrictEqual(part(2).map(q => q.pn), Array.from({ length: 12 }, (_, i) => i + 1));
+  assert.ok(part(1).every(q => q.fmt === 'mcq-gap' || q.fmt === 'type-gap'));
+  assert.ok(part(2).every(q => q.fmt.indexOf('bank:') === 0 && q.type === 'mcq'));
+  assert.ok(part(3).every(q => q.fmt === 'written'));
+  const per = {}; part(1).forEach(q => { const g = UN.itemsById[q.item].group; per[g] = (per[g] || 0) + 1; });
+  assert.strictEqual(Object.keys(per).length, 5, 'every topic is in Part 1: ' + JSON.stringify(per));
   const answers = {}; e1.qs.forEach((q, i) => { answers[i] = answerFor(q); });
   const att = UN.exam.finish(1, e1, answers, {});
   assert.strictEqual(att.max, 40);
-  assert.ok(att.rows.filter(r => r.type !== 'written').every(r => r.note && r.gapQ && r.gapA));
+  assert.ok(att.rows.every(r => r.part && r.pn), 'rows keep their part and number');
+  assert.ok(att.rows.filter(r => r.type !== 'written').every(r => r.note));
   assert.strictEqual(att.rows.filter(r => r.type === 'written').length, 4);
-  const first = new Set(e1.qs.map(q => q.item));
+  const firstGap = new Set(part(1).map(q => q.item)), firstMcq = new Set(part(2).map(q => q.item));
   const e3 = UN.exam.buildFull();
-  assert.strictEqual(e3.qs.filter(q => first.has(q.item) && UN.itemsById[q.item].kind === 'gap').length, 0, 'Exam 3 uses fresh gap questions');
+  assert.strictEqual(e3.qs.filter(q => q.part === 1 && firstGap.has(q.item)).length, 0, 'Exam 3 Part 1 is fresh');
+  assert.ok(e3.qs.filter(q => q.part === 2 && !firstMcq.has(q.item)).length >= 8, 'Exam 3 Part 2 uses the 8 MCQs not asked before');
   UN.store.reset();
+});
+
+ok('Part labels: every question knows its part and number', () => {
+  UN.gaps.forEach(g => assert.deepStrictEqual(UN.gen.partOf({ item: g.id, fmt: 'type-gap' }), { part: 1, n: g.n }));
+  UN.bank.mcq.forEach((b, i) => assert.deepStrictEqual(UN.gen.partOf({ item: b.item, fmt: 'bank:' + b.id }), { part: 2, n: i + 1 }));
+  UN.written.forEach(w => assert.deepStrictEqual(UN.gen.partOf({ item: w.id, fmt: 'written' }), { part: 3, n: w.n }));
+  assert.deepStrictEqual(UN.gen.partOf({ item: 'SK3', fmt: 'mcq-def' }), { part: 4, n: 3 });
+  UN.useSubject('tour'); assert.strictEqual(UN.gen.partOf({ item: 'R1', fmt: 'mcq-en2ar' }), null, 'other subjects have no parts'); UN.useSubject('si');
 });
 
 ok('Exam 2 targets missed items', () => {
@@ -177,6 +190,26 @@ ok('Progress is kept separately for each subject', () => {
   assert.strictEqual(UN.store.get().events.length, 1);
   assert.strictEqual(UN.store.get().xp, 30);
   UN.store.reset();
+});
+
+ok('Typos: a small spelling slip still counts; short or different words do not', () => {
+  const g = id => UN.gen.make(id, 'type-gap');
+  assert.strictEqual(UN.gen.grade(g('G1'), 'Comprehention'), 1);
+  assert.strictEqual(UN.check.fuzzy(), 'Comprehension');
+  assert.strictEqual(UN.gen.grade(g('G1'), 'Comprehension'), 1);
+  assert.strictEqual(UN.check.fuzzy(), null, 'exact answers report no typo');
+  assert.strictEqual(UN.gen.grade(g('G8'), 'sintactic'), 1);
+  assert.strictEqual(UN.gen.grade(g('G14'), 'outpt'), 1);
+  assert.strictEqual(UN.gen.grade(g('G74'), 'desicions'), 1);
+  assert.strictEqual(UN.gen.grade(g('G16'), 'EVZ'), 0, 'three-letter answers must be exact');
+  assert.strictEqual(UN.gen.grade(g('G9'), 'Lexicon'), 0, 'a different word two letters away');
+  assert.strictEqual(UN.gen.grade(g('G14'), 'Input'), 0, 'the opposite word is still wrong');
+  assert.strictEqual(UN.gen.grade(g('G20'), 'Output'), 0);
+  assert.strictEqual(UN.gen.grade(g('G1'), 'Strategy'), 0);
+  assert.strictEqual(UN.check.nearMiss('hand', 'land', false), false, 'four-letter words must be exact');
+  // no two different gap answers are within typo distance of each other, so a typo can never turn into another answer
+  const all = Array.from(new Set(UN.gaps.map(x => x.answer.toLowerCase())));
+  all.forEach(a => all.forEach(b => { if (a !== b && a.replace(/s$/, '') !== b.replace(/s$/, '')) assert.ok(!UN.check.nearMiss(a, b, false), a + ' / ' + b); }));
 });
 
 console.log('\n' + n + ' interpretation test groups passed');

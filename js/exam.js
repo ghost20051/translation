@@ -21,11 +21,12 @@
   }
 
   // n terms spread evenly over the term groups, weakest / least-seen first, preferring items not asked last time
-  function stratified(n, r, prev, kind) {
+  function stratified(n, r, prev, kind, skip) {
     var byGroup = {}, order = [];
     r.ids.forEach(function (id) {
       var it = UN.itemsById[id];
       if (it.kind !== (kind || 'term')) return;
+      if (skip && skip[id]) return;
       if (!byGroup[it.group]) { byGroup[it.group] = []; order.push(it.group); }
       byGroup[it.group].push(id);
     });
@@ -41,12 +42,48 @@
     return out;
   }
 
+  // number the questions inside each part: Part 1 Q1, Q2 ... then Part 2 Q1 ...
+  function labelParts(qs) {
+    var cnt = {};
+    qs.forEach(function (q) { var p = G().partOf(q); if (p) { q.part = p.part; q.pn = cnt[p.part] = (cnt[p.part] || 0) + 1; } });
+    return qs;
+  }
+  function inParts(qs, rng) {
+    var by = {};
+    qs.forEach(function (q) { var p = G().partOf(q); var k = p ? p.part : 9; (by[k] = by[k] || []).push(q); });
+    var out = [];
+    Object.keys(by).sort().forEach(function (k) { out = out.concat(G().shuffle(by[k], rng)); });
+    return labelParts(out);
+  }
+  function bankFor(id) { return UN.bank.mcq.filter(function (b) { return b.item === id; })[0]; }
+
+  // Exam 1 / 3 for a subject made of parts: Part 1 fill in the gap, Part 2 multiple choice, Part 3 written
+  function buildParts(rng, r, prev, prevWritten) {
+    var p = cfg().plan;
+    var mcqIds = r.ids.filter(function (id) { return UN.itemsById[id].kind === 'gap' && bankFor(id); });
+    var freshM = mcqIds.filter(function (id) { return !prev[id]; });
+    mcqIds = freshM.concat(mcqIds.filter(function (id) { return freshM.indexOf(id) === -1; })).slice(0, p.mcq);
+    var skip = {}; mcqIds.forEach(function (id) { skip[id] = 1; });
+    var gapIds = stratified(p.gap, r, prev, 'gap', skip);
+    var allW = r.ids.filter(function (id) { return UN.itemsById[id].kind === 'wq'; });
+    var freshW = allW.filter(function (id) { return prevWritten.indexOf(id) === -1; });
+    var wIds = freshW.concat(allW.filter(function (id) { return freshW.indexOf(id) === -1; })).slice(0, p.written);
+    var q1 = gapIds.map(function (id) {
+      var avoid = G().formatsFor(id).filter(function (f) { return f.indexOf('bank:') === 0; }).concat(['written']);
+      return qFor(id, rng, avoid);
+    });
+    var q2 = mcqIds.map(function (id) { return G().make(id, 'bank:' + bankFor(id).id, rng); });
+    var q3 = wIds.map(function (id) { return G().make(id, 'written', rng); });
+    return { mode: 'full', qs: inParts(q1.concat(q2, q3), rng), extras: [], writtenIds: wIds, targeted: [] };
+  }
+
   function buildFull(rng) {
     var c = cfg(), r = UN.adapt.rank(rng), last = lastFull(), prevTerms = {}, prevExtras = [], prevWritten = [];
     if (last) {
       last.rows.forEach(function (row) { prevTerms[row.item] = 1; });
       prevExtras = last.extras || []; prevWritten = last.writtenIds || [];
     }
+    if (c.plan) return buildParts(rng, r, prevTerms, prevWritten);
     var termIds = c.terms === 'all' ? UN.terms.map(function (t) { return t.id; }) : (c.terms ? stratified(c.terms, r, prevTerms, 'term') : []);
     var gapIds = c.gaps ? stratified(c.gaps, r, prevTerms, 'gap') : [];
 
@@ -74,7 +111,7 @@
     var targeted = r.ids.slice(0, a.targeted);
     var general = G().shuffle(r.ids.slice(a.targeted), rng).slice(0, a.total - a.targeted);
     var qs = targeted.concat(general).map(function (id) { return qFor(id, rng); });
-    return { mode: 'adaptive', qs: G().shuffle(qs, rng), extras: [], writtenIds: [], targeted: targeted };
+    return { mode: 'adaptive', qs: UN.cfg.parts ? inParts(qs, rng) : G().shuffle(qs, rng), extras: [], writtenIds: [], targeted: targeted };
   }
 
   function build(no, rng) { return no === 2 ? buildAdaptive(rng) : buildFull(rng); }
@@ -102,8 +139,9 @@
     var store = UN.store.get(), id = UN.store.nextId();
     var rows = built.qs.map(function (q, i) {
       var given = answers[i];
-      var row = { item: q.item, fmt: q.fmt, type: q.type, prompt: q.prompt, pl: q.promptLang, given: givenText(q, given),
+      var row = { part: q.part || null, pn: q.pn || null, typo: null, item: q.item, fmt: q.fmt, type: q.type, prompt: q.prompt, pl: q.promptLang, given: givenText(q, given),
         correct: q.correctText, v: valueOf(q, given), est: null, graded: q.type !== 'written', note: q.extra && q.extra.note || null, gapQ: q.extra && q.extra.q || null, gapA: q.extra && q.extra.ans || null };
+      if (q.type === 'type' && row.v >= 0.99) row.typo = UN.check.fuzzy ? UN.check.fuzzy() : null;
       if (q.type === 'written') {
         if (q.fmt === 'define') { var di = UN.itemsById[q.item]; row.est = UN.check.estimateBy(given || '', [di.def, di.orig]); row.orig = di.orig; }
         else row.est = UN.check.estimateWritten(given || '', UN.keys.written[q.item].phrases).pct;

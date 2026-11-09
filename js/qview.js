@@ -12,8 +12,10 @@
     var exam = cfg.mode === 'exam';
     var box = h('div', { class: 'qbox ' + q.type });
     var fb = h('div', { class: 'feedback', 'aria-live': 'polite' });
-    var locked = false;
+    var locked = false, typo = null;
 
+    var pinfo = !exam && UN.gen.partOf ? UN.gen.partOf(q) : null;
+    if (pinfo) box.appendChild(h('div', { class: 'qlabel' }, ui.partText(pinfo)));
     box.appendChild(h('div', { class: 'qprompt' }, ui.promptNode(q)));
 
     function finish(v, given) {
@@ -25,6 +27,7 @@
       var blank = !exam && q.extra && q.extra.ans ? box.querySelector('.gblank') : null;
       if (blank) blank.replaceWith(h('mark', { class: 'gans' }, q.extra.ans));   // fill the blank right where the student is looking
       if (q.extra && q.extra.q && !blank) fb.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(q.extra.q, q.extra.ans)));
+      if (typo && !exam) fb.appendChild(h('div', { class: 'typo' }, '✏️ ' + t('fb.typo') + ' ', ui.mixed(String(typo))));
       if (q.extra && q.extra.note) fb.appendChild(h('div', { class: 'muted small' }, q.extra.note));
       if (!exam && UN.fun) fb.appendChild(h('div', { class: 'quip' }, UN.fun.answer(v)));
       if (!exam && UN.sfx) UN.sfx.play(v >= 0.99 ? 'correct' : v > 0 ? 'partly' : 'wrong');
@@ -81,7 +84,7 @@
         placeholder: rtl ? t('q.typeAr') : t('q.typeEn'), 'aria-label': t('q.yourAnswer') });
       if (exam && cfg.value) inp.value = cfg.value;
       var go = h('button', { type: 'button', class: 'btn primary', onclick: function () {
-        if (locked) return; var v = UN.gen.grade(q, inp.value); inp.disabled = true; go.disabled = true; finish(v, inp.value);
+        if (locked) return; var v = UN.gen.grade(q, inp.value); typo = v >= 0.99 ? UN.check.fuzzy() : null; inp.disabled = true; go.disabled = true; finish(v, inp.value);
       } }, t('q.check'));
       if (exam) inp.addEventListener('input', function () { cfg.onChange(inp.value); });
       else inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });

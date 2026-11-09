@@ -244,5 +244,15 @@
     return 0;
   }
 
-  UN.gen = { rebuildIndex: rebuildIndex, shuffle: shuffle, pick: pick, formatsFor: formatsFor, drillFormatsFor: drillFormatsFor, make: make, chooseFormat: chooseFormat, grade: grade, distractTerms: distractTerms };
+  // Parts of the Simultaneous Interpretation material: 1 fill in the gap, 2 multiple choice, 3 written, 4 key concepts.
+  function partOf(q) {
+    if (!UN.cfg.parts) return null;
+    var it = UN.itemsById[q.item];
+    if (it.kind === 'wq') return { part: 3, n: it.n };
+    if (it.kind === 'sub') return { part: 4, n: +String(it.id).replace('SK', '') };
+    if (String(q.fmt).indexOf('bank:') === 0) return { part: 2, n: +String(q.fmt).replace('bank:SM', '') };
+    return { part: 1, n: it.n };
+  }
+
+  UN.gen = { partOf: partOf, rebuildIndex: rebuildIndex, shuffle: shuffle, pick: pick, formatsFor: formatsFor, drillFormatsFor: drillFormatsFor, make: make, chooseFormat: chooseFormat, grade: grade, distractTerms: distractTerms };
 })();

@@ -177,4 +177,17 @@ ok('Definitions: original kept verbatim, short simple version, translations pres
 });
 
 
+ok('Typos in typed terms: English and Arabic', () => {
+  const rec = UN.terms.find(x => x.en === 'Reception');
+  assert.ok(UN.check.matchTerm('Recepsion', rec, 'en'));
+  assert.ok(!UN.check.matchTerm('Receipt', rec, 'en'));
+  const land = UN.terms.find(x => x.en === 'Land');
+  assert.ok(!UN.check.matchTerm('Hand', land, 'en'), 'short words stay exact');
+  const agency = UN.terms.find(x => x.en === 'Travel agency');
+  assert.ok(UN.check.matchTerm('travel agancy', agency, 'en'));
+  assert.ok(UN.check.matchTerm('وكاله سفر', agency, 'ar'), 'normalisation still works');
+  assert.ok(UN.check.matchTerm('وكالة سفرر', agency, 'ar'), 'one extra Arabic letter on a long answer');
+  assert.ok(!UN.check.matchTerm('مطعم', agency, 'ar'));
+});
+
 console.log('\n' + n + ' tourist test groups passed');

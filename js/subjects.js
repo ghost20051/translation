@@ -22,7 +22,7 @@
     id: 'un',
     name: { en: 'UN Translation', ar: 'ترجمة الأمم المتحدة' },
     short: { en: 'UN', ar: 'الأمم المتحدة' },
-    icon: 'landmark',
+    icon: 'landmark', art: 'un',
     desc: { en: 'United Nations bodies, offices, documents and written answers', ar: 'هيئات الأمم المتحدة ومكاتبها ووثائقها والإجابات المقالية' },
     subNoun: 'characteristic',
     exam: { terms: 'all', written: 'all', extras: 5, extraPool: ['W3-acc', 'W3-cla', 'W3-obj', 'W3-con', 'W3-neu', 'W3-cnf', 'W1', 'W2', 'W4', 'W5'], sample: false, adaptive: { total: 20, targeted: 15 }, fullTotal: 30 },

@@ -27,17 +27,18 @@
     id: 'si',
     name: { en: 'Simultaneous Interpretation', ar: 'الترجمة الفورية' },
     short: { en: 'SI', ar: 'الفورية' },
-    icon: 'headphones',
+    icon: 'headphones', art: 'si',
     desc: { en: 'Fill-in-the-gap, multiple choice and essay answers', ar: 'أسئلة الفراغات والاختيار من متعدد والإجابات المقالية' },
     subNoun: 'concept',
-    exam: { terms: 0, written: 4, gaps: 36, extras: 0, extraPool: [], sample: true, adaptive: { total: 20, targeted: 15 }, fullTotal: 40,
+    parts: [{ name: s('Fill in the gap', 'املأ الفراغ') }, { name: s('Multiple choice', 'اختيار من متعدد') }, { name: s('Written questions', 'أسئلة مقالية') }, { name: s('Key concepts', 'مفاهيم أساسية') }],
+    exam: { plan: { gap: 24, mcq: 12, written: 4 }, terms: 0, written: 4, gaps: 36, extras: 0, extraPool: [], sample: true, adaptive: { total: 20, targeted: 15 }, fullTotal: 40,
       desc: {
-        1: s('A balanced sample of the whole material: 36 of the 80 fill-in-the-gap questions from every topic (some as multiple choice, some typed) and 4 essay questions (40 questions). It sets your starting point.',
-             'عينة متوازنة من المادة كاملة: 36 سؤالًا من أسئلة الفراغات الثمانين من كل المحاور (بعضها اختيار من متعدد وبعضها كتابة) و4 أسئلة مقالية (40 سؤالًا). يحدد نقطة البداية.'),
+        1: s('Three parts, like the real exam: Part 1 fill in the gap (24 questions from every topic), Part 2 multiple choice (12) and Part 3 written questions (4). 40 questions. It sets your starting point.',
+             'ثلاثة أجزاء زي الامتحان الحقيقي: الجزء 1 املأ الفراغ (24 سؤالًا من كل المحاور)، الجزء 2 اختيار من متعدد (12)، الجزء 3 أسئلة مقالية (4). 40 سؤالًا. يحدد نقطة البداية.'),
         2: s('Aims at your weak spots: 15 of your weakest questions plus 5 general ones (20 questions). Without data yet, it is the same as Exam 1.',
              'يستهدف نقاط ضعفك: 15 سؤالًا من أضعف أسئلتك و5 أسئلة عامة (20 سؤالًا). لو لسه مفيش بيانات يبقى زي الامتحان 1.'),
-        3: s('The final check: a fresh balanced sample of 40 questions, avoiding the ones asked in your last exam where possible.',
-             'الاختبار النهائي: عينة جديدة متوازنة من 40 سؤالًا، بنتجنب فيها أسئلة آخر امتحان قدر الإمكان.')
+        3: s('The final check: the same three parts with a fresh set of 40 questions, avoiding the ones asked in your last exam where possible.',
+             'الاختبار النهائي: نفس الأجزاء التلاتة بـ 40 سؤالًا جديدة، بنتجنب فيها أسئلة آخر امتحان قدر الإمكان.')
       } },
     clash: SI.clash,
     text: {

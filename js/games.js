@@ -88,6 +88,7 @@
       var list = [
         ['flip', '🃏', gapMode ? 'g1.gflip' : 'g1.flip', flip], ['match1', '🔗', 'g1.matchEnAr', function () { match('en2ar'); }], ['match2', '🔗', 'g1.matchArEn', function () { match('ar2en'); }],
         ['match3', '📖', 'g1.matchDef', function () { match('def'); }], ['speed', '⚡', 'g1.speed', speed], ['fill', '✏️', 'g1.fill', fill], ['body', '🏛️', UN.cfg.bodyKey, body], ['type', '🎯', 'g1.gtype', gapType]];
+      if (!gapMode) list = list.filter(function (a) { return a[0] !== 'type'; });
       if (UN.cfg.acts) list = list.filter(function (a) { return UN.cfg.acts.indexOf(a[0]) !== -1; });
       var grid = h('div', { class: 'grid3' });
       list.forEach(function (a) {
@@ -111,7 +112,7 @@
         if (!deck.length) { mark('flip'); reward(total * 2); return summary(box, new Array(total).fill({ v: 1, q: { item: 'T1' } }), total * 2, flip, '#/game/1', menu); }
         var it = deck[0];
         S().flipped[it.id] = 1; UN.store.save();
-        var front = gapMode ? h('div', { class: 'face front' }, h('small', null, t('flip.tap')), h('div', { class: 'gapsent' }, ui.gapSentence(it.q)))
+        var front = gapMode ? h('div', { class: 'face front' }, h('small', null, ui.partText({ part: 1, n: it.n }) + ' · ' + t('flip.tap')), h('div', { class: 'gapsent' }, ui.gapSentence(it.q)))
           : h('div', { class: 'face front' }, h('small', null, t('flip.tap')), h('div', { class: 'big-term' }, L(it.en, 'en')), ui.speakBtn(it.en));
         var back = gapMode ? h('div', { class: 'face back' }, h('small', null, UN.groups[it.group][S().lang]), h('div', { class: 'big-term' }, L(it.answer, 'en')), h('div', { class: 'gapsent small' }, ui.mixed(it.note)))
           : h('div', { class: 'face back' }, h('small', null, UN.groups[it.group][S().lang]), h('div', { class: 'big-term' }, L(it.arShow, 'ar')));
