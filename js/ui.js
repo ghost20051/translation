@@ -457,20 +457,89 @@
     var mb = mediaBlock(r); if (mb) d.appendChild(mb);
     return d;
   }
+  // Every question in its original order, part by part (Part 1 fill in the gap 1-80, Part 2 MCQ, Part 3 written),
+  // with a tick on each number so a student always knows where they stopped.
+  function learnParts() {
+    var s = S(), lang = s.lang, qn = lang === 'ar' ? 'س' : 'Q';
+    var done = s.learnDone = s.learnDone || {};
+    var tabs = [
+      { k: 'p1', label: partText({ part: 1 }, true), items: UN.gaps.map(function (it) { return { id: it.id, n: it.n }; }) },
+      { k: 'p2', label: partText({ part: 2 }, true), items: UN.bank.mcq.map(function (b, i) { return { id: b.id, n: i + 1 }; }) },
+      { k: 'p3', label: partText({ part: 3 }, true), items: UN.written.map(function (w, i) { return { id: w.id, n: i + 1 }; }) }
+    ];
+    if (UN.subs.length && UN.cfg.parts[3]) tabs.push({ k: 'p4', label: UN.cfg.parts[3].name[lang], items: UN.subs.map(function (x, i) { return { id: x.id, n: i + 1 }; }) });
+    var cur = tabs.some(function (x) { return x.k === s.learnPart; }) ? s.learnPart : 'p1';
+    var bar = h('div', { class: 'tabs lptabs', role: 'tablist' }), status = h('div', { class: 'lpstatus' }), list = h('div', { class: 'stack lplist' });
+    function tab() { return tabs.filter(function (x) { return x.k === cur; })[0]; }
+    function count(T) { return T.items.filter(function (x) { return done[x.id]; }).length; }
+    function drawTabs() {
+      bar.textContent = '';
+      tabs.forEach(function (x) {
+        bar.appendChild(h('button', { type: 'button', role: 'tab', 'aria-selected': String(x.k === cur), class: 'tab' + (x.k === cur ? ' on' : ''),
+          onclick: function () { cur = x.k; s.learnPart = cur; UN.store.save(); drawTabs(); drawList(); } }, x.label, h('small', null, ' ' + count(x) + '/' + x.items.length)));
+      });
+    }
+    function drawStatus() {
+      var T = tab(), c = count(T), next = T.items.filter(function (x) { return !done[x.id]; })[0];
+      status.textContent = '';
+      status.appendChild(h('span', { class: 'pill' + (c === T.items.length ? ' good' : '') }, ic('check'), t('learn.studied', { n: c, total: T.items.length })));
+      if (next) status.appendChild(h('button', { type: 'button', class: 'btn small primary', onclick: function () {
+        var el = document.getElementById('lp-' + next.id); if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('flash'); later(function () { el.classList.remove('flash'); }, 1600);
+      } }, t('learn.continue', { n: qn + next.n }), ic('chevron-right', 'flip')));
+      else status.appendChild(h('span', { class: 'muted' }, t('learn.allStudied')));
+      if (c) status.appendChild(h('button', { type: 'button', class: 'btn small ghost', onclick: function () { T.items.forEach(function (x) { delete done[x.id]; }); UN.store.save(); drawTabs(); drawList(); } }, t('learn.reset')));
+    }
+    // the question number is the "studied" switch; only its own row changes, so open answers stay open
+    function row(id, n, body) {
+      var r = h('div', { class: 'vrow card def lprow' + (done[id] ? ' studied' : ''), id: 'lp-' + id });
+      var b = h('button', { type: 'button', class: 'lpnum' + (done[id] ? ' done' : ''), title: t('learn.mark'), 'aria-pressed': String(!!done[id]) }, String(n));
+      b.addEventListener('click', function () {
+        if (done[id]) delete done[id]; else done[id] = true;
+        UN.store.save();
+        b.classList.toggle('done', !!done[id]); b.setAttribute('aria-pressed', String(!!done[id])); r.classList.toggle('studied', !!done[id]);
+        drawTabs(); drawStatus();
+      });
+      r.appendChild(b); r.appendChild(body);
+      return r;
+    }
+    function drawList() {
+      drawStatus(); list.textContent = '';
+      if (cur === 'p1') UN.gaps.forEach(function (it) {
+        list.appendChild(row(it.id, it.n, h('div', { class: 'vdef' }, h('div', { class: 'gapfull' }, gapSentence(it.q, it.answer)), h('div', { class: 'muted small' }, it.note), videoLink('gaps', it.n))));
+      });
+      else if (cur === 'p2') UN.bank.mcq.forEach(function (b, i) {
+        var key = UN.keys.mcq[b.id];
+        list.appendChild(row(b.id, i + 1, h('div', { class: 'vdef' }, h('b', null, b.text),
+          h('ul', { class: 'mopts' }, Object.keys(b.opts).map(function (k) { return h('li', { class: k === key ? 'right' : '' }, h('span', { class: 'letter' }, k.toUpperCase()), k === key ? h('mark', { class: 'gans' }, b.opts[k]) : b.opts[k]); })),
+          videoLink('mcq', i + 1))));
+      });
+      else if (cur === 'p3') UN.written.forEach(function (w, i) {
+        var k = UN.keys.written[w.id];
+        list.appendChild(row(w.id, i + 1, h('details', { class: 'vdef' }, h('summary', null, h('b', null, L(w.q, 'en'))), h('p', { class: 'quote model' }, L(k.model, 'en')),
+          k.trick ? h('div', { class: 'tip' }, ic('lightbulb'), h('span', null, k.trick)) : null, videoLink('essay', i + 1))));
+      });
+      else UN.subs.forEach(function (x, i) { list.appendChild(row(x.id, i + 1, h('div', { class: 'vdef' }, h('b', null, x.name), h('div', null, x.def)))); });
+    }
+    drawTabs(); drawList();
+    return h('section', { class: 'lparts', id: 'parts' }, h('h2', null, t('learn.byPart')), h('p', { class: 'muted' }, t('learn.byPartLead')), bar, status, list);
+  }
   UN.routes.learn = function (arg) {
     var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
     if (UN.videos && UN.videos.length) page.appendChild(h('a', { class: 'card vbanner', href: '#/videos' }, UN.art ? UN.art.make('si', 40) : ic('play-circle'), h('span', { class: 'vbt' }, h('b', null, t('vid.title')), h('small', { class: 'muted' }, t('vid.bannerSub', { n: UN.videos.length }))), ic('chevron-right', 'flip')));
+    var byPart = UN.cfg.parts && UN.gaps && UN.gaps.length;
+    if (byPart) page.appendChild(learnParts());
     var weak = UN.adapt.weakIds();
     var rec = weak.length ? UN.adapt.recommendResources(weak) : [];
     if (rec.length) {
       page.appendChild(h('section', null, h('h2', null, t('learn.recommended')),
         h('div', { class: 'stack' }, rec.slice(0, 3).map(function (r) { return resourceCard(r, r.id === arg); }))));
     }
-    page.appendChild(h('h2', null, t('learn.all')));
+    page.appendChild(h('h2', null, t(byPart ? 'learn.topics' : 'learn.all')));
     var stack = h('div', { class: 'stack' });
     UN.resources.forEach(function (r) { if (rec.slice(0, 3).indexOf(r) === -1) stack.appendChild(resourceCard(r, r.id === arg)); });
     page.appendChild(stack);
-    if (!UN.written.length) { if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return page; }
+    if (!UN.written.length || byPart) { if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return page; }
     page.appendChild(h('h2', null, t('learn.written')));
     var wst = h('div', { class: 'stack' });
     UN.written.forEach(function (w) {
