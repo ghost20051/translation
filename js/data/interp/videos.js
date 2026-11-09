@@ -10,10 +10,14 @@
   var SI = UN.SI = UN.SI || {};
   function M(t) { return { m: t }; }   // a highlighted word in a definition
 
+  // Real photos used as memory pictures: { id: { file, title, by, license, source } }. Empty until photos are added.
+  SI.photos = SI.photos || {};
+
   SI.videos = [
-    { id: 'v01', title: 'Comprehension, not perception', ar: 'المترجم الفوري بيعتمد على الفهم مش على السمع بس.', tone: 'blue', refs: { gaps: [1, 60], mcq: [1, 20], essay: [19] },
+    { id: 'v01', title: "Why do interpreters rely on comprehension, not perception?", gist: "Perception = hearing the sounds. Comprehension = understanding the meaning.", ar: 'المترجم الفوري بيعتمد على الفهم مش على السمع بس.', tone: 'blue', refs: { gaps: [1, 60], mcq: [1, 20], essay: [19] },
       scenes: [
-        { t: 'title', emoji: '🎧', sub: 'Simultaneous interpreting', say: 'Video one. Comprehension, not perception.' },
+        { t: 'title', emoji: '🎧', sub: 'Simultaneous interpreting', say: "Video one. Why do interpreters rely on comprehension, not perception?" },
+        { t: 'story', say: "Imagine a conference hall. A speaker talks in English. In a glass booth sits an interpreter, wearing headphones. She is not copying sounds. She understands the idea, and says it in Arabic to the audience.", beats: [{"who":"speaker","text":"We must protect our water resources."},{"who":"interp","text":"يجب أن نحمي مواردنا المائية"},{"who":"audience","text":"Understood! 👍"},{"who":"note","text":"Meaning first, words second"}] },
         { t: 'def', parts: ['In simultaneous interpreting, the interpreter ', M('listens and speaks at the same time'), ', in two languages.'], say: 'In simultaneous interpreting, the interpreter listens to the speaker and speaks in another language at the same time.' },
         { t: 'compare', left: { emoji: '👂', title: 'Perception', items: ['Hearing the sounds', 'What a normal listener does'] }, right: { emoji: '🧠', title: 'Comprehension', items: ['Understanding the meaning', 'What interpreters rely on'] },
           say: 'A normal listener depends on perception: hearing the sounds and the words. But simultaneous interpreters rely on comprehension. They understand the meaning first, and only then express it.' },
@@ -21,9 +25,10 @@
         { t: 'recap', points: ['Interpreters rely on comprehension, not perception', 'Meaning first, words second'], say: 'So remember: comprehension, not perception. Meaning first, words second.' }
       ] },
 
-    { id: 'v02', title: 'Temporal phenomena', ar: 'الظواهر الزمنية = كل حاجة بتخص الوقت في الترجمة: الطلاقة والوقفات والتأخير.', tone: 'amber', refs: { gaps: [14, 15, 55], mcq: [], essay: [] },
+    { id: 'v02', title: "What are temporal phenomena?", gist: "The time features of interpreting: fluency, pausing and lag.", ar: 'الظواهر الزمنية = كل حاجة بتخص الوقت في الترجمة: الطلاقة والوقفات والتأخير.', tone: 'amber', refs: { gaps: [14, 15, 55], mcq: [], essay: [] },
       scenes: [
-        { t: 'title', emoji: '⏱️', sub: 'Temporal phenomena', say: 'Video two. Temporal phenomena.' },
+        { t: 'title', emoji: '⏱️', sub: 'Temporal phenomena', say: "Video two. What are temporal phenomena?" },
+        { t: 'story', say: "Picture the same booth. Researchers do not only listen to what is said. They watch the clock. How smooth is her speech? Where does she pause? And how far behind the speaker is she?", beats: [{"who":"speaker","text":"Today we will discuss the budget."},{"who":"interp","text":"اليوم سنناقش الميزانية"},{"who":"note","text":"Fluency · Pausing · Lag"}] },
         { t: 'def', parts: ['Temporal means ', M('related to time'), '. These are the time features of interpreting.'], say: 'Temporal simply means related to time. Temporal phenomena are the time features of interpreting.' },
         { t: 'steps', items: [{ emoji: '🌊', text: 'Fluency: how smooth the speech is' }, { emoji: '⏸️', text: 'Pausing: the silent gaps' }, { emoji: '🐢', text: 'Lag: the delay behind the speaker' }],
           say: 'Researchers look at three things. Fluency, which is how smooth the speech is. Pausing, which is the silent gaps. And lag, which is how far the interpreter is behind the speaker. This lag is called ear-voice span.' },
@@ -31,31 +36,34 @@
         { t: 'recap', points: ['Temporal = related to time', 'Fluency + Pausing + Lag'], say: 'Remember: temporal means time. Fluency, pausing, and lag.' }
       ] },
 
-    { id: 'v03', title: 'Simultaneity and synchronicity', ar: 'التزامن: السماع والكلام بيحصلوا في نفس الوقت تقريبًا، والفجوة بينهم بتتغير.', tone: 'purple', refs: { gaps: [13, 17, 18, 19], mcq: [9, 10], essay: [1] },
+    { id: 'v03', title: "What are simultaneity and synchronicity?", gist: "Listening and speaking at the same time, with a gap that keeps changing.", ar: 'التزامن: السماع والكلام بيحصلوا في نفس الوقت تقريبًا، والفجوة بينهم بتتغير.', tone: 'purple', refs: { gaps: [13, 17, 18, 19], mcq: [9, 10], essay: [1] },
       scenes: [
-        { t: 'title', emoji: '🔁', sub: 'Simultaneity & synchronicity', say: 'Video three. Simultaneity and synchronicity.' },
+        { t: 'title', emoji: '🔁', sub: 'Simultaneity & synchronicity', say: "Video three. What are simultaneity and synchronicity?" },
+        { t: 'story', say: "The speaker never waits for the interpreter. Both of them are talking at the same time. She listens to the next words while she is still speaking the previous ones.", beats: [{"who":"speaker","text":"The new law will start next month."},{"who":"interp","text":"سيبدأ القانون الجديد الشهر المقبل"},{"who":"note","text":"Two voices at the same time"}] },
         { t: 'def', parts: ['Simultaneity: listening and speaking happen ', M('at the same time'), '. Synchronicity: how closely input and output match in time.'], say: 'Simultaneity means listening and speaking happen at the same time. Synchronicity is how closely the speaker and the interpreter match in time.' },
         { t: 'lanes', bars: 5, lag: 1, label: 'the gap keeps changing', say: 'Look at the two lanes. The speaker talks, and the interpreter follows almost at the same time. But the gap is never fixed. It keeps changing. That is why synchronicity is difficult to measure.' },
         { t: 'picture', emoji: '🎶', anim: 'float', caption: 'Singing along to a song you have never heard', say: 'It is like singing along to a song you have never heard before. You listen and sing at once. Researchers call this task spectacular and mysterious.' },
         { t: 'recap', points: ['Synchronicity = input and output, almost at the same time', 'The time gap keeps changing'], say: 'Remember: same time, and a changing time gap.' }
       ] },
 
-    { id: 'v04', title: 'Ear-voice span (EVS)', ar: 'EVS = الفجوة الزمنية بين ما بتسمعه وما بتقوله، وتتقاس بالثواني أو بعدد الكلمات.', tone: 'blue', refs: { gaps: [16, 54, 61, 62, 63, 64, 65, 66, 67, 69, 75], mcq: [8], essay: [3, 4, 5, 6, 7] },
+    { id: 'v04', title: "What is the ear-voice span (EVS)?", gist: "The time gap between hearing the speaker and speaking the interpretation.", ar: 'EVS = الفجوة الزمنية بين ما بتسمعه وما بتقوله، وتتقاس بالثواني أو بعدد الكلمات.', tone: 'blue', refs: { gaps: [16, 54, 61, 62, 63, 64, 65, 66, 67, 69, 75], mcq: [8], essay: [3, 4, 5, 6, 7] },
       scenes: [
-        { t: 'title', emoji: '🗣️', sub: 'Ear-voice span, or EVS', say: 'Video four. Ear-voice span, or E V S.' },
+        { t: 'title', emoji: '🗣️', sub: 'Ear-voice span, or EVS', say: "Video four. What is the ear-voice span, or E V S?" },
+        { t: 'story', say: "The speaker says a word. The interpreter hears it, but she waits a moment to understand it. Then she speaks. That small gap, between her ear and her voice, is the ear-voice span.", beats: [{"who":"speaker","text":"Water"},{"who":"note","text":"EVS: the gap, about 2 to 4 seconds"},{"who":"interp","text":"المياه"}] },
         { t: 'def', parts: ['EVS is the ', M('time delay'), ' between hearing the source speech and delivering the interpretation. Also called décalage or time lag.'], say: 'E V S is the time delay between hearing the source speech and delivering the interpretation. It is also called décalage, or time lag.' },
         { t: 'lanes', bars: 5, lag: 2, label: 'EVS', say: 'Here the speaker finishes a word, and the interpreter speaks it a moment later. That gap is the E V S. It gives the interpreter time to understand the message before translating it.' },
         { t: 'steps', items: [{ emoji: '⏲️', text: 'In seconds' }, { emoji: '🔢', text: 'Or by the number of content words' }],
-          say: 'It can be measured in two ways: in seconds, or by counting the content words. Studies report different ranges. Paneth found an average of two to four seconds, and your question bank also mentions up to six. Use the numbers given in your question.' },
+          say: "It can be measured in two ways: in seconds, or by counting the content words. Paneth found an average of two to four seconds. Oléron and Nanpon found that it can range from two to ten seconds, depending on the languages." },
         { t: 'steps', items: [{ emoji: '🔑', text: 'Where the key words are' }, { emoji: '🏗️', text: 'Sentence structure, such as the predicate' }, { emoji: '🧠', text: 'Mental effort' }, { emoji: '😵', text: 'How difficult the speech is' }, { emoji: '👤', text: 'Who is interpreting' }],
           say: 'What changes its length? Where the key words are, the sentence structure, the mental effort, how difficult the speech is, and who is interpreting. The interpreter must understand enough of the original before starting.' },
         { t: 'picture', art: 'echo', emoji: '⛰️', anim: 'float', caption: 'Like an echo: the voice comes back a moment later', say: 'Think of an echo in a valley. You shout, and the sound comes back a moment later. That small delay is the E V S.' },
         { t: 'recap', points: ['Ear = hearing. Voice = speaking. EVS = the gap between them', 'Two ways to measure: seconds and words'], say: 'Remember: ear is hearing, voice is speaking, and E V S is the gap between them.' }
       ] },
 
-    { id: 'v05', title: 'Pauses', ar: 'الوقفات الطبيعية في كلام المتحدث بتساعد المترجم، والوقفات الغريبة بتصعّب عليه.', tone: 'green', refs: { gaps: [20, 23, 24, 25, 27, 28, 29], mcq: [13, 14], essay: [2] },
+    { id: 'v05', title: "How do pauses help or hurt the interpreter?", gist: "Normal pauses help. Pauses in the wrong place make interpreting harder.", ar: 'الوقفات الطبيعية في كلام المتحدث بتساعد المترجم، والوقفات الغريبة بتصعّب عليه.', tone: 'green', refs: { gaps: [20, 23, 24, 25, 27, 28, 29], mcq: [13, 14], essay: [2] },
       scenes: [
-        { t: 'title', emoji: '⏸️', sub: 'Pauses', say: 'Video five. Pauses.' },
+        { t: 'title', emoji: '⏸️', sub: 'Pauses', say: "Video five. How do pauses help or hurt the interpreter?" },
+        { t: 'story', say: "Imagine the interpreter listening to a speech, and she must deliver it to the audience. When the speaker pauses at the end of a clause, she catches up and organizes her thoughts. But when the speaker stops in the middle of a phrase, she is left waiting, without enough information.", beats: [{"who":"speaker","text":"The minister said that the law will change.","badge":{"text":"⏸ normal","tone":"ok"}},{"who":"interp","text":"قال الوزير إن القانون سيتغير"},{"who":"note","text":"A pause in the middle of a phrase = trouble"}] },
         { t: 'def', parts: ['Pauses are ', M('interruptions in the flow of speech'), '. Silent pauses are empty gaps. Filled pauses are hesitations like uh.'], say: 'Pauses are interruptions in the flow of speech. Silent pauses are empty gaps. Filled pauses are hesitations, like uh.' },
         { t: 'chunks', words: ['The', 'minister', 'said', 'that', 'the', 'law', 'will', 'change'], groups: [], pauses: [{ after: 2, kind: 'ok', label: 'normal' }, { after: 4, kind: 'bad', label: 'unusual' }],
           say: 'Look at this sentence. A pause between clauses is normal, and it gives the interpreter time to listen, understand, and organize. But a pause in the middle of a phrase, between the and law, is unusual. It sits at an ungrammatical location.' },
@@ -65,9 +73,10 @@
         { t: 'recap', points: ['Normal pauses = help', 'Unusual pauses = difficulty', 'Same pause positions = structural correspondence'], say: 'Remember: normal pauses help, unusual pauses make it difficult.' }
       ] },
 
-    { id: 'v06', title: 'Segmentation and chunking', ar: 'التقسيم = تقطيع الكلام لوحدات ليها معنى عشان تفهمها وتحفظها.', tone: 'amber', refs: { gaps: [2, 3, 10, 50, 51, 52, 56, 76, 77], mcq: [2, 3, 6], essay: [11, 12] },
+    { id: 'v06', title: "What are segmentation and chunking?", gist: "Cutting speech into small meaningful pieces to understand and remember it.", ar: 'التقسيم = تقطيع الكلام لوحدات ليها معنى عشان تفهمها وتحفظها.', tone: 'amber', refs: { gaps: [2, 3, 10, 50, 51, 52, 56, 76, 77], mcq: [2, 3, 6], essay: [11, 12] },
       scenes: [
-        { t: 'title', emoji: '🍕', sub: 'Segmentation and chunking', say: 'Video six. Segmentation and chunking.' },
+        { t: 'title', emoji: '🍕', sub: 'Segmentation and chunking', say: "Video six. What are segmentation and chunking?" },
+        { t: 'story', say: "A speaker delivers one long sentence. The interpreter cannot hold all of it in her head. So she cuts it into small pieces, understands each piece, and speaks piece by piece.", beats: [{"who":"speaker","text":"The delegates agreed to postpone the vote until next week."},{"who":"note","text":"Chunk 1 | Chunk 2 | Chunk 3"},{"who":"interp","text":"اتفق المندوبون … على تأجيل التصويت … إلى الأسبوع المقبل"}] },
         { t: 'def', parts: ['Segmentation means ', M('dividing speech into smaller meaningful units'), ', called chunks, that are easier to process.'], say: 'Segmentation means dividing speech into smaller meaningful units, called chunks, that are easier to process.' },
         { t: 'chunks', words: ['The', 'delegates', 'agreed', 'to', 'postpone', 'the', 'vote', 'until', 'next', 'week'], groups: [{ from: 0, to: 2, label: 'Chunk 1', cls: 'a' }, { from: 3, to: 6, label: 'Chunk 2', cls: 'b' }, { from: 7, to: 9, label: 'Chunk 3', cls: 'c' }], pauses: [],
           say: 'A long sentence arrives. The interpreter does not process it all at once. They cut it into meaningful chunks, understand each one, and keep it in memory.' },
@@ -77,9 +86,10 @@
         { t: 'recap', points: ['Segmentation = Divide + Understand + Remember', 'Chunking helps memory storage'], say: 'Remember: divide, understand, remember.' }
       ] },
 
-    { id: 'v07', title: 'Propositional meaning unit and predicate', ar: 'الوحدة المعنوية الكاملة = مركب اسمي + مركب فعلي (المسند).', tone: 'purple', refs: { gaps: [11, 12, 53, 68], mcq: [7], essay: [7] },
+    { id: 'v07', title: "What is a propositional meaning unit?", gist: "A complete idea: a noun phrase plus a verb phrase (the predicate).", ar: 'الوحدة المعنوية الكاملة = مركب اسمي + مركب فعلي (المسند).', tone: 'purple', refs: { gaps: [11, 12, 53, 68], mcq: [7], essay: [7] },
       scenes: [
-        { t: 'title', emoji: '🧩', sub: 'Propositional meaning unit', say: 'Video seven. The propositional meaning unit, and the predicate.' },
+        { t: 'title', emoji: '🧩', sub: 'Propositional meaning unit', say: "Video seven. What is a propositional meaning unit?" },
+        { t: 'story', say: "The interpreter hears: the delegates. She waits. Who did what? Only when she hears: agreed to postpone the vote, does she have a complete idea, and she starts speaking.", beats: [{"who":"speaker","text":"The delegates … (who?)"},{"who":"note","text":"Waiting for the predicate"},{"who":"speaker","text":"… agreed to postpone the vote."},{"who":"interp","text":"اتفق المندوبون على تأجيل التصويت"}] },
         { t: 'def', parts: ['A complete predicative expression is a ', M('noun phrase'), ' followed by a ', M('verb phrase'), ', which is the predicate.'], say: 'A complete predicative expression is a noun phrase followed by a verb phrase. The verb phrase is called the predicate.' },
         { t: 'chunks', words: ['The', 'interpreter', 'understands', 'the', 'message'], groups: [{ from: 0, to: 1, label: 'Noun phrase: who', cls: 'a' }, { from: 2, to: 4, label: 'Verb phrase = predicate: what happens', cls: 'b' }], pauses: [],
           say: 'In this sentence, the interpreter is the noun phrase. It says who. Understands the message is the verb phrase, the predicate. It says what happens. You need both pieces for a complete unit.' },
@@ -87,19 +97,131 @@
         { t: 'recap', points: ['Complete unit = noun phrase + verb phrase', 'The predicate is the verb phrase', 'EVS units contain at least a complete predicative expression'], say: 'Remember: noun phrase plus verb phrase makes a complete unit.' }
       ] },
 
-    { id: 'v08', title: 'Syntactic, not lexical', ar: 'وحدات EVS مبنية على تركيب الجملة (syntactic) مش على الكلمات المفردة (lexical).', tone: 'blue', refs: { gaps: [8, 9], mcq: [5], essay: [] },
-      scenes: [
-        { t: 'title', emoji: '🧱', sub: 'Syntactic and lexical', say: 'Video eight. Syntactic, not lexical.' },
-        { t: 'compare', left: { emoji: '🏗️', title: 'Syntactic', items: ['About sentence structure', 'Phrases, like noun phrase and verb phrase'] }, right: { emoji: '🔤', title: 'Lexical', items: ['About individual words', 'Single words, one by one'] },
-          say: 'Syntactic means about sentence structure. Lexical means about individual words.' },
-        { t: 'def', parts: ['Goldman-Eisler found that EVS units are ', M('syntactic in nature, not lexical'), '.'], say: 'In Goldman-Eisler\'s study, six professional interpreters interpreted short speeches. She found that E V S units are syntactic in nature, not lexical.' },
-        { t: 'picture', emoji: '🧱', anim: 'slice', caption: 'Not single bricks, but the shape of the wall', say: 'Think of a wall. Lexical is looking at single bricks. Syntactic is looking at how the bricks form the wall. Interpreters process the wall.' },
-        { t: 'recap', points: ['EVS units are syntactic', 'Not mainly lexical'], say: 'Remember: syntactic, structure. Lexical, single words.' }
-      ] },
+    {
+      "id": "v08",
+      "title": "What do syntactic and lexical mean?",
+      "gist": "Syntactic = sentence structure. Lexical = single words. EVS units are syntactic.",
+      "ar": "syntactic = تركيب الجملة (النحو)، وlexical = الكلمات المفردة (المعجم). ووحدات EVS تركيبية مش معجمية.",
+      "tone": "blue",
+      "refs": {
+        "gaps": [
+          8,
+          9
+        ],
+        "mcq": [
+          5
+        ],
+        "essay": []
+      },
+      "scenes": [
+        {
+          "t": "title",
+          "emoji": "🧱",
+          "sub": "Syntactic and lexical",
+          "say": "Video eight. What do syntactic and lexical mean?"
+        },
+        {
+          "t": "def",
+          "parts": [
+            "Syntactic comes from ",
+            {
+              "m": "syntax"
+            },
+            ": how words are put together into phrases and sentences. Lexical comes from ",
+            {
+              "m": "lexicon"
+            },
+            ": the words themselves."
+          ],
+          "say": "Syntactic comes from syntax, which means how words are put together into phrases and sentences. Lexical comes from lexicon, which means the vocabulary: the words themselves."
+        },
+        {
+          "t": "chunks",
+          "words": [
+            "The",
+            "committee",
+            "approved",
+            "the",
+            "plan"
+          ],
+          "groups": [
+            {
+              "from": 0,
+              "to": 1,
+              "label": "Noun phrase",
+              "cls": "a"
+            },
+            {
+              "from": 2,
+              "to": 4,
+              "label": "Verb phrase",
+              "cls": "b"
+            }
+          ],
+          "pauses": [],
+          "say": "Look at this sentence. Lexical looks at one word at a time: committee, approved, plan. Syntactic looks at the structure: the committee, a noun phrase, and approved the plan, a verb phrase."
+        },
+        {
+          "t": "story",
+          "say": "Researchers asked: when does the interpreter start speaking? After every single word? No. She waits for a structure, a complete phrase, not just one word.",
+          "beats": [
+            {
+              "who": "speaker",
+              "text": "The … committee … approved … the plan."
+            },
+            {
+              "who": "note",
+              "text": "She waits for a whole phrase, not one word"
+            },
+            {
+              "who": "interp",
+              "text": "وافقت اللجنة على الخطة"
+            }
+          ]
+        },
+        {
+          "t": "compare",
+          "left": {
+            "emoji": "🔤",
+            "title": "Lexical unit",
+            "items": [
+              "One word, like \"committee\"",
+              "About vocabulary"
+            ]
+          },
+          "right": {
+            "emoji": "🏗️",
+            "title": "Syntactic unit",
+            "items": [
+              "A structure, like \"the committee approved the plan\"",
+              "About grammar: noun phrase + verb phrase"
+            ]
+          },
+          "say": "In Goldman-Eisler's study, six professional interpreters interpreted short speeches. She found that E V S units are syntactic in nature, not lexical. Interpreters work with structures, not single words."
+        },
+        {
+          "t": "picture",
+          "emoji": "🧱",
+          "anim": "slice",
+          "caption": "Not single bricks, but the shape of the wall",
+          "say": "Think of a wall. Lexical is looking at single bricks. Syntactic is looking at how the bricks are built into the wall."
+        },
+        {
+          "t": "recap",
+          "points": [
+            "Syntactic = structure (syntax)",
+            "Lexical = single words (lexicon)",
+            "EVS units are syntactic, not lexical"
+          ],
+          "say": "Remember: syntactic means structure. Lexical means single words. E V S units are syntactic."
+        }
+      ]
+    },
 
-    { id: 'v09', title: 'Shadowing', ar: 'الـ shadowing = ترديد الكلام فورًا بنفس اللغة من غير ترجمة.', tone: 'green', refs: { gaps: [70, 71, 72], mcq: [], essay: [8] },
+    { id: 'v09', title: "What is shadowing?", gist: "Repeating the speaker word for word, in the same language.", ar: 'الـ shadowing = ترديد الكلام فورًا بنفس اللغة من غير ترجمة.', tone: 'green', refs: { gaps: [70, 71, 72], mcq: [], essay: [8] },
       scenes: [
-        { t: 'title', emoji: '🦜', sub: 'Shadowing', say: 'Video nine. Shadowing.' },
+        { t: 'title', emoji: '🦜', sub: 'Shadowing', say: "Video nine. What is shadowing?" },
+        { t: 'story', say: "In a training room, a student wears headphones and simply repeats every word she hears, in the same language, like an echo. There is no translating and no deep thinking. That is shadowing.", beats: [{"who":"speaker","text":"Good morning, everyone."},{"who":"interp","text":"Good morning, everyone."},{"who":"note","text":"Shadowing: same language, just repeat"}] },
         { t: 'def', parts: ['Shadowing is the ', M('immediate verbatim repetition'), ' of the input, in the ', M('same language'), '.'], say: 'Shadowing is the immediate, word for word repetition of the input, in the same language.' },
         { t: 'compare', left: { emoji: '🦜', title: 'Shadowing', items: ['Repeat the words', 'Same language', 'Shorter lag: about 3 words'] }, right: { emoji: '🧠', title: 'Interpreting', items: ['Understand + translate', 'Another language', 'Longer lag: about 4 to 5 words'] },
           say: 'In shadowing you only repeat, in the same language. In interpreting, you understand and translate into another language. Treisman found that the lag is longer in interpreting, about four to five words, than in shadowing, about three words.' },
@@ -107,9 +229,10 @@
         { t: 'recap', points: ['Shadowing = Repeat', 'Interpreting = Understand + Translate', 'Interpreting needs more mental effort'], say: 'Remember: shadowing is repeat. Interpreting is understand and translate.' }
       ] },
 
-    { id: 'v10', title: 'Cognitive load', ar: 'الحمل المعرفي = كمية الجهد الذهني، وكل ما زاد زادت الأخطاء وقلّت الطلاقة.', tone: 'amber', refs: { gaps: [69, 73, 74], mcq: [], essay: [9, 10] },
+    { id: 'v10', title: "What is cognitive load?", gist: "How much mental effort interpreting takes.", ar: 'الحمل المعرفي = كمية الجهد الذهني، وكل ما زاد زادت الأخطاء وقلّت الطلاقة.', tone: 'amber', refs: { gaps: [69, 73, 74], mcq: [], essay: [9, 10] },
       scenes: [
-        { t: 'title', emoji: '🎒', sub: 'Cognitive load', say: 'Video ten. Cognitive load.' },
+        { t: 'title', emoji: '🎒', sub: 'Cognitive load', say: "Video ten. What is cognitive load?" },
+        { t: 'story', say: "Now imagine the booth when the speaker talks fast about a very difficult topic. The interpreter must listen, understand, remember, translate, and speak, all at once. Her brain is working very hard.", beats: [{"who":"speaker","text":"Inflation, tariffs and fiscal policy…","badge":{"text":"fast!","tone":"bad"}},{"who":"interp","text":"Hmm… 😓"},{"who":"note","text":"High cognitive load"}] },
         { t: 'def', parts: ['Cognitive load is the ', M('amount of mental effort'), ' needed during interpreting.'], say: 'Cognitive load is the amount of mental effort needed during interpreting.' },
         { t: 'steps', items: [{ emoji: '👂', text: 'Listen' }, { emoji: '💡', text: 'Understand' }, { emoji: '🧠', text: 'Remember' }, { emoji: '🔁', text: 'Translate' }, { emoji: '🗣️', text: 'Speak' }, { emoji: '⚖️', text: 'Keep making decisions' }],
           say: 'The interpreter must listen, understand, remember, translate, and speak, all at once, and keep making decisions. All of this is cognitive activity, and it can make the time lag longer.' },
@@ -117,18 +240,19 @@
         { t: 'recap', points: ['Cognitive load = mental effort', 'High load = more mistakes + less fluency'], say: 'Remember: high load means more mistakes and less fluency.' }
       ] },
 
-    { id: 'v11', title: 'Source and target', ar: 'المصدر = كلام المتحدث (input)، والهدف = ترجمة المترجم (output).', tone: 'purple', refs: { gaps: [26, 57, 58, 59], mcq: [], essay: [20] },
+    { id: 'v11', title: "What do source and target mean?", gist: "Source = the original speech (SL, input). Target = the interpretation (TL, output).", ar: 'المصدر = كلام المتحدث (input)، والهدف = ترجمة المترجم (output).', tone: 'purple', refs: { gaps: [26, 57, 58, 59], mcq: [], essay: [20] },
       scenes: [
-        { t: 'title', emoji: '📮', sub: 'Source and target', say: 'Video eleven. Source and target.' },
+        { t: 'title', emoji: '📮', sub: 'Source and target', say: "Video eleven. What do source and target mean?" },
+        { t: 'story', say: "The speaker's language is the source. The audience's language is the target. The message travels from the source to the target, through the interpreter.", beats: [{"who":"speaker","text":"SOURCE: the original speech, in English"},{"who":"interp","text":"TARGET: the interpretation, in Arabic"},{"who":"note","text":"Input → Interpreter → Output"}] },
         { t: 'compare', left: { emoji: '🎤', title: 'Source', items: ['The original speaker', 'The input', 'Source language, SL'] }, right: { emoji: '🎧', title: 'Target', items: ['The interpreter', 'The output', 'Target language, TL'] },
           say: 'The source is the original speaker, and the original message. It is the input, in the source language, S L. The target is the interpreter, and the translated message. It is the output, in the target language, T L.' },
         { t: 'picture', emoji: '📮', anim: 'float', caption: 'The sender is the source, the receiver is the target', say: 'Think of a letter. The sender is the source. The receiver is the target. In Gerver\'s study, the source was French and the target was English.' },
         { t: 'recap', points: ['Source = input = SL', 'Target = output = TL'], say: 'Remember: source is input, target is output.' }
       ] },
 
-    { id: 'v12', title: 'Bilingual, balanced and dominant', ar: 'ثنائي اللغة المتوازن = مستوى متساوي في اللغتين، والمهيمن = أقوى في لغة.', tone: 'green', refs: { gaps: [30, 31, 47, 48, 49, 80], mcq: [15, 19], essay: [13, 18] },
+    { id: 'v12', title: "What are balanced and dominant bilinguals?", gist: "Balanced = equally strong in both languages. Dominant = one language is stronger.", ar: 'ثنائي اللغة المتوازن = مستوى متساوي في اللغتين، والمهيمن = أقوى في لغة.', tone: 'green', refs: { gaps: [30, 31, 47, 48, 49, 80], mcq: [15, 19], essay: [13, 18] },
       scenes: [
-        { t: 'title', emoji: '⚖️', sub: 'Bilingual, balanced, dominant', say: 'Video twelve. Bilingual, balanced, and dominant.' },
+        { t: 'title', emoji: '⚖️', sub: 'Bilingual, balanced, dominant', say: "Video twelve. What are balanced and dominant bilinguals?" },
         { t: 'def', parts: ['A ', M('bilingual'), ' is a person who speaks two languages. How good they are in each is called proficiency.'], say: 'A bilingual is a person who speaks two languages. How good they are in each language is called proficiency.' },
         { t: 'compare', left: { emoji: '⚖️', title: 'Balanced bilingual', items: ['Equal proficiency', 'Both languages at the same level'] }, right: { emoji: '🏋️', title: 'Dominant bilingual', items: ['One language is stronger', 'The other is weaker'] },
           say: 'A balanced bilingual has almost equal proficiency in both languages. A dominant bilingual is stronger in one language than in the other. Interpreters need a high level in both the source and the target language.' },
@@ -136,27 +260,27 @@
         { t: 'recap', points: ['Balanced = Equal', 'Dominant = One is stronger', 'Interpreters need high proficiency in SL and TL'], say: 'Remember: balanced is equal. Dominant is one stronger.' }
       ] },
 
-    { id: 'v13', title: 'Natural translation', ar: 'أي ثنائي اللغة عنده قدرة طبيعية على الترجمة من غير تدريب متخصص (هاريس 1977).', tone: 'amber', refs: { gaps: [32, 33], mcq: [], essay: [14] },
+    { id: 'v13', title: "What is natural translation?", gist: "Translating without any training, just because you know two languages (Harris, 1977).", ar: 'أي ثنائي اللغة عنده قدرة طبيعية على الترجمة من غير تدريب متخصص (هاريس 1977).', tone: 'amber', refs: { gaps: [32, 33], mcq: [], essay: [14] },
       scenes: [
-        { t: 'title', emoji: '👧', sub: 'Natural translation / interpreting', say: 'Video thirteen. Natural translation and interpreting.' },
+        { t: 'title', emoji: '👧', sub: 'Natural translation / interpreting', say: "Video thirteen. What is natural translation?" },
         { t: 'def', parts: ['Harris said any bilingual has a ', M('natural ability to translate'), ' without receiving specialized training.'], say: 'Harris, in 1977, said that any bilingual has a natural ability to translate, without receiving any specialized training.' },
         { t: 'compare', left: { emoji: '👧', title: 'Natural interpreting', items: ['No special training', 'Comes from knowing two languages'] }, right: { emoji: '🎓', title: 'Professional interpreting', items: ['Trained skills and strategies', 'Works under time pressure'] },
           say: 'Think of a child who helps a grandparent talk to a doctor. That is natural interpreting. Professional interpreting adds training, skills, and strategies.' },
         { t: 'recap', points: ['Natural translation = Bilingualism + natural ability − specialized training'], say: 'Remember: bilingualism, plus natural ability, minus specialized training.' }
       ] },
 
-    { id: 'v14', title: 'What affects proficiency in a second language', ar: 'اللي بيأثر على مستواك في اللغة التانية: سن الاكتساب، الدافع، الشخصية، وقرب اللغات.', tone: 'green', refs: { gaps: [34, 35, 36], mcq: [], essay: [15] },
+    { id: 'v14', title: "What affects proficiency in a second language?", gist: "Age of acquisition, motivation, personality and how close the languages are.", ar: 'اللي بيأثر على مستواك في اللغة التانية: سن الاكتساب، الدافع، الشخصية، وقرب اللغات.', tone: 'green', refs: { gaps: [34, 35, 36], mcq: [], essay: [15] },
       scenes: [
-        { t: 'title', emoji: '🌱', sub: 'Factors of proficiency', say: 'Video fourteen. What affects proficiency in a second language.' },
+        { t: 'title', emoji: '🌱', sub: 'Factors of proficiency', say: "Video fourteen. What affects proficiency in a second language?" },
         { t: 'steps', items: [{ emoji: '🎂', text: 'Age of acquisition' }, { emoji: '🔥', text: 'Motivation' }, { emoji: '🎭', text: 'Personality' }, { emoji: '🧭', text: 'Closeness of the two languages' }],
           say: 'According to the course book, being proficient in a second language depends on the age of acquisition, motivation, personality, and how close the languages involved are. Your essay answer also mentions language exposure.' },
         { t: 'picture', art: 'plant', emoji: '🌱', anim: 'grow', caption: 'Start early, keep it watered, and it grows', say: 'Learning a language is like growing a plant. Starting early, staying motivated, and plenty of exposure help it grow.' },
         { t: 'recap', points: ['Age + Motivation + Personality + (closeness / exposure)'], say: 'Remember: age, motivation, personality.' }
       ] },
 
-    { id: 'v15', title: 'Language interference', ar: 'التداخل اللغوي = لغة بتأثر على التانية، حتى لو مستواك عالي.', tone: 'purple', refs: { gaps: [37, 38, 39], mcq: [16], essay: [16] },
+    { id: 'v15', title: "What is language interference?", gist: "When one language affects the other.", ar: 'التداخل اللغوي = لغة بتأثر على التانية، حتى لو مستواك عالي.', tone: 'purple', refs: { gaps: [37, 38, 39], mcq: [16], essay: [16] },
       scenes: [
-        { t: 'title', emoji: '🙈', sub: 'Language interference', say: 'Video fifteen. Language interference.' },
+        { t: 'title', emoji: '🙈', sub: 'Language interference', say: "Video fifteen. What is language interference?" },
         { t: 'def', parts: ['Language interference happens when ', M('one language influences another'), '.'], say: 'Language interference happens when one language influences another.' },
         { t: 'steps', items: [{ emoji: '🆕', text: 'A learner meets a new word in the second language, L2' }, { emoji: '🔗', text: 'They link it to a concept through their first language, L1' }, { emoji: '🔍', text: 'Later they see how much the concepts really overlap' }],
           say: 'According to De Bot, it happens when second language learners meet new words and link them to concepts through their first language. Later they realize how much the concepts overlap, or do not. And even a high level of proficiency does not prevent it.' },
@@ -164,18 +288,19 @@
         { t: 'recap', points: ['One language affects another', 'Can happen even with high proficiency'], say: 'Remember: one language affects another.' }
       ] },
 
-    { id: 'v16', title: 'Psycholinguistics', ar: 'علم اللغة النفسي = دراسة العمليات العقلية والعصبية اللي بتخلّينا نكتسب اللغة.', tone: 'blue', refs: { gaps: [42, 43, 44, 45], mcq: [18], essay: [17] },
+    { id: 'v16', title: "What is psycholinguistics?", gist: "The study of language in the mind and the brain.", ar: 'علم اللغة النفسي = دراسة العمليات العقلية والعصبية اللي بتخلّينا نكتسب اللغة.', tone: 'blue', refs: { gaps: [42, 43, 44, 45], mcq: [18], essay: [17] },
       scenes: [
-        { t: 'title', emoji: '🧠', sub: 'Psycholinguistics', say: 'Video sixteen. Psycholinguistics.' },
+        { t: 'title', emoji: '🧠', sub: 'Psycholinguistics', say: "Video sixteen. What is psycholinguistics?" },
         { t: 'def', parts: ['The study of the ', M('mental and cognitive processes'), ' and the ', M('neural mechanisms'), ' that let a person acquire one or more languages.'], say: 'Psycholinguistics studies the mental and cognitive processes, and the neural mechanisms, that let a person acquire one or more languages. The study of bilingualism belongs to it.' },
         { t: 'steps', items: [{ emoji: '💭', text: 'Mental / cognitive processes: how the mind works with language' }, { emoji: '🧬', text: 'Neural mechanisms: how the brain does it' }, { emoji: '📚', text: 'Language acquisition: learning one or more languages' }], say: 'It asks how the mind understands and produces language, how the brain works during language activities, and how people learn one or more languages.' },
         { t: 'picture', emoji: '🛋️', anim: 'bounce', caption: 'Language on the therapist\'s couch: language + mind + brain', say: 'Imagine language on a therapist\'s couch. Psycholinguistics is language, plus mind, plus brain.' },
         { t: 'recap', points: ['Psycholinguistics = Language + Mind + Brain', 'Bilingualism belongs to psycholinguistics'], say: 'Remember: language, mind, and brain.' }
       ] },
 
-    { id: 'v17', title: 'Interpreter vs normal bilingual', ar: 'المترجم الفوري مش مجرد ثنائي اللغة: لازم يفهم وينتج بسرعة وتحت ضغط.', tone: 'amber', refs: { gaps: [40, 41, 46, 78], mcq: [17], essay: [19] },
+    { id: 'v17', title: "How is an interpreter different from a normal bilingual?", gist: "Interpreters must understand and speak at the same time, under pressure.", ar: 'المترجم الفوري مش مجرد ثنائي اللغة: لازم يفهم وينتج بسرعة وتحت ضغط.', tone: 'amber', refs: { gaps: [40, 41, 46, 78], mcq: [17], essay: [19] },
       scenes: [
-        { t: 'title', emoji: '🏎️', sub: 'Interpreter vs normal bilingual', say: 'Video seventeen. Interpreter versus normal bilingual.' },
+        { t: 'title', emoji: '🏎️', sub: 'Interpreter vs normal bilingual', say: "Video seventeen. How is an interpreter different from a normal bilingual?" },
+        { t: 'story', say: "Ahmed speaks Arabic and English perfectly at home. But put him in the booth, and he must understand one language while speaking another, under pressure, for an hour. That is a different skill from simply being bilingual.", beats: [{"who":"speaker","text":"Talking at normal speed for an hour…"},{"who":"interp","text":"Understand + remember + speak!"},{"who":"note","text":"Interpreters do more than speak two languages"}] },
         { t: 'def', parts: ['Interpreters need ', M('perceptive skills'), ' (understanding language) and ', M('productive skills'), ' (producing it).'], say: 'Interpreters need perceptive skills, which means understanding language, and productive skills, which means producing it.' },
         { t: 'compare', left: { emoji: '🚗', title: 'Normal bilingual', items: ['Knows two languages', 'May understand but not produce'] }, right: { emoji: '🏎️', title: 'Simultaneous interpreter', items: ['Productive and close to balanced', 'Listens, understands, remembers, speaks', 'Understands one language while speaking another'] },
           say: 'A normal bilingual knows two languages, but may understand without producing. A simultaneous interpreter is productive and close to balanced, and must understand one language while speaking another, under time pressure.' },
@@ -183,18 +308,19 @@
         { t: 'recap', points: ['Interpreters do more than speak two languages'], say: 'Remember: interpreters do more than speak two languages.' }
       ] },
 
-    { id: 'v18', title: 'Simultaneous, early sequential and late bilinguals', ar: 'الثنائي المبكر (early sequential) اتعرّض للغتين من الولادة، والمتأخر اتعلّم التانية بعد الأولى.', tone: 'green', refs: { gaps: [79], mcq: [], essay: [] },
+    { id: 'v18', title: "What are early sequential and late bilinguals?", gist: "Early sequential = both languages from birth. Late = the second language later in life.", ar: 'الثنائي المبكر (early sequential) اتعرّض للغتين من الولادة، والمتأخر اتعلّم التانية بعد الأولى.', tone: 'green', refs: { gaps: [79], mcq: [], essay: [] },
       scenes: [
-        { t: 'title', emoji: '⏳', sub: 'When bilinguals learn their languages', say: 'Video eighteen. Simultaneous, early sequential, and late bilinguals.' },
+        { t: 'title', emoji: '⏳', sub: 'When bilinguals learn their languages', say: "Video eighteen. What are early sequential and late bilinguals?" },
         { t: 'steps', items: [{ emoji: '👶', text: 'Simultaneous bilingual' }, { emoji: '🍼', text: 'Early sequential: exposed to the two languages from birth' }, { emoji: '🧑‍🎓', text: 'Late bilingual: learns a second language later, after the first' }],
           say: 'According to the course book, bilinguals can be simultaneous, early sequential, meaning exposed to the two languages from birth, or late, meaning they learn a second language later in life, after the first one.' },
         { t: 'def', parts: ['All ages of first exposure ', M('may lead to balanced bilingualism'), ' with a high level of proficiency in both languages.'], say: 'The good news: all ages of first exposure may lead to balanced bilingualism, with a high level of proficiency in both languages.' },
         { t: 'recap', points: ['Early sequential = exposed to both languages from birth', 'Late = second language later in life'], say: 'Remember: early sequential means from birth. Late means later in life.' }
       ] },
 
-    { id: 'v19', title: 'The two classic studies', ar: 'دراستا غولدمان-أيزلر وجيرفر: مين، وإيه اللي عملوه، وإيه النتيجة.', tone: 'blue', refs: { gaps: [4, 5, 6, 7, 21, 22, 23], mcq: [4, 11, 12], essay: [] },
+    { id: 'v19', title: "The two classic studies: Goldman-Eisler and Gerver", gist: "Who they studied, what they did and what they found.", ar: 'دراستا غولدمان-أيزلر وجيرفر: مين، وإيه اللي عملوه، وإيه النتيجة.', tone: 'blue', refs: { gaps: [4, 5, 6, 7, 21, 22, 23], mcq: [4, 11, 12], essay: [] },
       scenes: [
-        { t: 'title', emoji: '🔬', sub: 'Goldman-Eisler and Gerver', say: 'Video nineteen. The two classic studies.' },
+        { t: 'title', emoji: '🔬', sub: 'Goldman-Eisler and Gerver', say: "Video nineteen. The two classic studies: Goldman-Eisler and Gerver" },
+        { t: 'story', say: "Picture Gerver's experiment: students in booths listen to a recorded French speech and interpret it into English. Before that, Goldman-Eisler asked six professional interpreters to interpret short speeches of three to six minutes.", beats: [{"who":"speaker","text":"Un discours en français…"},{"who":"interp","text":"A speech in English…"},{"who":"note","text":"Goldman-Eisler: 6 interpreters · Gerver: French into English"}] },
         { t: 'compare', left: { emoji: '👩‍🏫', title: 'Goldman-Eisler', items: ['Six professional interpreters', 'Short speeches, 3 to 6 minutes', 'Several language pairs', 'EVS units are syntactic'] }, right: { emoji: '🇫🇷', title: 'Gerver', items: ['Students interpreting pre-recorded French into English', 'Pauses over 0.25 seconds removed', 'Interpreters paused where the speaker paused'] },
           say: 'Goldman-Eisler studied six professional interpreters, who interpreted short speeches of three to six minutes, in several language pairs. She found that E V S units are syntactic. Gerver had students interpret pre-recorded French speech into English, after removing pauses longer than a quarter of a second. Their pauses fell in the same places as the speaker\'s.' },
         { t: 'picture', emoji: '🔬', anim: 'bounce', caption: 'Goldman-Eisler: 6 interpreters. Gerver: French into English', say: 'To remember: Goldman-Eisler, six interpreters. Gerver served French, and the students replied in English.' },

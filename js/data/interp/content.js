@@ -18,7 +18,7 @@
     ['syntactic', 'lexical'],
     ['native', 'english', 'french'],
     ['proficiency', 'performance'],
-    ['evs', 'lag', 'time delay'],
+    ['evs', 'lag', 'time delay', 'decalage'],
     ['units', 'constituents', 'positions'],
     ['bilingual', 'bilinguals', 'balanced', 'dominant']
   ];

@@ -36,10 +36,10 @@ ok('Subject is registered with 80 fill-in-the-gap items in 5 topics', () => {
 ok('Source answers are kept exactly as supplied (spot checks)', () => {
   const a = i => UN.gaps[i - 1].answer;
   assert.strictEqual(a(1), 'Comprehension'); assert.strictEqual(a(8), 'Syntactic'); assert.strictEqual(a(16), 'EVS');
-  assert.strictEqual(a(23), 'Removed'); assert.strictEqual(a(48), 'Balanced'); assert.strictEqual(a(61), 'Time delay');
-  assert.strictEqual(a(64), '2 seconds'); assert.strictEqual(a(65), '6 seconds'); assert.strictEqual(a(66), 'Source-language');
+  assert.strictEqual(a(23), 'Removed'); assert.strictEqual(a(48), 'Balanced'); assert.strictEqual(a(61), 'Décalage');
+  assert.strictEqual(a(64), '2 seconds'); assert.strictEqual(a(65), '10 seconds'); assert.strictEqual(a(66), 'Source-language');
   assert.strictEqual(a(72), 'Longer'); assert.strictEqual(a(79), 'Early'); assert.strictEqual(a(80), 'Performance');
-  assert.ok(/inconsistent/.test(UN.gaps[78].note));
+  assert.ok(/early sequential/i.test(UN.gaps[78].note));
 });
 
 ok('Typed answers: exact, case, plural, "the", listed alternatives; wrong answers rejected', () => {
@@ -58,7 +58,11 @@ ok('Typed answers: exact, case, plural, "the", listed alternatives; wrong answer
   assert.strictEqual(UN.gen.grade(UN.gen.make('G64', 'type-gap'), 'two'), 1);
   assert.strictEqual(UN.gen.grade(UN.gen.make('G64', 'type-gap'), '6'), 0);
   assert.strictEqual(UN.gen.grade(UN.gen.make('G66', 'type-gap'), 'source language'), 1);
-  assert.strictEqual(UN.gen.grade(UN.gen.make('G79', 'type-gap'), 'simultaneous'), 1);
+  assert.strictEqual(UN.gen.grade(UN.gen.make('G79', 'type-gap'), 'early'), 1);
+  assert.strictEqual(UN.gen.grade(UN.gen.make('G79', 'type-gap'), 'simultaneous'), 0, 'the book says early sequential');
+  ['Décalage', 'decalage', 'time delay'].forEach(x => assert.strictEqual(UN.gen.grade(UN.gen.make('G61', 'type-gap'), x), 1, 'G61 ' + x));
+  assert.strictEqual(UN.gen.grade(UN.gen.make('G65', 'type-gap'), 'ten'), 1);
+  assert.strictEqual(UN.gen.grade(UN.gen.make('G65', 'type-gap'), '6 seconds'), 0);
 });
 
 ok('Multiple choice: 4 distinct options, one correct, no clashing distractors, a/an fits, no numbers as distractors', () => {
@@ -240,8 +244,9 @@ ok('Typos: a small spelling slip still counts; short or different words do not',
   all.forEach(a => all.forEach(b => { if (a !== b && a.replace(/s$/, '') !== b.replace(/s$/, '')) assert.ok(!UN.check.nearMiss(a, b, false), a + ' / ' + b); }));
 });
 
+function sc0(v) { return v.scenes[0]; }
 ok('Videos: 19 short explainers with valid scenes, narration and question links; every question is explained somewhere', () => {
-  const V = UN.videos, TYPES = ['title', 'def', 'lanes', 'chunks', 'compare', 'steps', 'picture', 'recap'];
+  const V = UN.videos, TYPES = ['title', 'def', 'lanes', 'chunks', 'compare', 'steps', 'picture', 'recap', 'story'];
   assert.strictEqual(V.length, 19);
   assert.strictEqual(new Set(V.map(v => v.id)).size, 19);
   V.forEach((v, i) => {
@@ -257,7 +262,10 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
       if (sc.t === 'picture') assert.ok(sc.caption && (sc.emoji || sc.art));
       if (sc.t === 'compare') assert.ok(sc.left.items.length && sc.right.items.length);
     });
-    assert.ok(words >= 50 && words <= 200, v.id + ' total narration ' + words);
+    assert.ok(words >= 50 && words <= 240, v.id + ' total narration ' + words);
+    assert.ok(v.gist && /\?$|:/.test(v.title) || v.id === 'v19', v.id + ' title should be a clear question');
+    if (sc0(v).say.indexOf('Video ') !== 0) assert.fail(v.id + ' title narration');
+    (v.scenes.filter(s => s.t === 'story')).forEach(s => s.beats.forEach(b => assert.ok(['speaker', 'interp', 'audience', 'note'].indexOf(b.who) !== -1 && b.text, v.id + ' story beat')));
     v.refs.gaps.forEach(n => assert.ok(n >= 1 && n <= 80)); v.refs.mcq.forEach(n => assert.ok(n >= 1 && n <= 20)); v.refs.essay.forEach(n => assert.ok(n >= 1 && n <= 20));
   });
   const cov = { gaps: new Set(), mcq: new Set(), essay: new Set() };

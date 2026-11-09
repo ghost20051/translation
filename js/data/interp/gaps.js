@@ -1,7 +1,7 @@
 /*
  * Simultaneous Interpretation: 80 fill-in-the-gap questions with answers and explanations, exactly as supplied.
  * Line format:  group | answer | other accepted answers separated by ";" | question (__ marks the gap) | explanation
- * Question 79 is flagged by its source as inconsistent: the supplied answer is kept and the explanation says so.
+ * Questions 61, 65 and 79 follow the course book where it differs from the question bank (each note says so).
  */
 (function () {
   var UN = window.UN = window.UN || {};
@@ -78,11 +78,11 @@
     'time|Target||The interpreter produces the __ output.|The target is the translated message.',
     'time|Speeches||Structural correspondence may exist between source and target __.|The original and translated speeches may have similar structures.',
     'bil|Proficiency||Effective interpreting requires both comprehension and language __.|Interpreters need understanding and strong language skills.',
-    'evs|Time delay|delay;time lag;lag|Ear-voice span (EVS) is also known as __ or time lag.|It means the delay between hearing and interpreting speech.',
+    'evs|Décalage|decalage;time delay;delay|Ear-voice span (EVS) is also known as __ or time lag.|The course book: "Ear-voice span (EVS), also known as décalage or time lag". Your question bank gave "time delay", which means the same and is also accepted.',
     'evs|Interpretation|interpreting;the interpretation|EVS refers to the interval between hearing the source speech and delivering the __.|It is the time between hearing the original and producing the translation.',
     'evs|Words||Time lag can be measured by units of time or the number of content __.|It can be measured in seconds or by counting words.',
     'evs|2 seconds|2;two;two seconds;2 sec|Paneth\'s findings showed that the average EVS ranged from __ to 4 seconds.|The reported average range was two to four seconds.',
-    'evs|6 seconds|6;six;six seconds;6 sec|According to some studies, EVS may range from 2 to __ seconds.|The time lag can vary and may reach six seconds.',
+    'evs|10 seconds|10;ten;ten seconds;10 sec|According to some studies, EVS may range from 2 to __ seconds.|The course book (Oléron and Nanpon, 1965): EVS can range from 2 to 10 seconds, depending on the languages. (Your question bank said 6; the book says 10.)',
     'evs|Source-language|source language;source;sl|An interpreter must comprehend a sufficient amount of __ information before beginning interpretation.|The interpreter needs to understand enough of the original message.',
     'evs|EVS||The position of key words may affect the length of the __.|The location of important words can affect the interpreter\'s delay.',
     'evs|Syntactic||The predicate is considered an important __ element.|The predicate is an important part of sentence structure.',
@@ -96,7 +96,7 @@
     'segm|Output||According to Pöchhacker, segmentation refers to the interpreter\'s processing of both input and __.|It involves processing the original speech and producing the translation.',
     'segm|Units||Segmentation helps decompose speech into processing-relevant __.|It divides speech into smaller parts that are easier to process.',
     'bil|Productive||Interpreters should possess both perceptive and __ language skills.|They need to understand language and produce it.',
-    'bil|Early|simultaneous|A bilingual who learns two languages from birth is described as an __ sequential bilingual.|Likely intended answer: Early. The question is technically inconsistent: learning two languages from birth is called simultaneous bilingualism, not sequential bilingualism.',
+    'bil|Early||A bilingual who learns two languages from birth is described as an __ sequential bilingual.|In the course book (De Groot, 2015), an early sequential bilingual is one exposed to the two languages from birth.',
     'bil|Performance||High proficiency in both the source language and target language is an important criterion for evaluating an interpreter\'s __.|Strong ability in both languages is essential for good interpreting.'
   ];
 

@@ -43,13 +43,64 @@
     return out;
   }
 
+  /* ---------- the conference hall used by the story scenes ---------- */
+  function T(x, y, txt, attrs) { var a = { x: x, y: y }; Object.keys(attrs || {}).forEach(function (k) { a[k] = attrs[k]; }); return sv('text', a, [document.createTextNode(txt)]); }
+  function wrap(txt, max) {
+    var out = [], line = '';
+    String(txt).split(' ').forEach(function (w) { if ((line + ' ' + w).trim().length > max && line) { out.push(line); line = w; } else line = (line + ' ' + w).trim(); });
+    if (line) out.push(line); return out;
+  }
+  // a bubble anchored at (x, y) (its top-left corner); returns [group, width, height]
+  function bubble(x, y, txt, tone, k, tail) {
+    var lines = wrap(txt, 24), w = Math.max.apply(null, lines.map(function (l) { return l.length; })) * 5.9 + 18, hh = lines.length * 13 + 10;
+    var g = sv('g', { class: 'vbub pop vbub-' + tone, style: stagger(k) }, [
+      sv('rect', { x: x, y: y, width: w, height: hh, rx: 9 }),
+      sv('path', { d: 'M' + (x + 14) + ' ' + (y + hh) + ' l6 9 l6 -9 z', transform: tail || '' })]);
+    lines.forEach(function (l, i) { g.appendChild(T(x + w / 2, y + 15 + i * 13, l, { 'text-anchor': 'middle', class: 'vbub-t' })); });
+    return g;
+  }
+  function person(cx, cy, body, hair, phones) {
+    var kids = [sv('rect', { x: cx - 13, y: cy + 14, width: 26, height: 30, rx: 9, fill: body }), sv('circle', { cx: cx, cy: cy, r: 12, fill: '#f1c27d' }), sv('path', { d: 'M' + (cx - 12) + ' ' + (cy - 2) + ' a12 12 0 0 1 24 0 q-12 -8 -24 0z', fill: hair })];
+    if (phones) kids.push(sv('path', { d: 'M' + (cx - 13) + ' ' + (cy + 2) + ' v-3 a13 13 0 0 1 26 0 v3', fill: 'none', stroke: '#fff', 'stroke-width': 3 }), sv('circle', { cx: cx - 13, cy: cy + 4, r: 4.5, fill: '#fff' }), sv('circle', { cx: cx + 13, cy: cy + 4, r: 4.5, fill: '#fff' }));
+    return sv('g', null, kids);
+  }
+  function hall(sc) {
+    var kids = [], beats = sc.beats || [], seat = ['#0ea5e9', '#f97316', '#84cc16'];
+    // floor and podium
+    kids.push(sv('rect', { x: 0, y: 206, width: 400, height: 24, fill: 'rgba(0,0,0,.22)' }));
+    kids.push(sv('path', { d: 'M18 150 h56 l-6 56 h-44 z', fill: '#8b5a2b' }));
+    kids.push(person(46, 110, '#1e3a8a', '#3b2f2f', false));
+    kids.push(sv('rect', { x: 62, y: 128, width: 3, height: 22, fill: '#cbd5e1' }), sv('circle', { cx: 63.5, cy: 126, r: 4.5, fill: '#e2e8f0' }));
+    // booth
+    kids.push(sv('rect', { x: 196, y: 62, width: 132, height: 98, rx: 10, fill: 'rgba(186,230,253,.22)', stroke: '#bae6fd', 'stroke-width': 3 }));
+    kids.push(T(262, 76, 'BOOTH', { 'text-anchor': 'middle', class: 'vtag' }));
+    kids.push(person(262, 102, '#7c3aed', '#1f2937', true));
+    kids.push(sv('rect', { x: 210, y: 140, width: 104, height: 8, rx: 3, fill: '#475569' }), sv('rect', { x: 256, y: 132, width: 3, height: 9, fill: '#cbd5e1' }), sv('circle', { cx: 257.5, cy: 130, r: 3.5, fill: '#e2e8f0' }));
+    // audience
+    [244, 286, 328].forEach(function (x, i) { kids.push(person(x, 184, seat[i], i === 1 ? '#7c2d12' : '#111827', true)); });
+    kids.push(sv('rect', { x: 0, y: 206, width: 400, height: 24, fill: 'rgba(0,0,0,.18)' }));
+    // sound flowing speaker -> booth -> audience
+    kids.push(sv('path', { d: 'M76 104 C110 84 156 84 192 100', class: 'vflow', fill: 'none' }), sv('path', { d: 'M300 162 C306 172 316 176 322 178', class: 'vflow vflow2', fill: 'none' }));
+    kids.push(sv('g', { class: 'vwaves' }, [sv('path', { d: 'M74 106 q7 8 0 16', fill: 'none' }), sv('path', { d: 'M82 100 q12 14 0 28', fill: 'none' })]));
+    // bubbles and notes
+    var pos = { speaker: [6, 6], interp: [190, 4], audience: [118, 150] }, k = 0;
+    beats.forEach(function (b) {
+      if (b.who === 'note') { var nw = Math.min(392, Math.max(150, b.text.length * 5.6 + 26)); kids.push(sv('g', { class: 'vnote pop', style: stagger(k * 1.4 + 0.2) }, [sv('rect', { x: 200 - nw / 2, y: 213, width: nw, height: 15, rx: 7.5 }), T(200, 224, b.text, { 'text-anchor': 'middle', class: 'vnote-t' })])); }
+      else { var p = pos[b.who] || pos.speaker; kids.push(bubble(p[0], p[1], b.text, b.who, k * 1.4 + 0.2, b.who === 'audience' ? '' : '')); }
+      if (b.badge) { var bx = b.who === 'interp' ? 330 : 84, by = b.who === 'interp' ? 80 : 86; kids.push(sv('g', { class: 'vbadge2 pop ' + b.badge.tone, style: stagger(k * 1.4 + 0.7) }, [sv('rect', { x: bx, y: by, width: 64, height: 16, rx: 8 }), T(bx + 32, by + 11.5, b.badge.text, { 'text-anchor': 'middle', class: 'vbadge2-t' })])); }
+      k++;
+    });
+    return sv('svg', { viewBox: '0 0 400 232', class: 'vsvg vhall', role: 'img', 'aria-label': 'An interpreter in a booth, a speaker and an audience' }, kids);
+  }
+
   /* ---------- scene renderers: each returns the scene element; --d is the scene length in seconds ---------- */
   var R = {
+    story: function (sc) { return h('div', { class: 'vs vs-story' }, hall(sc)); },
     title: function (sc, v, idx, n) {
       return h('div', { class: 'vs vs-title' },
         h('div', { class: 'vnumbadge pop', style: stagger(0) }, String(n)),
         h('div', { class: 'vbigemoji pop', style: stagger(1) }, em(sc.emoji)),
-        h('h2', { class: 'pop', style: stagger(2) }, v.title), sc.sub ? h('p', { class: 'vsub pop', style: stagger(3) }, sc.sub) : null);
+        h('h2', { class: 'pop', style: stagger(2) }, v.title), (v.gist || sc.sub) ? h('p', { class: 'vsub pop', style: stagger(3) }, v.gist || sc.sub) : null);
     },
     def: function (sc) {
       var kids = [];
@@ -102,6 +153,15 @@
       }));
     },
     picture: function (sc) {
+      var ph = sc.photo && UN.SI && UN.SI.photos ? UN.SI.photos[sc.photo] : null;
+      if (ph) {
+        // a real photo that slowly moves (pan and zoom); if the file is missing, fall back to the drawing
+        var fallback = function () { var alt = R.picture(Object.assign({}, sc, { photo: null })); fig.replaceWith(alt.firstChild); };
+        var img = h('img', { src: 'media/img/si/' + ph.file, alt: ph.title || sc.caption, loading: 'lazy' });
+        img.addEventListener('error', fallback);
+        var fig = h('figure', { class: 'vphoto pop kb-' + (sc.kb || 'in'), style: stagger(0) }, img, h('figcaption', null, (ph.by ? ph.by + ' · ' : '') + ph.license));
+        return h('div', { class: 'vs vs-picture' }, fig, h('p', { class: 'vcaption pop', style: stagger(1.5) }, sc.caption));
+      }
       var artEl = sc.art && UN.art && UN.art.scene ? UN.art.scene(sc.art) : null;
       var meter = sc.meter ? h('div', { class: 'vmeter pop', style: stagger(2) }, h('small', null, sc.meter.label),
         h('div', { class: 'vmeterbar' }, h('div', { class: 'vmeterfill', style: '--to:' + sc.meter.to + '%' }))) : null;
@@ -126,6 +186,7 @@
       if (sc.groups && sc.groups.length) sc.groups.forEach(function (g) { c.push([f(g.from * 0.7 - 0.05), 'pop']); });
       else { sc.words.forEach(function (w, j) { c.push([f(j * 0.7), 'blip']); }); (sc.pauses || []).forEach(function (p) { c.push([f(p.after * 0.7 + 0.5), p.kind === 'ok' ? 'pair' : 'miss']); }); }
     }
+    else if (sc.t === 'story') { c.push([0.02, 'whoosh']); (sc.beats || []).forEach(function (b, j) { c.push([f(j * 1.4 + 0.2) + 0.05, b.who === 'note' ? 'ding' : 'pop']); }); }
     else if (sc.t === 'compare') { c.push([f(0), 'pop'], [f(2.8), 'pop']); }
     else if (sc.t === 'steps') sc.items.forEach(function (it, j) { c.push([f(j * 1.2), 'coin']); });
     else if (sc.t === 'picture') c.push([0.05, 'boing'], [f(1.5), 'pop']);
@@ -141,7 +202,7 @@
       var tl = timeline(v), first = v.scenes[0];
       grid.appendChild(h('a', { class: 'card vcardlink tone-' + v.tone, href: '#/video/' + v.id },
         h('span', { class: 'vlnum' }, String(i + 1)), h('span', { class: 'vlemoji' }, em(first.emoji)),
-        h('span', { class: 'vltxt' }, h('b', null, v.title), h('small', { class: 'muted' }, fmt(tl.total) + ' · ' + t('vid.scenes', { n: v.scenes.length }))),
+        h('span', { class: 'vltxt' }, h('b', null, v.title), v.gist ? h('small', { class: 'vlgist' }, v.gist) : null, h('small', { class: 'muted' }, fmt(tl.total) + ' · ' + t('vid.scenes', { n: v.scenes.length }))),
         ic('play-circle', 'vlplay')));
     });
     page.appendChild(grid);
