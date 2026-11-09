@@ -257,7 +257,7 @@
     page.appendChild(h('p', { class: 'muted' }, t('vid.note')));
     var P = (UN.SI && UN.SI.photos) || {};
     if (Object.keys(P).length) page.appendChild(h('details', { class: 'card vcredits' }, h('summary', null, t('vid.credits')),
-      h('ul', null, Object.keys(P).map(function (k) { var p = P[k]; return h('li', null, h('a', { href: p.source, target: '_blank', rel: 'noopener noreferrer' }, p.title), ' · ' + p.by + ' · ' + p.license + ' · Wikimedia Commons'); }))));
+      h('ul', null, Object.keys(P).map(function (k) { var p = P[k]; return h('li', null, h('a', { href: p.source, target: '_blank', rel: 'noopener noreferrer' }, p.title), ' · ' + p.by + ' · ' + p.license + ' · Wikimedia Commons' + (p.clip ? ' · moving clip made from this photo with Google Flow (AI)' : '')); }))));
     return page;
   };
 

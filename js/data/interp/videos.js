@@ -12,23 +12,23 @@
 
   // Real photos used as memory pictures: { id: { file, title, by, license, source } }. Empty until photos are added.
   SI.photos = {
-    conference: {"file":"conference.jpg","title":"Hearing of Commissioner-designate Thierry Breton (cropped)","by":"European Parliament","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Hearing_of_Commissioner-designate_Thierry_Breton_(49068586441).jpg"},
-    pizza: {"file":"pizza.jpg","title":"Pizza (edited: a glass removed)","by":"igorovsyannykov","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Pizza-3007395.jpg"},
-    traffic: {"file":"traffic.jpg","title":"LED traffic light on red","by":"Kevin Payravi","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:LED_traffic_light_on_red.jpg"},
-    lightning: {"file":"lightning.jpg","title":"Lightning strike in the evening","by":"Валерия Бобыленко","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Lightning_strike_in_the_evening.jpg"},
-    parrot: {"file":"parrot.jpg","title":"Scarlet macaw","by":"David E. Lucas","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Scarlet_macaw_-_DPLA_-_34c7c384feb3d71d9831fd28f62a1d5b.jpg"},
+    conference: {"file":"conference.jpg","clip":"conference.mp4","title":"Hearing of Commissioner-designate Thierry Breton (cropped)","by":"European Parliament","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Hearing_of_Commissioner-designate_Thierry_Breton_(49068586441).jpg"},
+    pizza: {"file":"pizza.jpg","clip":"pizza.mp4","title":"Pizza (edited: a glass removed)","by":"igorovsyannykov","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Pizza-3007395.jpg"},
+    traffic: {"file":"traffic.jpg","clip":"traffic.mp4","title":"LED traffic light on red","by":"Kevin Payravi","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:LED_traffic_light_on_red.jpg"},
+    lightning: {"file":"lightning.jpg","clip":"lightning.mp4","title":"Lightning strike in the evening","by":"Валерия Бобыленко","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Lightning_strike_in_the_evening.jpg"},
+    parrot: {"file":"parrot.jpg","clip":"parrot.mp4","title":"Scarlet macaw","by":"David E. Lucas","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Scarlet_macaw_-_DPLA_-_34c7c384feb3d71d9831fd28f62a1d5b.jpg"},
     weights: {"file":"weights.jpg","title":"Weight plates in gym","by":"Santeri Viinamäki","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Weight_plates_in_gym_20180112.jpg"},
-    scales: {"file":"scales.jpg","title":"Justice scale and flag","by":"St. Louis Circuit Attorney's Office","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Justice_scale_and_flag.jpg"},
+    scales: {"file":"scales.jpg","clip":"scales.mp4","title":"Justice scale and flag","by":"St. Louis Circuit Attorney's Office","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Justice_scale_and_flag.jpg"},
     puzzle: {"file":"puzzle.jpg","title":"Jigsaw puzzle solving (cropped)","by":"kallerna","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Jigsaw_puzzle_solving_2.jpg"},
-    seedling: {"file":"seedling.jpg","title":"Tomato seedlings grow in Plant Habitat-06","by":"NASA Johnson Space Center","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Tomato_Seedlings_Grow_in_Plant_Habitat-06_(iss070e064263).jpg"},
+    seedling: {"file":"seedling.jpg","clip":"seedling.mp4","title":"Tomato seedlings grow in Plant Habitat-06","by":"NASA Johnson Space Center","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Tomato_Seedlings_Grow_in_Plant_Habitat-06_(iss070e064263).jpg"},
     brain: {"file":"brain.jpg","title":"MRI of human brain","by":"Asnaebsa","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:MRI_of_Human_Brain.jpg"},
-    stopwatch: {"file":"stopwatch.jpg","title":"Stopwatch","by":"Ansgar Koreng","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Stopwatch%2C_1810201155%2C_ako.jpg"},
+    stopwatch: {"file":"stopwatch.jpg","clip":"stopwatch.mp4","title":"Stopwatch","by":"Ansgar Koreng","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Stopwatch%2C_1810201155%2C_ako.jpg"},
     babel: {"file":"babel.jpg","title":"The Tower of Babel (Vienna)","by":"Pieter Bruegel the Elder","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_The_Tower_of_Babel_(Vienna)_-_Google_Art_Project_-_edited.jpg"},
-    bridge: {"file":"bridge.jpg","title":"Cairo's Qasr El Nil Bridge","by":"سها القاضي","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Cairo%E2%80%99s_Qasr_El_Nil_Bridge.jpg"},
-    bricks: {"file":"bricks.jpg","title":"Bricklayer","by":"Brice Blondel for HDPTCAR","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Bricklayer.jpg"},
-    racecar: {"file":"racecar.jpg","title":"Renault Formula One racing car","by":"Ivan Radic","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Renault_Formula_One_racing_car_(49667991997).jpg"},
-    tape: {"file":"tape.jpg","title":"Revox B77 reel-to-reel audio tape recorder","by":"touhotus","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Revox_B77_reel-to-reel_audio_tape_recorder%2C_ca._1977_(cropped_and_edited).jpg"},
-    clockwork: {"file":"clockwork.jpg","title":"Longines pocket watch, clockwork visible","by":"Franz van Duns","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Longines_4_Grand_Prix_pocket_watch_-_clockwork_visible_-_enhanced_resolution_DSF3402-PSMS.jpg"},
+    bridge: {"file":"bridge.jpg","clip":"bridge.mp4","title":"Cairo's Qasr El Nil Bridge","by":"سها القاضي","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Cairo%E2%80%99s_Qasr_El_Nil_Bridge.jpg"},
+    bricks: {"file":"bricks.jpg","clip":"bricks.mp4","title":"Bricklayer","by":"Brice Blondel for HDPTCAR","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Bricklayer.jpg"},
+    racecar: {"file":"racecar.jpg","clip":"racecar.mp4","title":"Renault Formula One racing car","by":"Ivan Radic","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Renault_Formula_One_racing_car_(49667991997).jpg"},
+    tape: {"file":"tape.jpg","clip":"tape.mp4","title":"Revox B77 reel-to-reel audio tape recorder","by":"touhotus","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Revox_B77_reel-to-reel_audio_tape_recorder%2C_ca._1977_(cropped_and_edited).jpg"},
+    clockwork: {"file":"clockwork.jpg","clip":"clockwork.mp4","title":"Longines pocket watch, clockwork visible","by":"Franz van Duns","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Longines_4_Grand_Prix_pocket_watch_-_clockwork_visible_-_enhanced_resolution_DSF3402-PSMS.jpg"},
   };
 
   SI.videos = [
