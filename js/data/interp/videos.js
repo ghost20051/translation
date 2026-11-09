@@ -13,7 +13,7 @@
   // Real photos used as memory pictures: { id: { file, title, by, license, source } }. Empty until photos are added.
   SI.photos = {
     conference: {"file":"conference.jpg","title":"Hearing of Commissioner-designate Thierry Breton (cropped)","by":"European Parliament","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Hearing_of_Commissioner-designate_Thierry_Breton_(49068586441).jpg"},
-    pizza: {"file":"pizza.jpg","title":"Pizza","by":"igorovsyannykov","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Pizza-3007395.jpg"},
+    pizza: {"file":"pizza.jpg","title":"Pizza (edited: a glass removed)","by":"igorovsyannykov","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Pizza-3007395.jpg"},
     traffic: {"file":"traffic.jpg","title":"LED traffic light on red","by":"Kevin Payravi","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:LED_traffic_light_on_red.jpg"},
     echo: {"file":"echo.jpg","title":"Echo Point Lookout","by":"MilaKampus","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Echo_Point_Lookout.jpg"},
     lightning: {"file":"lightning.jpg","title":"Lightning strike in the evening","by":"Валерия Бобыленко","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Lightning_strike_in_the_evening.jpg"},
@@ -21,7 +21,7 @@
     weights: {"file":"weights.jpg","title":"Weight plates in gym","by":"Santeri Viinamäki","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Weight_plates_in_gym_20180112.jpg"},
     juggler: {"file":"juggler.jpg","title":"Juggling balls","by":"Richard Leonard","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Juggling_Balls_(81706016).jpg"},
     scales: {"file":"scales.jpg","title":"Justice scale and flag","by":"St. Louis Circuit Attorney's Office","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Justice_scale_and_flag.jpg"},
-    puzzle: {"file":"puzzle.jpg","title":"Jigsaw puzzle solving","by":"kallerna","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Jigsaw_puzzle_solving_2.jpg"},
+    puzzle: {"file":"puzzle.jpg","title":"Jigsaw puzzle solving (cropped)","by":"kallerna","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Jigsaw_puzzle_solving_2.jpg"},
     seedling: {"file":"seedling.jpg","title":"Tomato seedlings grow in Plant Habitat-06","by":"NASA Johnson Space Center","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Tomato_Seedlings_Grow_in_Plant_Habitat-06_(iss070e064263).jpg"},
     brain: {"file":"brain.jpg","title":"MRI of human brain","by":"Asnaebsa","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:MRI_of_Human_Brain.jpg"},
     stopwatch: {"file":"stopwatch.jpg","title":"Stopwatch","by":"Ansgar Koreng","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Stopwatch%2C_1810201155%2C_ako.jpg"},
