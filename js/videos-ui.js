@@ -264,7 +264,7 @@
     function arOf(i) { var ar = UN.SI && UN.SI.videosAr && UN.SI.videosAr[v.id]; return ar && ar[i] ? ar[i] : ''; }
     function sayOf(i) { return nlang === 'ar' && arOf(i) ? arOf(i) : v.scenes[i].say; }
     var tl = timeline(v, sayOf);
-    var cueTimers = [];
+    var cueTimers = [], clip = null, clipLen = {}, capTimer = null, capWords = [], capStart = 0, capSpoken = -1;
     var cur = -1, playing = false, finished = false, voiceOn = true, ccOn = true, mode = 'timer', audio = null, tts = null, boundsMs = null, timer = null, sceneT0 = 0;
     try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (e) { /* storage may be blocked */ }
 
@@ -319,7 +319,25 @@
       var part = (cur < 0 ? 0 : cur) / v.scenes.length;
       prog.firstChild.style.width = Math.min(100, Math.round(part * 100 + (playing ? 100 / v.scenes.length / 2 : 0))) + '%';
     }
+    function clipUrl(i) { return 'media/audio/si/' + (nlang === 'ar' ? 'ar' : 'en') + '/' + v.id + '-' + ('0' + i).slice(-2) + '.mp3'; }
+    // highlight word k and show only its group of words (about 7 at a time)
+    function markWord(k) {
+      if (!capWords.length) return;
+      k = Math.max(0, Math.min(capWords.length - 1, k));
+      if (k === capSpoken) return; capSpoken = k;
+      var G = 7, g0 = Math.floor(k / G) * G;
+      capWords.forEach(function (w, j) { w.classList.toggle('now', j === k); w.classList.toggle('done', j < k); w.style.display = (j >= g0 && j < g0 + G) ? '' : 'none'; });
+    }
+    // which word is being said now: from the clip's time, or the elapsed time of the scene
+    function tickCaption() {
+      if (!playing || cur < 0 || !capWords.length || capStart === -1) return;
+      var len = sceneLength(cur), t;
+      if (mode === 'clips' && clip && isFinite(clip.duration) && clip.duration > 0) { t = clip.currentTime; len = clip.duration; }
+      else t = (Date.now() - capStart) / 1000;
+      markWord(Math.floor(capWords.length * Math.min(0.999, t / Math.max(0.5, len))));
+    }
     function sceneLength(i) {
+      if (mode === 'clips' && clipLen[i]) return clipLen[i];
       if (mode === 'mp3' && boundsMs) return boundsMs[i].dur;
       return tl.parts[i].dur;
     }
@@ -330,8 +348,14 @@
       el.style.setProperty('--d', sceneLength(i).toFixed(2) + 's');
       sceneBox.textContent = ''; sceneBox.appendChild(el);
       cap.textContent = '';
-      if (nlang === 'enar' && arOf(i)) { cap.setAttribute('dir', 'ltr'); cap.appendChild(h('div', { class: 'vcap-en' }, v.scenes[i].say)); cap.appendChild(h('div', { class: 'vcap-ar', dir: 'rtl', lang: 'ar' }, arOf(i))); }
-      else { cap.textContent = sayOf(i); cap.setAttribute('dir', nlang === 'ar' ? 'rtl' : 'ltr'); }
+      capWords = []; capSpoken = -1; capStart = Date.now();
+      var spoken = nlang === 'ar' ? arOf(i) || v.scenes[i].say : v.scenes[i].say;
+      var line = h('div', { class: 'vkline', dir: nlang === 'ar' ? 'rtl' : 'ltr' });
+      spoken.split(/\s+/).filter(Boolean).forEach(function (w, k) { var s = h('span', { class: 'vkw' }, w); capWords.push(s); line.appendChild(s); line.appendChild(document.createTextNode(' ')); });
+      cap.appendChild(line);
+      if (nlang === 'enar' && arOf(i)) cap.appendChild(h('div', { class: 'vcap-ar', dir: 'rtl', lang: 'ar' }, arOf(i)));
+      cap.setAttribute('dir', nlang === 'ar' ? 'rtl' : 'ltr');
+      markWord(0);
       cap.classList.toggle('hidden', !ccOn);
       drawDots(); setProgress();
     }
@@ -340,6 +364,7 @@
     function stopVoices() {
       try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* optional */ }
       if (audio) { try { audio.pause(); } catch (e) { /* optional */ } }
+      if (clip) { try { clip.pause(); clip.onended = null; } catch (e) { /* optional */ } }
       if (timer) { clearTimeout(timer); timer = null; }
       cueTimers.forEach(clearTimeout); cueTimers = [];
     }
@@ -349,6 +374,7 @@
         window.speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance(sayOf(i)); u.lang = nlang === 'ar' ? 'ar-EG' : 'en-US'; u.rate = 0.95;
         u.onend = function () { if (playing && cur === i) advance(i); };
+        u.onboundary = function (e) { if (cur !== i || e.name === 'sentence') return; var before = sayOf(i).slice(0, e.charIndex).split(/\s+/).filter(Boolean).length; markWord(before); capStart = -1; };
         window.speechSynthesis.speak(u); return true;
       } catch (e) { return false; }
     }
@@ -365,7 +391,14 @@
       show(i);
       if (!playing) return;
       if (UN.sfx) cuesFor(v.scenes[i]).forEach(function (q) { cueTimers.push(setTimeout(function () { if (playing && cur === i) UN.sfx.play(q[1]); }, q[0] * sceneLength(i) * 1000)); });
-      if (mode === 'mp3') {
+      if (mode === 'clips') {
+        clip = clip || new Audio();
+        clip.onended = null; clip.muted = !voiceOn; clip.src = clipUrl(i);
+        clip.onloadedmetadata = function () { if (isFinite(clip.duration) && clip.duration > 0 && cur === i) { clipLen[i] = clip.duration; var el = sceneBox.firstChild; if (el) el.style.setProperty('--d', clip.duration.toFixed(2) + 's'); } };
+        clip.onended = function () { if (playing && cur === i) { timer && clearTimeout(timer); timer = setTimeout(function () { advance(i); }, 450); } };
+        var cp = clip.play(); if (cp && cp.catch) cp.catch(function () { armTimer(i); });
+        timer = setTimeout(function () { advance(i); }, (sceneLength(i) + 20) * 1000);   // safety net
+      } else if (mode === 'mp3') {
         audio.muted = !voiceOn;
         audio.currentTime = boundsMs[i].start + 0.01;
         var p = audio.play(); if (p && p.catch) p.catch(function () { /* blocked: the play button starts it */ });
@@ -389,6 +422,7 @@
       confetti();
     }
     function play() {
+      if (!capTimer) capTimer = setInterval(tickCaption, 120);
       if (finished) { cur = -1; finished = false; nextCard.classList.add('hidden'); }
       playing = true; setPlayingUI();
       playScene(cur < 0 ? 0 : cur);
@@ -405,6 +439,7 @@
       voiceOn = !voiceOn; bVoice.setAttribute('aria-pressed', String(voiceOn)); bVoice.textContent = ''; bVoice.appendChild(ic(voiceOn ? 'volume' : 'volume-x'));
       try { localStorage.setItem(VOICE_KEY, voiceOn ? 'on' : 'off'); } catch (e) { /* ignore */ }
       if (audio) audio.muted = !voiceOn;
+      if (clip) clip.muted = !voiceOn;
       if (!voiceOn && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { /* optional */ } }
       else if (playing && mode === 'tts') speakScene(cur);
     };
@@ -414,11 +449,17 @@
       tts = ('speechSynthesis' in window && typeof SpeechSynthesisUtterance === 'function') ? true : null;
       mode = tts ? 'tts' : 'timer';
       modeNote.textContent = t(tts ? 'vid.modeTts' : 'vid.modeSilent');
+      var probe = new Audio(); probe.preload = 'metadata';
+      probe.addEventListener('loadedmetadata', function () {
+        if (!isFinite(probe.duration) || probe.duration < 0.5) return;
+        mode = 'clips'; clipLen = {}; clipLen[0] = probe.duration; modeNote.textContent = t('vid.modeAudio');
+      });
+      probe.src = clipUrl(0);
       var src = nlang === 'ar' ? ('media/audio/si/ar/' + v.id + '.mp3') : (v.audio || ('media/audio/si/' + v.id + '.mp3'));
       try {
         var a = new Audio(); a.preload = 'metadata';
         a.addEventListener('loadedmetadata', function () {
-          if (!isFinite(a.duration) || a.duration < 2) return;
+          if (!isFinite(a.duration) || a.duration < 2 || mode === 'clips') return;
           audio = a; mode = 'mp3'; boundsMs = boundaries(v, a.duration, sayOf);
           modeNote.textContent = t('vid.modeAudio');
           a.addEventListener('ended', function () { if (playing && cur === v.scenes.length - 1) finish(); });
@@ -435,7 +476,7 @@
     page.appendChild(h('div', { class: 'pagehead' }, h('h1', null, h('span', { class: 'vhn' }, (idx0 + 1) + '.'), ' ', v.title), h('a', { class: 'btn ghost small', href: '#/videos' }, [ic('arrow-left'), t('vid.all')])));
     page.appendChild(stage); page.appendChild(ctrl); page.appendChild(dots); page.appendChild(modeNote); page.appendChild(nextCard);
 
-    function stopAll() { playing = false; stopVoices(); window.removeEventListener('hashchange', stopAll); }
+    function stopAll() { if (capTimer) { clearInterval(capTimer); capTimer = null; } playing = false; stopVoices(); window.removeEventListener('hashchange', stopAll); }
     window.addEventListener('hashchange', stopAll);
     chooseMode(); show(0); setPlayingUI();
     return page;
