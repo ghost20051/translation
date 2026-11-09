@@ -269,7 +269,7 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
     ex.forEach(s => s.rows.forEach(r => assert.ok(['src', 'tgt', 'good', 'bad', 'note'].indexOf(r.who) !== -1 && r.text, v.id + ' example row')));
     const ar = UN.SI.videosAr[v.id];
     assert.ok(ar && ar.length === v.scenes.length, v.id + ' Arabic narration lines ' + (ar && ar.length) + ' vs scenes ' + v.scenes.length);
-    ar.forEach((line, i) => assert.ok(/[\u0600-\u06FF]/.test(line) && line.length > 8, v.id + ' Arabic line ' + i));
+    ar.forEach((line, i) => assert.ok(/[\u0600-\u06FF]/.test(line) && line.length > 8 && line.length <= 400, v.id + ' Arabic line ' + i + ' (max 400 characters for the Arabic voice tool)'));
     assert.ok(v.gist && /\?$|:/.test(v.title) || v.id === 'v19', v.id + ' title should be a clear question');
     if (sc0(v).say.indexOf('Video ') !== 0) assert.fail(v.id + ' title narration');
     (v.scenes.filter(s => s.t === 'story')).forEach(s => s.beats.forEach(b => assert.ok(['speaker', 'interp', 'audience', 'note'].indexOf(b.who) !== -1 && b.text, v.id + ' story beat')));

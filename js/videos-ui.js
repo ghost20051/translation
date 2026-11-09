@@ -261,7 +261,8 @@
     if (idx0 < 0) return UN.routes.videos();
     var v = UN.videos[idx0], page = h('div', { class: 'page' });
     var nlang = S().lang === 'ar' ? 'ar' : 'en';
-    function sayOf(i) { var ar = UN.SI && UN.SI.videosAr && UN.SI.videosAr[v.id]; return nlang === 'ar' && ar && ar[i] ? ar[i] : v.scenes[i].say; }
+    function arOf(i) { var ar = UN.SI && UN.SI.videosAr && UN.SI.videosAr[v.id]; return ar && ar[i] ? ar[i] : ''; }
+    function sayOf(i) { return nlang === 'ar' && arOf(i) ? arOf(i) : v.scenes[i].say; }
     var tl = timeline(v, sayOf);
     var cueTimers = [];
     var cur = -1, playing = false, finished = false, voiceOn = true, ccOn = true, mode = 'timer', audio = null, tts = null, boundsMs = null, timer = null, sceneT0 = 0;
@@ -287,7 +288,7 @@
     var langBox = h('div', { class: 'seg vlang', role: 'group', 'aria-label': t('vid.narr') });
     function drawLang() {
       langBox.textContent = '';
-      [['en', 'English'], ['ar', 'عربي']].forEach(function (o) {
+      [['en', 'English'], ['enar', 'English + ترجمة'], ['ar', 'عربي']].forEach(function (o) {
         langBox.appendChild(h('button', { type: 'button', lang: o[0], class: o[0] === nlang ? 'on' : '', 'aria-pressed': String(o[0] === nlang), onclick: function () {
           if (o[0] === nlang) return;
           var wasPlaying = playing; stopVoices(); playing = false;
@@ -328,7 +329,10 @@
       var el = (R[sc.t] || R.title)(sc, v, i, idx0 + 1);
       el.style.setProperty('--d', sceneLength(i).toFixed(2) + 's');
       sceneBox.textContent = ''; sceneBox.appendChild(el);
-      cap.textContent = sayOf(i); cap.setAttribute('dir', nlang === 'ar' ? 'rtl' : 'ltr'); cap.classList.toggle('hidden', !ccOn);
+      cap.textContent = '';
+      if (nlang === 'enar' && arOf(i)) { cap.setAttribute('dir', 'ltr'); cap.appendChild(h('div', { class: 'vcap-en' }, v.scenes[i].say)); cap.appendChild(h('div', { class: 'vcap-ar', dir: 'rtl', lang: 'ar' }, arOf(i))); }
+      else { cap.textContent = sayOf(i); cap.setAttribute('dir', nlang === 'ar' ? 'rtl' : 'ltr'); }
+      cap.classList.toggle('hidden', !ccOn);
       drawDots(); setProgress();
     }
 

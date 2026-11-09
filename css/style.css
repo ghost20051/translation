@@ -471,3 +471,7 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .vex-tgt { background: #dcfce7; } .vex-good { background: #dcfce7; border-inline-start: 5px solid #16a34a; } .vex-bad { background: #fee2e2; border-inline-start: 5px solid #dc2626; }
 .vex-note { background: rgba(15, 23, 42, .78); color: #fff; } .vex-note .vexhead small { opacity: .85; }
 .vlang { margin-inline-start: auto; } .vcap[dir="rtl"] { font-family: inherit; }
+
+/* English narration with the Arabic line under it */
+.vcap-en { font-weight: 600; } .vcap-ar { margin-top: 4px; font-size: .92em; color: #fde68a; }
+@media (max-width: 560px) { .vlang { margin-inline-start: 0; width: 100%; } .vlang button { flex: 1; } }
