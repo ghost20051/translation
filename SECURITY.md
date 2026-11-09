@@ -3,10 +3,11 @@
 This is a static website. It cannot guarantee absolute security, but it is designed to have very little that can go wrong.
 
 ## What it does
-- Runs entirely in the student's browser. There is no backend, database, account system, analytics or tracking.
+- Runs entirely in the student's browser. There is no backend, database or account system.
 - Saves progress (scores, XP, achievements, answer history) in the browser's `localStorage` on that device only. Nothing is transmitted. Clearing site data or using Settings → Reset progress deletes it.
 - All grading is plain local JavaScript. No AI and no API calls.
-- Loads no external scripts, fonts, styles or images. It makes no network requests to other sites. (The optional service worker only caches this site's own files.)
+- Visit counter: the page loads one external script, GoatCounter (`https://gc.zgo.at/count.js`), which counts page views for the site owner at https://ghost20051.goatcounter.com. `js/visits.js` sends only the subject and the part of the site (for example `/si/learn` or `/si/video/v05`), never answers, scores or progress. GoatCounter sets no cookies and stores nothing in the browser; it keeps daily totals (page, browser, system, country, language, screen width) and, per its privacy policy, does not store IP addresses, the full User-Agent or any tracker ID. If it is blocked (ad blocker) or the device is offline, the site works the same. It never counts on localhost or `file://`.
+- Apart from that counter, it loads no external scripts, fonts, styles or images and makes no other requests to other sites. (The optional service worker only caches this site's own files.)
 - Contains no passwords, keys, tokens or secrets. It collects no personal information.
 
 ## What to be aware of

@@ -35,7 +35,7 @@ Audio and video: an audio clip that only read the words aloud was tried with Ele
 ## Opening it
 - **Easiest:** double-click `index.html`. All scripts are classic `<script>` files and the data lives in `.js` files, so it does not need a server.
 - **With a local server (recommended for testing):** `node tests/serve.js` then open http://localhost:8765
-- Offline: the site loads nothing from the internet. When hosted on https (GitHub Pages) it also registers a small service worker that caches the files after the first visit.
+- Offline: apart from the small GoatCounter visit counter (see SECURITY.md; skipped when offline or blocked), the site loads nothing from the internet. Visit numbers: https://ghost20051.goatcounter.com (owner login). When hosted on https (GitHub Pages) it also registers a small service worker that caches the files after the first visit.
 
 ## Hosting on GitHub Pages (when you are ready)
 1. Create a repository (Pages on a free account needs a public repo).
