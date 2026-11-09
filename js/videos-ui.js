@@ -6,7 +6,7 @@
   var ui = UN.ui, h = ui.h, t = ui.t, ic = ui.ic;
   var S = function () { return UN.store.get(); };
   var NS = 'http://www.w3.org/2000/svg';
-  var VOICE_KEY = 'unrev-vvoice';
+  var VOICE_KEY = 'unrev-vvoice', SPEED_KEY = 'unrev-vspeed', SPEEDS = [0.75, 1, 1.25, 1.5];
 
   /* ---------- timing (pure, also used by the tests) ---------- */
   function words(s) { return String(s || '').split(/\s+/).filter(Boolean).length; }
@@ -279,6 +279,10 @@
     var cueTimers = [], clip = null, clipLen = {}, capTimer = null, capWords = [], capStart = 0, capSpoken = -1;
     var cur = -1, playing = false, finished = false, voiceOn = true, ccOn = true, mode = 'timer', audio = null, tts = null, boundsMs = null, timer = null, sceneT0 = 0;
     try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (e) { /* storage may be blocked */ }
+    // the scene clock: narration time already played in the current scene (ms), so pause and play continue where they stopped
+    var speed = 1, doneMs = 0, runAt = 0, started = false, ttsToken = 0;
+    try { var sp = +localStorage.getItem(SPEED_KEY); if (SPEEDS.indexOf(sp) !== -1) speed = sp; } catch (e) { /* storage may be blocked */ }
+    function sceneMs() { return doneMs + (playing && runAt ? (Date.now() - runAt) * speed : 0); }
 
     var stage = h('div', { class: 'vstage tone-' + v.tone + ' paused' });
     var sceneBox = h('div', { class: 'vscenebox' });
@@ -305,14 +309,24 @@
           if (o[0] === nlang) return;
           var wasPlaying = playing; stopVoices(); playing = false;
           nlang = o[0]; tl = timeline(v, sayOf); audio = null; boundsMs = null; chooseMode(); drawLang(); drawArNote();
-          if (wasPlaying) { playing = true; setPlayingUI(); playScene(cur < 0 ? 0 : cur); } else { show(cur < 0 ? 0 : cur); setPlayingUI(); }
+          if (wasPlaying) { playing = true; setPlayingUI(); runScene(cur < 0 ? 0 : cur, false); } else { show(cur < 0 ? 0 : cur); setPlayingUI(); }
         } }, o[1]));
       });
     }
     drawLang();
+    // playback speed: the voice, the captions, the scene timing and the animations change together
+    var speedBox = h('div', { class: 'seg vspeed', role: 'group', 'aria-label': t('vid.speed') });
+    function drawSpeed() {
+      speedBox.textContent = '';
+      speedBox.appendChild(h('span', { class: 'vspeed-l', title: t('vid.speed') }, ic('clock')));
+      SPEEDS.forEach(function (s) {
+        speedBox.appendChild(h('button', { type: 'button', class: s === speed ? 'on' : '', 'aria-pressed': String(s === speed), 'aria-label': t('vid.speed') + ' ' + s + '×', onclick: function () { setSpeed(s); } }, s + '×'));
+      });
+    }
+    drawSpeed();
     var arNote = h('p', { class: 'vnote-ar', lang: 'ar', dir: 'rtl' });
     function drawArNote() { arNote.textContent = nlang === 'ar' ? t('vid.arNote') : ''; arNote.classList.toggle('hidden', nlang !== 'ar'); }
-    var ctrl = h('div', { class: 'vctrl' }, bPrev, bPlay, bNext, bRe, bCC, bVoice, langBox);
+    var ctrl = h('div', { class: 'vctrl' }, bPrev, bPlay, bNext, bRe, bCC, bVoice, langBox, speedBox);
 
     // floating sparkles in the background and a burst of confetti at the end
     var fx = h('div', { class: 'vfx', 'aria-hidden': 'true' });
@@ -354,7 +368,7 @@
       if (!playing || cur < 0 || !capWords.length || capStart === -1) return;
       var len = sceneLength(cur), t;
       if (mode === 'clips' && clip && isFinite(clip.duration) && clip.duration > 0) { t = clip.currentTime; len = clip.duration; }
-      else t = (Date.now() - capStart) / 1000;
+      else t = sceneMs() / 1000;
       markWord(Math.floor(capWords.length * Math.min(0.999, t / Math.max(0.5, len))));
     }
     function sceneLength(i) {
@@ -364,9 +378,10 @@
     }
     function show(i) {
       cur = i; var sc = v.scenes[i];
+      doneMs = 0; runAt = 0; started = false;
       stage.classList.toggle('idle', !playing);   // before play: show the finished picture instead of an empty stage
       var el = (R[sc.t] || R.title)(sc, v, i, idx0 + 1);
-      el.style.setProperty('--d', sceneLength(i).toFixed(2) + 's');
+      el.style.setProperty('--d', (sceneLength(i) / speed).toFixed(2) + 's');
       sceneBox.textContent = ''; sceneBox.appendChild(el);
       syncClips();
       cap.textContent = '';
@@ -384,19 +399,24 @@
 
     /* --- narration drivers --- */
     function stopVoices() {
+      ttsToken++;
       try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* optional */ }
       if (audio) { try { audio.pause(); } catch (e) { /* optional */ } }
       if (clip) { try { clip.pause(); clip.onended = null; } catch (e) { /* optional */ } }
       if (timer) { clearTimeout(timer); timer = null; }
       cueTimers.forEach(clearTimeout); cueTimers = [];
     }
-    function speakScene(i) {
+    // the device voice reads the scene, or the rest of it from word "from" (after a pause or a change of speed)
+    function speakScene(i, from) {
       if (!tts || !voiceOn) return false;
       try {
         window.speechSynthesis.cancel();
-        var u = new SpeechSynthesisUtterance(sayOf(i)); u.lang = nlang === 'ar' ? 'ar-EG' : 'en-US'; u.rate = 0.95;
-        u.onend = function () { if (playing && cur === i) advance(i); };
-        u.onboundary = function (e) { if (cur !== i || e.name === 'sentence') return; var before = sayOf(i).slice(0, e.charIndex).split(/\s+/).filter(Boolean).length; markWord(before); capStart = -1; };
+        from = Math.max(0, from || 0);
+        var text = sayOf(i).split(/\s+/).filter(Boolean).slice(from).join(' '), token = ++ttsToken;
+        if (!text) return false;
+        var u = new SpeechSynthesisUtterance(text); u.lang = nlang === 'ar' ? 'ar-EG' : 'en-US'; u.rate = 0.95 * speed;
+        u.onend = function () { if (token === ttsToken && playing && cur === i) advance(i); };
+        u.onboundary = function (e) { if (token !== ttsToken || cur !== i || e.name === 'sentence') return; var before = text.slice(0, e.charIndex).split(/\s+/).filter(Boolean).length; markWord(from + before); capStart = -1; };
         window.speechSynthesis.speak(u); return true;
       } catch (e) { return false; }
     }
@@ -406,34 +426,42 @@
     }
     function armTimer(i) {
       if (timer) clearTimeout(timer);
-      var ms = sceneLength(i) * 1000 + 400;
+      var ms = Math.max(0, (sceneLength(i) * 1000 + 400 - sceneMs()) / speed);
       timer = setTimeout(function () { advance(i); }, ms);
     }
-    function playScene(i) {
-      show(i);
+    // play scene i from its start, or (resume) continue it from where it was paused
+    function runScene(i, resume) {
+      if (!resume) show(i);
       if (!playing) return;
-      if (UN.sfx) cuesFor(v.scenes[i]).forEach(function (q) { cueTimers.push(setTimeout(function () { if (playing && cur === i) UN.sfx.play(q[1]); }, q[0] * sceneLength(i) * 1000)); });
+      started = true; runAt = Date.now();
+      if (timer) { clearTimeout(timer); timer = null; }
+      cueTimers.forEach(clearTimeout); cueTimers = [];
+      var at0 = sceneMs(), len = sceneLength(i) * 1000;
+      if (UN.sfx) cuesFor(v.scenes[i]).forEach(function (q) { var at = q[0] * len; if (at >= at0) cueTimers.push(setTimeout(function () { if (playing && cur === i) UN.sfx.play(q[1]); }, (at - at0) / speed)); });
       if (mode === 'clips') {
         clip = clip || new Audio();
-        clip.onended = null; clip.muted = !voiceOn; clip.src = clipUrl(i);
-        clip.onloadedmetadata = function () { if (isFinite(clip.duration) && clip.duration > 0 && cur === i) { clipLen[i] = clip.duration; var el = sceneBox.firstChild; if (el) el.style.setProperty('--d', clip.duration.toFixed(2) + 's'); } };
-        clip.onended = function () { if (playing && cur === i) { timer && clearTimeout(timer); timer = setTimeout(function () { advance(i); }, 450); } };
+        if (!resume || clip.getAttribute('data-scene') !== v.id + '-' + i) {
+          clip.onended = null; clip.src = clipUrl(i); clip.setAttribute('data-scene', v.id + '-' + i);
+          clip.onloadedmetadata = function () { if (isFinite(clip.duration) && clip.duration > 0 && cur === i) { clipLen[i] = clip.duration; var el = sceneBox.firstChild; if (el) el.style.setProperty('--d', (clip.duration / speed).toFixed(2) + 's'); } };
+          clip.onended = function () { if (playing && cur === i) { timer && clearTimeout(timer); timer = setTimeout(function () { advance(i); }, 450); } };
+        }
+        clip.muted = !voiceOn; clip.defaultPlaybackRate = speed; clip.playbackRate = speed;
         var cp = clip.play(); if (cp && cp.catch) cp.catch(function () { armTimer(i); });
-        timer = setTimeout(function () { advance(i); }, (sceneLength(i) + 20) * 1000);   // safety net
+        timer = setTimeout(function () { advance(i); }, Math.max(0, (sceneLength(i) + 20) * 1000 - at0) / speed);   // safety net
       } else if (mode === 'mp3') {
-        audio.muted = !voiceOn;
-        audio.currentTime = boundsMs[i].start + 0.01;
+        audio.muted = !voiceOn; audio.playbackRate = speed;
+        if (!resume) audio.currentTime = boundsMs[i].start + 0.01;
         var p = audio.play(); if (p && p.catch) p.catch(function () { /* blocked: the play button starts it */ });
         armTimer(i);
-      } else if (mode === 'tts' && voiceOn && speakScene(i)) {
-        timer = setTimeout(function () { advance(i); }, sceneLength(i) * 1000 + 9000);   // safety net if the voice never ends
+      } else if (mode === 'tts' && voiceOn && speakScene(i, resume ? capSpoken : 0)) {
+        timer = setTimeout(function () { advance(i); }, Math.max(0, len + 9000 - at0) / speed);   // safety net if the voice never ends
       } else armTimer(i);
     }
     function goto(i, manual) {
       i = Math.max(0, Math.min(v.scenes.length - 1, i));
       stopVoices(); finished = false;
       if (manual && !playing) { show(i); setPlayingUI(); return; }
-      playScene(i);
+      runScene(i, false);
     }
     function finish() {
       playing = false; finished = true; stopVoices(); setPlayingUI();
@@ -446,10 +474,30 @@
     function play() {
       if (!capTimer) capTimer = setInterval(tickCaption, 120);
       if (finished) { cur = -1; finished = false; nextCard.classList.add('hidden'); }
+      var resume = cur >= 0 && started;
       playing = true; setPlayingUI();
-      playScene(cur < 0 ? 0 : cur);
+      runScene(cur < 0 ? 0 : cur, resume);
     }
-    function pause() { playing = false; stopVoices(); setPlayingUI(); }
+    // pause keeps the place: the voice, the captions and the animations continue from here
+    function pause() {
+      if (playing) { doneMs = sceneMs(); runAt = 0; }
+      playing = false; ttsToken++;
+      try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* optional */ }
+      if (clip) { try { clip.pause(); } catch (e) { /* optional */ } }
+      if (audio) { try { audio.pause(); } catch (e) { /* optional */ } }
+      if (timer) { clearTimeout(timer); timer = null; }
+      cueTimers.forEach(clearTimeout); cueTimers = [];
+      setPlayingUI();
+    }
+    function setSpeed(s) {
+      if (s === speed) return;
+      if (playing) { doneMs = sceneMs(); runAt = Date.now(); }
+      speed = s;
+      try { localStorage.setItem(SPEED_KEY, String(s)); } catch (e) { /* ignore */ }
+      drawSpeed();
+      var el = sceneBox.firstChild; if (el && cur >= 0) el.style.setProperty('--d', (sceneLength(cur) / speed).toFixed(2) + 's');
+      if (playing && cur >= 0) runScene(cur, true);
+    }
     function toggle() { if (playing) pause(); else play(); }
 
     bPlay.onclick = toggle; big.onclick = function (e) { e.stopPropagation(); toggle(); };
@@ -458,7 +506,7 @@
     stage.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); } });
     bPrev.onclick = function () { goto(cur - 1, true); };
     bNext.onclick = function () { if (cur + 1 < v.scenes.length) goto(cur + 1, true); };
-    bRe.onclick = function () { finished = false; nextCard.classList.add('hidden'); playing = true; setPlayingUI(); playScene(0); };
+    bRe.onclick = function () { finished = false; nextCard.classList.add('hidden'); playing = true; setPlayingUI(); runScene(0, false); };
     bCC.onclick = function () { ccOn = !ccOn; bCC.setAttribute('aria-pressed', String(ccOn)); cap.classList.toggle('hidden', !ccOn); };
     bVoice.onclick = function () {
       voiceOn = !voiceOn; bVoice.setAttribute('aria-pressed', String(voiceOn)); bVoice.textContent = ''; bVoice.appendChild(ic(voiceOn ? 'volume' : 'volume-x'));
@@ -466,7 +514,7 @@
       if (audio) audio.muted = !voiceOn;
       if (clip) clip.muted = !voiceOn;
       if (!voiceOn && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) { /* optional */ } }
-      else if (playing && mode === 'tts') speakScene(cur);
+      else if (playing && mode === 'tts') speakScene(cur, capSpoken);
     };
 
     /* choose how the narration is delivered: recorded file, device voice, or silent */

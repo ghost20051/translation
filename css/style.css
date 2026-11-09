@@ -505,3 +505,6 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 
 /* Revise my mistakes */
 .revicon { font-size: 1.7em; line-height: 1; } .revbtn { margin: 6px 0; }
+
+/* video speed */
+.vspeed { align-items: center; } .vspeed .vspeed-l { display: inline-flex; align-items: center; padding: 0 4px 0 6px; color: var(--muted); } .vspeed .vspeed-l svg { width: 16px; height: 16px; }
