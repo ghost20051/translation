@@ -18,5 +18,6 @@ This is a static website. It cannot guarantee absolute security, but it is desig
 - If you add videos or audio, only use files you have the right to share, and host them in the repository's `media` folder.
 
 ## Maintainer checks done
+- The only links to other websites are the photo credits on the Short videos page (Wikimedia Commons pages, opened in a new tab with `noopener`). The photos themselves are stored in the site.
 - Searched the code for `innerHTML`, `eval`, `new Function`, `document.write`, `fetch`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`, dynamic `import` and external URLs. Only the service worker's same-origin cache fallback uses `fetch`.
 - No cookies are set.

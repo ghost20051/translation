@@ -443,3 +443,20 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 @keyframes vkbright { from { transform: scale(1.15) translateX(-4%); } to { transform: scale(1.15) translateX(4%); } } @keyframes vkbup { from { transform: scale(1.15) translateY(4%); } to { transform: scale(1.15) translateY(-4%); } }
 @keyframes vsweep { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @media (prefers-reduced-motion: reduce) { .vphoto img, .vphoto::after { animation: none; } }
+.vstoryph figcaption { top: 4px; bottom: auto; z-index: 2; }
+
+/* title over a real photo */
+.vs-title.has-cover { position: relative; width: 100%; height: 100%; justify-content: center; text-shadow: 0 2px 12px rgba(0, 0, 0, .6); }
+.vcover { position: absolute; inset: -44px -14px -64px; margin: 0; z-index: -1; overflow: hidden; }
+.vcover img { width: 100%; height: 100%; object-fit: cover; animation: vkbin 16s ease-in-out infinite alternate; }
+.vcover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, .65)); }
+/* story scene on a real photo */
+.vstoryph { width: 100%; max-width: 640px; aspect-ratio: 16 / 10; }
+.vsbwrap { position: absolute; inset: auto 0 0 0; padding: 10px; display: flex; flex-direction: column; gap: 6px; background: linear-gradient(transparent, rgba(0, 0, 0, .6)); }
+.vsb { max-width: 78%; padding: 6px 10px; border-radius: 12px; background: #fff; color: #0f172a; font-weight: 700; font-size: .82em; line-height: 1.35; text-align: start; box-shadow: 0 4px 10px rgba(0, 0, 0, .25); }
+.vsb small { display: block; font-size: .72em; font-weight: 800; opacity: .65; text-transform: uppercase; letter-spacing: .05em; }
+.vsb-speaker { align-self: flex-start; } .vsb-interp { align-self: flex-end; background: #bbf7d0; } .vsb-audience { align-self: flex-end; background: #fde68a; }
+.vsb-note { align-self: center; background: rgba(15, 23, 42, .78); color: #fff; font-size: .75em; }
+.vsbadge { display: inline-block; margin-inline-start: 6px; padding: 0 6px; border-radius: 6px; font-style: normal; font-size: .8em; background: #86efac; } .vsbadge.bad { background: #fca5a5; }
+.vcredits ul { margin: 8px 0 0; padding-inline-start: 1.1em; display: grid; gap: 4px; font-size: .85rem; } .vcredits a { color: var(--link); }
+.vstage.idle .vcover img, .vstage.idle .vphoto img { animation-play-state: paused; }

@@ -11,10 +11,31 @@
   function M(t) { return { m: t }; }   // a highlighted word in a definition
 
   // Real photos used as memory pictures: { id: { file, title, by, license, source } }. Empty until photos are added.
-  SI.photos = SI.photos || {};
+  SI.photos = {
+    conference: {"file":"conference.jpg","title":"Hearing of Commissioner-designate Thierry Breton","by":"European Parliament","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Hearing_of_Commissioner-designate_Thierry_Breton_(49068586441).jpg"},
+    pizza: {"file":"pizza.jpg","title":"Pizza","by":"igorovsyannykov","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Pizza-3007395.jpg"},
+    traffic: {"file":"traffic.jpg","title":"LED traffic light on red","by":"Kevin Payravi","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:LED_traffic_light_on_red.jpg"},
+    echo: {"file":"echo.jpg","title":"Echo Point Lookout","by":"MilaKampus","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Echo_Point_Lookout.jpg"},
+    lightning: {"file":"lightning.jpg","title":"Lightning strike in the evening","by":"Валерия Бобыленко","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Lightning_strike_in_the_evening.jpg"},
+    parrot: {"file":"parrot.jpg","title":"Scarlet macaw","by":"David E. Lucas","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Scarlet_macaw_-_DPLA_-_34c7c384feb3d71d9831fd28f62a1d5b.jpg"},
+    backpack: {"file":"backpack.jpg","title":"Backpackers on the Stehekin Valley Road","by":"NPS Staff","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Backpackers_on_the_Stehekin_Valley_Road_(67af5853ef7b4a11acda1e392a4ff4cd).JPG"},
+    juggler: {"file":"juggler.jpg","title":"Juggling balls","by":"Richard Leonard","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Juggling_Balls_(81706016).jpg"},
+    scales: {"file":"scales.jpg","title":"Justice scale and flag","by":"St. Louis Circuit Attorney's Office","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Justice_scale_and_flag.jpg"},
+    puzzle: {"file":"puzzle.jpg","title":"Jigsaw puzzle solving","by":"kallerna","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Jigsaw_puzzle_solving_2.jpg"},
+    seedling: {"file":"seedling.jpg","title":"Tomato seedlings grow in Plant Habitat-06","by":"NASA Johnson Space Center","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Tomato_Seedlings_Grow_in_Plant_Habitat-06_(iss070e064263).jpg"},
+    brain: {"file":"brain.jpg","title":"MRI of human brain","by":"Asnaebsa","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:MRI_of_Human_Brain.jpg"},
+    stopwatch: {"file":"stopwatch.jpg","title":"Stopwatch","by":"Ansgar Koreng","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Stopwatch%2C_1810201155%2C_ako.jpg"},
+    babel: {"file":"babel.jpg","title":"The Tower of Babel (Vienna)","by":"Pieter Bruegel the Elder","license":"Public domain","source":"https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_The_Tower_of_Babel_(Vienna)_-_Google_Art_Project_-_edited.jpg"},
+    sign: {"file":"sign.jpg","title":"Arabic-English street sign \"Sidi El Wasti St.\" in Alexandria","by":"Marsupium","license":"CC BY 4.0","source":"https://commons.wikimedia.org/wiki/File:Arabic-English_street_sign_%22Sidi_El_Wasti_St.%22_in_Alexandria.jpg"},
+    bridge: {"file":"bridge.jpg","title":"Cairo's Qasr El Nil Bridge","by":"سها القاضي","license":"CC0","source":"https://commons.wikimedia.org/wiki/File:Cairo%E2%80%99s_Qasr_El_Nil_Bridge.jpg"},
+    bricks: {"file":"bricks.jpg","title":"Bricklayer","by":"Brice Blondel for HDPTCAR","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Bricklayer.jpg"},
+    racecar: {"file":"racecar.jpg","title":"Renault Formula One racing car","by":"Ivan Radic","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Renault_Formula_One_racing_car_(49667991997).jpg"},
+    tape: {"file":"tape.jpg","title":"Revox B77 reel-to-reel audio tape recorder","by":"touhotus","license":"CC BY 2.0","source":"https://commons.wikimedia.org/wiki/File:Revox_B77_reel-to-reel_audio_tape_recorder%2C_ca._1977_(cropped_and_edited).jpg"},
+    tango: {"file":"tango.jpg","title":"Tango Porteño","by":"Manticora87","license":"CC BY-SA 4.0","source":"https://commons.wikimedia.org/wiki/File:Tango_Porte%C3%B1o.jpg"}
+  };
 
   SI.videos = [
-    { id: 'v01', title: "Why do interpreters rely on comprehension, not perception?", gist: "Perception = hearing the sounds. Comprehension = understanding the meaning.", ar: 'المترجم الفوري بيعتمد على الفهم مش على السمع بس.', tone: 'blue', refs: { gaps: [1, 60], mcq: [1, 20], essay: [19] },
+    { id: 'v01', title: "Why do interpreters rely on comprehension, not perception?", gist: "Perception = hearing the sounds. Comprehension = understanding the meaning.", ar: 'المترجم الفوري بيعتمد على الفهم مش على السمع بس.', tone: 'blue', cover: 'conference', refs: { gaps: [1, 60], mcq: [1, 20], essay: [19] },
       scenes: [
         { t: 'title', emoji: '🎧', sub: 'Simultaneous interpreting', say: "Video one. Why do interpreters rely on comprehension, not perception?" },
         { t: 'story', say: "Imagine a conference hall. A speaker talks in English. In a glass booth sits an interpreter, wearing headphones. She is not copying sounds. She understands the idea, and says it in Arabic to the audience.", beats: [{"who":"speaker","text":"We must protect our water resources."},{"who":"interp","text":"يجب أن نحمي مواردنا المائية"},{"who":"audience","text":"Understood! 👍"},{"who":"note","text":"Meaning first, words second"}] },
@@ -32,7 +53,7 @@
         { t: 'def', parts: ['Temporal means ', M('related to time'), '. These are the time features of interpreting.'], say: 'Temporal simply means related to time. Temporal phenomena are the time features of interpreting.' },
         { t: 'steps', items: [{ emoji: '🌊', text: 'Fluency: how smooth the speech is' }, { emoji: '⏸️', text: 'Pausing: the silent gaps' }, { emoji: '🐢', text: 'Lag: the delay behind the speaker' }],
           say: 'Researchers look at three things. Fluency, which is how smooth the speech is. Pausing, which is the silent gaps. And lag, which is how far the interpreter is behind the speaker. This lag is called ear-voice span.' },
-        { t: 'picture', emoji: '💃', anim: 'float', caption: 'The interpreter follows the speaker, one step behind', say: 'Think of a dance. The speaker leads, and the interpreter follows, one step behind. The timing of that dance is what temporal phenomena study.' },
+        { t: "picture", photo: "stopwatch", kb: "in", emoji: "💃", caption: "Interpreting, measured against the clock", say: "Picture researchers holding a stopwatch over the booth. They time how smooth the speech is, how long the pauses are, and how far behind the speaker the interpreter is." },
         { t: 'recap', points: ['Temporal = related to time', 'Fluency + Pausing + Lag'], say: 'Remember: temporal means time. Fluency, pausing, and lag.' }
       ] },
 
@@ -42,11 +63,11 @@
         { t: 'story', say: "The speaker never waits for the interpreter. Both of them are talking at the same time. She listens to the next words while she is still speaking the previous ones.", beats: [{"who":"speaker","text":"The new law will start next month."},{"who":"interp","text":"سيبدأ القانون الجديد الشهر المقبل"},{"who":"note","text":"Two voices at the same time"}] },
         { t: 'def', parts: ['Simultaneity: listening and speaking happen ', M('at the same time'), '. Synchronicity: how closely input and output match in time.'], say: 'Simultaneity means listening and speaking happen at the same time. Synchronicity is how closely the speaker and the interpreter match in time.' },
         { t: 'lanes', bars: 5, lag: 1, label: 'the gap keeps changing', say: 'Look at the two lanes. The speaker talks, and the interpreter follows almost at the same time. But the gap is never fixed. It keeps changing. That is why synchronicity is difficult to measure.' },
-        { t: 'picture', emoji: '🎶', anim: 'float', caption: 'Singing along to a song you have never heard', say: 'It is like singing along to a song you have never heard before. You listen and sing at once. Researchers call this task spectacular and mysterious.' },
+        { t: "picture", photo: "tango", kb: "left", emoji: "🎶", caption: "Moving together, one a fraction behind", say: "Think of tango dancers. They move at almost the same moment, but the follower is always a fraction of a second behind the leader. Simultaneous interpreting is the same kind of dance." },
         { t: 'recap', points: ['Synchronicity = input and output, almost at the same time', 'The time gap keeps changing'], say: 'Remember: same time, and a changing time gap.' }
       ] },
 
-    { id: 'v04', title: "What is the ear-voice span (EVS)?", gist: "The time gap between hearing the speaker and speaking the interpretation.", ar: 'EVS = الفجوة الزمنية بين ما بتسمعه وما بتقوله، وتتقاس بالثواني أو بعدد الكلمات.', tone: 'blue', refs: { gaps: [16, 54, 61, 62, 63, 64, 65, 66, 67, 69, 75], mcq: [8], essay: [3, 4, 5, 6, 7] },
+    { id: 'v04', title: "What is the ear-voice span (EVS)?", gist: "The time gap between hearing the speaker and speaking the interpretation.", ar: 'EVS = الفجوة الزمنية بين ما بتسمعه وما بتقوله، وتتقاس بالثواني أو بعدد الكلمات.', tone: 'blue', cover: 'echo', refs: { gaps: [16, 54, 61, 62, 63, 64, 65, 66, 67, 69, 75], mcq: [8], essay: [3, 4, 5, 6, 7] },
       scenes: [
         { t: 'title', emoji: '🗣️', sub: 'Ear-voice span, or EVS', say: "Video four. What is the ear-voice span, or E V S?" },
         { t: 'story', say: "The speaker says a word. The interpreter hears it, but she waits a moment to understand it. Then she speaks. That small gap, between her ear and her voice, is the ear-voice span.", beats: [{"who":"speaker","text":"Water"},{"who":"note","text":"EVS: the gap, about 2 to 4 seconds"},{"who":"interp","text":"المياه"}] },
@@ -56,7 +77,7 @@
           say: "It can be measured in two ways: in seconds, or by counting the content words. Paneth found an average of two to four seconds. Oléron and Nanpon found that it can range from two to ten seconds, depending on the languages." },
         { t: 'steps', items: [{ emoji: '🔑', text: 'Where the key words are' }, { emoji: '🏗️', text: 'Sentence structure, such as the predicate' }, { emoji: '🧠', text: 'Mental effort' }, { emoji: '😵', text: 'How difficult the speech is' }, { emoji: '👤', text: 'Who is interpreting' }],
           say: 'What changes its length? Where the key words are, the sentence structure, the mental effort, how difficult the speech is, and who is interpreting. The interpreter must understand enough of the original before starting.' },
-        { t: 'picture', art: 'echo', emoji: '⛰️', anim: 'float', caption: 'Like an echo: the voice comes back a moment later', say: 'Think of an echo in a valley. You shout, and the sound comes back a moment later. That small delay is the E V S.' },
+        { t: "picture", photo: "lightning", kb: "up", emoji: "⛰️", caption: "See the flash, hear the thunder a moment later", say: "Think of a storm. You see the lightning first, and you hear the thunder a moment later. That delay between the flash and the sound is like the ear-voice span." },
         { t: 'recap', points: ['Ear = hearing. Voice = speaking. EVS = the gap between them', 'Two ways to measure: seconds and words'], say: 'Remember: ear is hearing, voice is speaking, and E V S is the gap between them.' }
       ] },
 
@@ -69,7 +90,7 @@
           say: 'Look at this sentence. A pause between clauses is normal, and it gives the interpreter time to listen, understand, and organize. But a pause in the middle of a phrase, between the and law, is unusual. It sits at an ungrammatical location.' },
         { t: 'compare', left: { emoji: '🟢', title: 'Normal pauses', items: ['Time to listen and organize', 'Make interpreting easier'] }, right: { emoji: '🔴', title: 'Unusual pauses', items: ['Not enough information to process', 'May hinder the interpreter'] },
           say: 'Normal pauses make interpreting easier. Unusual pauses can hinder the interpreter, because the information is not enough to process. Gerver also found that interpreters pause in the same positions as the speaker. That is called structural correspondence.' },
-        { t: 'picture', art: 'traffic', emoji: '🚦', anim: 'bounce', caption: 'A green light helps. A red light in the wrong place causes a jam', say: 'Think of traffic lights. A normal stop helps traffic. A red light in the middle of nowhere causes a jam.' },
+        { t: "picture", photo: "traffic", kb: "up", emoji: "🚦", caption: "A stop in the right place helps; in the wrong place it causes a jam", say: "Think of traffic lights. A red light at a crossing helps the traffic. A red light in the middle of a road just causes a jam. Pauses work the same way." },
         { t: 'recap', points: ['Normal pauses = help', 'Unusual pauses = difficulty', 'Same pause positions = structural correspondence'], say: 'Remember: normal pauses help, unusual pauses make it difficult.' }
       ] },
 
@@ -82,7 +103,7 @@
           say: 'A long sentence arrives. The interpreter does not process it all at once. They cut it into meaningful chunks, understand each one, and keep it in memory.' },
         { t: 'steps', items: [{ emoji: '✂️', text: 'Divide the speech into units' }, { emoji: '💡', text: 'Understand each unit' }, { emoji: '📦', text: 'Store it in memory' }],
           say: 'Kalina sees segmentation, or chunking, as a comprehension-based strategy that helps memory storage. Each interpreter segments in their own way, and the output chunks do not have to match the input chunks.' },
-        { t: 'picture', art: 'pizza', emoji: '🍕', anim: 'slice', caption: 'Nobody eats a whole pizza in one bite', say: 'Nobody eats a whole pizza in one bite. You eat slice by slice. Segmentation is slicing the speech.' },
+        { t: "picture", photo: "pizza", kb: "in", emoji: "🍕", caption: "Nobody eats a whole pizza in one bite", say: "Nobody eats a whole pizza in one bite. You cut it into slices and eat slice by slice. Segmentation is slicing the speech." },
         { t: 'recap', points: ['Segmentation = Divide + Understand + Remember', 'Chunking helps memory storage'], say: 'Remember: divide, understand, remember.' }
       ] },
 
@@ -93,7 +114,7 @@
         { t: 'def', parts: ['A complete predicative expression is a ', M('noun phrase'), ' followed by a ', M('verb phrase'), ', which is the predicate.'], say: 'A complete predicative expression is a noun phrase followed by a verb phrase. The verb phrase is called the predicate.' },
         { t: 'chunks', words: ['The', 'interpreter', 'understands', 'the', 'message'], groups: [{ from: 0, to: 1, label: 'Noun phrase: who', cls: 'a' }, { from: 2, to: 4, label: 'Verb phrase = predicate: what happens', cls: 'b' }], pauses: [],
           say: 'In this sentence, the interpreter is the noun phrase. It says who. Understands the message is the verb phrase, the predicate. It says what happens. You need both pieces for a complete unit.' },
-        { t: 'picture', art: 'puzzle', emoji: '🧩', anim: 'bounce', caption: 'Two pieces that must click: who + what happens', say: 'Think of two puzzle pieces. Who, and what happens. They must click together. Interpreters usually wait for the predicate before they start speaking.' },
+        { t: "picture", photo: "puzzle", kb: "right", emoji: "🧩", caption: "Pieces that must click together: who + what happens", say: "Think of puzzle pieces. A piece alone means little. Who, and what happens, must click together. Interpreters usually wait for the predicate before they start speaking." },
         { t: 'recap', points: ['Complete unit = noun phrase + verb phrase', 'The predicate is the verb phrase', 'EVS units contain at least a complete predicative expression'], say: 'Remember: noun phrase plus verb phrase makes a complete unit.' }
       ] },
 
@@ -199,13 +220,7 @@
           },
           "say": "In Goldman-Eisler's study, six professional interpreters interpreted short speeches. She found that E V S units are syntactic in nature, not lexical. Interpreters work with structures, not single words."
         },
-        {
-          "t": "picture",
-          "emoji": "🧱",
-          "anim": "slice",
-          "caption": "Not single bricks, but the shape of the wall",
-          "say": "Think of a wall. Lexical is looking at single bricks. Syntactic is looking at how the bricks are built into the wall."
-        },
+        {"t":"picture","photo":"bricks","kb":"left","emoji":"🧱","caption":"Not single bricks, but the wall they build","say":"Watch a bricklayer. Lexical is looking at each single brick. Syntactic is looking at how the bricks are built into a wall. Interpreters work with the wall."},
         {
           "t": "recap",
           "points": [
@@ -225,18 +240,18 @@
         { t: 'def', parts: ['Shadowing is the ', M('immediate verbatim repetition'), ' of the input, in the ', M('same language'), '.'], say: 'Shadowing is the immediate, word for word repetition of the input, in the same language.' },
         { t: 'compare', left: { emoji: '🦜', title: 'Shadowing', items: ['Repeat the words', 'Same language', 'Shorter lag: about 3 words'] }, right: { emoji: '🧠', title: 'Interpreting', items: ['Understand + translate', 'Another language', 'Longer lag: about 4 to 5 words'] },
           say: 'In shadowing you only repeat, in the same language. In interpreting, you understand and translate into another language. Treisman found that the lag is longer in interpreting, about four to five words, than in shadowing, about three words.' },
-        { t: 'picture', art: 'parrot', emoji: '🪞', anim: 'float', caption: 'Your shadow copies you without thinking', say: 'Your shadow copies you without thinking. Interpreting needs more mental effort, so the delay is longer.' },
+        { t: "picture", photo: "parrot", kb: "up", emoji: "🪞", caption: "A parrot repeats; an interpreter understands", say: "A parrot repeats what it hears, without understanding it. That is shadowing. Interpreting needs much more mental effort, so the delay is longer." },
         { t: 'recap', points: ['Shadowing = Repeat', 'Interpreting = Understand + Translate', 'Interpreting needs more mental effort'], say: 'Remember: shadowing is repeat. Interpreting is understand and translate.' }
       ] },
 
-    { id: 'v10', title: "What is cognitive load?", gist: "How much mental effort interpreting takes.", ar: 'الحمل المعرفي = كمية الجهد الذهني، وكل ما زاد زادت الأخطاء وقلّت الطلاقة.', tone: 'amber', refs: { gaps: [69, 73, 74], mcq: [], essay: [9, 10] },
+    { id: 'v10', title: "What is cognitive load?", gist: "How much mental effort interpreting takes.", ar: 'الحمل المعرفي = كمية الجهد الذهني، وكل ما زاد زادت الأخطاء وقلّت الطلاقة.', tone: 'amber', cover: 'juggler', refs: { gaps: [69, 73, 74], mcq: [], essay: [9, 10] },
       scenes: [
         { t: 'title', emoji: '🎒', sub: 'Cognitive load', say: "Video ten. What is cognitive load?" },
         { t: 'story', say: "Now imagine the booth when the speaker talks fast about a very difficult topic. The interpreter must listen, understand, remember, translate, and speak, all at once. Her brain is working very hard.", beats: [{"who":"speaker","text":"Inflation, tariffs and fiscal policy…","badge":{"text":"fast!","tone":"bad"}},{"who":"interp","text":"Hmm… 😓"},{"who":"note","text":"High cognitive load"}] },
         { t: 'def', parts: ['Cognitive load is the ', M('amount of mental effort'), ' needed during interpreting.'], say: 'Cognitive load is the amount of mental effort needed during interpreting.' },
         { t: 'steps', items: [{ emoji: '👂', text: 'Listen' }, { emoji: '💡', text: 'Understand' }, { emoji: '🧠', text: 'Remember' }, { emoji: '🔁', text: 'Translate' }, { emoji: '🗣️', text: 'Speak' }, { emoji: '⚖️', text: 'Keep making decisions' }],
           say: 'The interpreter must listen, understand, remember, translate, and speak, all at once, and keep making decisions. All of this is cognitive activity, and it can make the time lag longer.' },
-        { t: 'picture', art: 'backpack', emoji: '🎒', anim: 'meter', caption: 'Each task makes the bag heavier', meter: { label: 'Mental effort', to: 92 }, say: 'Imagine a backpack that gets heavier with every task. When the load is high, mistakes, memory problems, and less fluent speech can appear.' },
+        { t: "picture", photo: "backpack", kb: "right", emoji: "🎒", caption: "Every task adds weight to the backpack", say: "Imagine a long hike with a backpack that gets heavier with every task. When the load is too high, mistakes, memory problems, and less fluent speech appear." },
         { t: 'recap', points: ['Cognitive load = mental effort', 'High load = more mistakes + less fluency'], say: 'Remember: high load means more mistakes and less fluency.' }
       ] },
 
@@ -246,7 +261,7 @@
         { t: 'story', say: "The speaker's language is the source. The audience's language is the target. The message travels from the source to the target, through the interpreter.", beats: [{"who":"speaker","text":"SOURCE: the original speech, in English"},{"who":"interp","text":"TARGET: the interpretation, in Arabic"},{"who":"note","text":"Input → Interpreter → Output"}] },
         { t: 'compare', left: { emoji: '🎤', title: 'Source', items: ['The original speaker', 'The input', 'Source language, SL'] }, right: { emoji: '🎧', title: 'Target', items: ['The interpreter', 'The output', 'Target language, TL'] },
           say: 'The source is the original speaker, and the original message. It is the input, in the source language, S L. The target is the interpreter, and the translated message. It is the output, in the target language, T L.' },
-        { t: 'picture', emoji: '📮', anim: 'float', caption: 'The sender is the source, the receiver is the target', say: 'Think of a letter. The sender is the source. The receiver is the target. In Gerver\'s study, the source was French and the target was English.' },
+        { t: "picture", photo: "bridge", kb: "left", emoji: "📮", caption: "The interpreter is the bridge from source to target", say: "Think of Qasr El Nil Bridge in Cairo. The source is one bank of the Nile, the target is the other bank, and the interpreter is the bridge between them. In Gerver's study, the source was French and the target was English." },
         { t: 'recap', points: ['Source = input = SL', 'Target = output = TL'], say: 'Remember: source is input, target is output.' }
       ] },
 
@@ -256,11 +271,11 @@
         { t: 'def', parts: ['A ', M('bilingual'), ' is a person who speaks two languages. How good they are in each is called proficiency.'], say: 'A bilingual is a person who speaks two languages. How good they are in each language is called proficiency.' },
         { t: 'compare', left: { emoji: '⚖️', title: 'Balanced bilingual', items: ['Equal proficiency', 'Both languages at the same level'] }, right: { emoji: '🏋️', title: 'Dominant bilingual', items: ['One language is stronger', 'The other is weaker'] },
           say: 'A balanced bilingual has almost equal proficiency in both languages. A dominant bilingual is stronger in one language than in the other. Interpreters need a high level in both the source and the target language.' },
-        { t: 'picture', art: 'scales', emoji: '⚖️', anim: 'tilt', caption: 'Balanced: level scales. Dominant: one side is heavier', say: 'Picture a pair of scales. Balanced means the scales are level. Dominant means one side is heavier.' },
+        { t: "picture", photo: "scales", kb: "in", emoji: "⚖️", caption: "Balanced: level scales. Dominant: one side is heavier", say: "Picture a pair of scales. Balanced means the scales are level. Dominant means one side is heavier." },
         { t: 'recap', points: ['Balanced = Equal', 'Dominant = One is stronger', 'Interpreters need high proficiency in SL and TL'], say: 'Remember: balanced is equal. Dominant is one stronger.' }
       ] },
 
-    { id: 'v13', title: "What is natural translation?", gist: "Translating without any training, just because you know two languages (Harris, 1977).", ar: 'أي ثنائي اللغة عنده قدرة طبيعية على الترجمة من غير تدريب متخصص (هاريس 1977).', tone: 'amber', refs: { gaps: [32, 33], mcq: [], essay: [14] },
+    { id: 'v13', title: "What is natural translation?", gist: "Translating without any training, just because you know two languages (Harris, 1977).", ar: 'أي ثنائي اللغة عنده قدرة طبيعية على الترجمة من غير تدريب متخصص (هاريس 1977).', tone: 'amber', cover: 'sign', refs: { gaps: [32, 33], mcq: [], essay: [14] },
       scenes: [
         { t: 'title', emoji: '👧', sub: 'Natural translation / interpreting', say: "Video thirteen. What is natural translation?" },
         { t: 'def', parts: ['Harris said any bilingual has a ', M('natural ability to translate'), ' without receiving specialized training.'], say: 'Harris, in 1977, said that any bilingual has a natural ability to translate, without receiving any specialized training.' },
@@ -274,7 +289,7 @@
         { t: 'title', emoji: '🌱', sub: 'Factors of proficiency', say: "Video fourteen. What affects proficiency in a second language?" },
         { t: 'steps', items: [{ emoji: '🎂', text: 'Age of acquisition' }, { emoji: '🔥', text: 'Motivation' }, { emoji: '🎭', text: 'Personality' }, { emoji: '🧭', text: 'Closeness of the two languages' }],
           say: 'According to the course book, being proficient in a second language depends on the age of acquisition, motivation, personality, and how close the languages involved are. Your essay answer also mentions language exposure.' },
-        { t: 'picture', art: 'plant', emoji: '🌱', anim: 'grow', caption: 'Start early, keep it watered, and it grows', say: 'Learning a language is like growing a plant. Starting early, staying motivated, and plenty of exposure help it grow.' },
+        { t: "picture", photo: "seedling", kb: "in", emoji: "🌱", caption: "Start early, keep it watered, and it grows", say: "These seedlings are growing on the International Space Station. A language grows like a plant: starting early, staying motivated, and plenty of exposure help it grow." },
         { t: 'recap', points: ['Age + Motivation + Personality + (closeness / exposure)'], say: 'Remember: age, motivation, personality.' }
       ] },
 
@@ -284,7 +299,7 @@
         { t: 'def', parts: ['Language interference happens when ', M('one language influences another'), '.'], say: 'Language interference happens when one language influences another.' },
         { t: 'steps', items: [{ emoji: '🆕', text: 'A learner meets a new word in the second language, L2' }, { emoji: '🔗', text: 'They link it to a concept through their first language, L1' }, { emoji: '🔍', text: 'Later they see how much the concepts really overlap' }],
           say: 'According to De Bot, it happens when second language learners meet new words and link them to concepts through their first language. Later they realize how much the concepts overlap, or do not. And even a high level of proficiency does not prevent it.' },
-        { t: 'picture', emoji: '🙈', anim: 'shake', caption: 'Your first language sneaks in like a nosy neighbour', say: 'Imagine your first language as a nosy neighbour that sneaks into your second language, bringing its grammar and vocabulary with it.' },
+        { t: "picture", photo: "babel", kb: "up", emoji: "🙈", caption: "Languages mixing: a little Babel in your head", say: "Remember the Tower of Babel, where languages got mixed up. Interference is a small Babel inside your head: your first language slips into the second one, with its grammar and its words." },
         { t: 'recap', points: ['One language affects another', 'Can happen even with high proficiency'], say: 'Remember: one language affects another.' }
       ] },
 
@@ -293,7 +308,7 @@
         { t: 'title', emoji: '🧠', sub: 'Psycholinguistics', say: "Video sixteen. What is psycholinguistics?" },
         { t: 'def', parts: ['The study of the ', M('mental and cognitive processes'), ' and the ', M('neural mechanisms'), ' that let a person acquire one or more languages.'], say: 'Psycholinguistics studies the mental and cognitive processes, and the neural mechanisms, that let a person acquire one or more languages. The study of bilingualism belongs to it.' },
         { t: 'steps', items: [{ emoji: '💭', text: 'Mental / cognitive processes: how the mind works with language' }, { emoji: '🧬', text: 'Neural mechanisms: how the brain does it' }, { emoji: '📚', text: 'Language acquisition: learning one or more languages' }], say: 'It asks how the mind understands and produces language, how the brain works during language activities, and how people learn one or more languages.' },
-        { t: 'picture', emoji: '🛋️', anim: 'bounce', caption: 'Language on the therapist\'s couch: language + mind + brain', say: 'Imagine language on a therapist\'s couch. Psycholinguistics is language, plus mind, plus brain.' },
+        { t: "picture", photo: "brain", kb: "in", emoji: "🛋️", caption: "Language + mind + brain", say: "This is a scan of a real human brain. Psycholinguistics studies what happens in here when we learn, understand, and produce language. Language, plus mind, plus brain." },
         { t: 'recap', points: ['Psycholinguistics = Language + Mind + Brain', 'Bilingualism belongs to psycholinguistics'], say: 'Remember: language, mind, and brain.' }
       ] },
 
@@ -304,11 +319,11 @@
         { t: 'def', parts: ['Interpreters need ', M('perceptive skills'), ' (understanding language) and ', M('productive skills'), ' (producing it).'], say: 'Interpreters need perceptive skills, which means understanding language, and productive skills, which means producing it.' },
         { t: 'compare', left: { emoji: '🚗', title: 'Normal bilingual', items: ['Knows two languages', 'May understand but not produce'] }, right: { emoji: '🏎️', title: 'Simultaneous interpreter', items: ['Productive and close to balanced', 'Listens, understands, remembers, speaks', 'Understands one language while speaking another'] },
           say: 'A normal bilingual knows two languages, but may understand without producing. A simultaneous interpreter is productive and close to balanced, and must understand one language while speaking another, under time pressure.' },
-        { t: 'picture', emoji: '🏎️', anim: 'slide', caption: 'Everyone can drive. Interpreters race', say: 'Everyone can drive a car. Interpreters drive a race car, at high speed.' },
+        { t: "picture", photo: "racecar", kb: "right", emoji: "🏎️", caption: "Everyone can drive. Interpreters race", say: "Everyone can drive an ordinary car. A simultaneous interpreter drives a race car, at high speed, with no time to stop." },
         { t: 'recap', points: ['Interpreters do more than speak two languages'], say: 'Remember: interpreters do more than speak two languages.' }
       ] },
 
-    { id: 'v18', title: "What are early sequential and late bilinguals?", gist: "Early sequential = both languages from birth. Late = the second language later in life.", ar: 'الثنائي المبكر (early sequential) اتعرّض للغتين من الولادة، والمتأخر اتعلّم التانية بعد الأولى.', tone: 'green', refs: { gaps: [79], mcq: [], essay: [] },
+    { id: 'v18', title: "What are early sequential and late bilinguals?", gist: "Early sequential = both languages from birth. Late = the second language later in life.", ar: 'الثنائي المبكر (early sequential) اتعرّض للغتين من الولادة، والمتأخر اتعلّم التانية بعد الأولى.', tone: 'green', cover: 'seedling', refs: { gaps: [79], mcq: [], essay: [] },
       scenes: [
         { t: 'title', emoji: '⏳', sub: 'When bilinguals learn their languages', say: "Video eighteen. What are early sequential and late bilinguals?" },
         { t: 'steps', items: [{ emoji: '👶', text: 'Simultaneous bilingual' }, { emoji: '🍼', text: 'Early sequential: exposed to the two languages from birth' }, { emoji: '🧑‍🎓', text: 'Late bilingual: learns a second language later, after the first' }],
@@ -323,7 +338,7 @@
         { t: 'story', say: "Picture Gerver's experiment: students in booths listen to a recorded French speech and interpret it into English. Before that, Goldman-Eisler asked six professional interpreters to interpret short speeches of three to six minutes.", beats: [{"who":"speaker","text":"Un discours en français…"},{"who":"interp","text":"A speech in English…"},{"who":"note","text":"Goldman-Eisler: 6 interpreters · Gerver: French into English"}] },
         { t: 'compare', left: { emoji: '👩‍🏫', title: 'Goldman-Eisler', items: ['Six professional interpreters', 'Short speeches, 3 to 6 minutes', 'Several language pairs', 'EVS units are syntactic'] }, right: { emoji: '🇫🇷', title: 'Gerver', items: ['Students interpreting pre-recorded French into English', 'Pauses over 0.25 seconds removed', 'Interpreters paused where the speaker paused'] },
           say: 'Goldman-Eisler studied six professional interpreters, who interpreted short speeches of three to six minutes, in several language pairs. She found that E V S units are syntactic. Gerver had students interpret pre-recorded French speech into English, after removing pauses longer than a quarter of a second. Their pauses fell in the same places as the speaker\'s.' },
-        { t: 'picture', emoji: '🔬', anim: 'bounce', caption: 'Goldman-Eisler: 6 interpreters. Gerver: French into English', say: 'To remember: Goldman-Eisler, six interpreters. Gerver served French, and the students replied in English.' },
+        { t: "picture", photo: "tape", kb: "in", emoji: "🔬", caption: "Gerver: a pre-recorded French speech, pauses removed", say: "Gerver used pre-recorded speech, played from a tape recorder like this one, after cutting out every pause longer than a quarter of a second." },
         { t: 'recap', points: ['Goldman-Eisler: 6 professionals, 3 to 6 minutes, syntactic units', 'Gerver: French into English, pauses over 0.25 s removed, structural correspondence'], say: 'Remember these two studies, and their numbers.' }
       ] }
   ];

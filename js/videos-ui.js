@@ -94,10 +94,39 @@
   }
 
   /* ---------- scene renderers: each returns the scene element; --d is the scene length in seconds ---------- */
+  function photoOf(id) { return id && UN.SI && UN.SI.photos ? UN.SI.photos[id] : null; }
+  function coverOf(v) {
+    if (v.cover) return v.cover;
+    for (var i = 0; i < v.scenes.length; i++) if (v.scenes[i].photo) return v.scenes[i].photo;
+    return null;
+  }
+  function photoImg(ph, onFail) {
+    var img = h('img', { src: 'media/img/si/' + ph.file, alt: ph.title, loading: 'lazy' });
+    if (onFail) img.addEventListener('error', onFail);
+    return img;
+  }
+  function credit(ph) { return h('figcaption', null, (ph.by ? ph.by + ' · ' : '') + ph.license); }
+
   var R = {
-    story: function (sc) { return h('div', { class: 'vs vs-story' }, hall(sc)); },
+    // a real photo of an interpreter at work, with what is said shown on top of it
+    story: function (sc) {
+      var ph = photoOf(sc.photo || 'conference');
+      if (!ph) return h('div', { class: 'vs vs-story' }, hall(sc));
+      var box = h('div', { class: 'vs vs-story' });
+      var fig = h('figure', { class: 'vphoto vstoryph kb-' + (sc.kb || 'left') }, photoImg(ph, function () { box.textContent = ''; box.appendChild(hall(sc)); }), credit(ph));
+      var lines = h('div', { class: 'vsbwrap' }, (sc.beats || []).map(function (b, k) {
+        return h('div', { class: 'vsb vsb-' + b.who + ' pop', style: stagger(k * 1.4 + 0.2) },
+          b.who === 'note' ? null : h('small', null, t('vid.who.' + b.who)), h('span', { dir: 'auto' }, b.text),
+          b.badge ? h('em', { class: 'vsbadge ' + b.badge.tone }, b.badge.text) : null);
+      }));
+      fig.appendChild(lines);
+      box.appendChild(fig);
+      return box;
+    },
     title: function (sc, v, idx, n) {
-      return h('div', { class: 'vs vs-title' },
+      var cov = photoOf(coverOf(v));
+      return h('div', { class: 'vs vs-title' + (cov ? ' has-cover' : '') },
+        cov ? h('figure', { class: 'vcover kb-in', 'aria-hidden': 'true' }, photoImg(cov, function (e) { e.target.parentNode.remove(); })) : null,
         h('div', { class: 'vnumbadge pop', style: stagger(0) }, String(n)),
         h('div', { class: 'vbigemoji pop', style: stagger(1) }, em(sc.emoji)),
         h('h2', { class: 'pop', style: stagger(2) }, v.title), (v.gist || sc.sub) ? h('p', { class: 'vsub pop', style: stagger(3) }, v.gist || sc.sub) : null);
@@ -159,7 +188,7 @@
         var fallback = function () { var alt = R.picture(Object.assign({}, sc, { photo: null })); fig.replaceWith(alt.firstChild); };
         var img = h('img', { src: 'media/img/si/' + ph.file, alt: ph.title || sc.caption, loading: 'lazy' });
         img.addEventListener('error', fallback);
-        var fig = h('figure', { class: 'vphoto pop kb-' + (sc.kb || 'in'), style: stagger(0) }, img, h('figcaption', null, (ph.by ? ph.by + ' · ' : '') + ph.license));
+        var fig = h('figure', { class: 'vphoto pop kb-' + (sc.kb || 'in'), style: stagger(0) }, img, credit(ph));
         return h('div', { class: 'vs vs-picture' }, fig, h('p', { class: 'vcaption pop', style: stagger(1.5) }, sc.caption));
       }
       var artEl = sc.art && UN.art && UN.art.scene ? UN.art.scene(sc.art) : null;
@@ -207,6 +236,9 @@
     });
     page.appendChild(grid);
     page.appendChild(h('p', { class: 'muted' }, t('vid.note')));
+    var P = (UN.SI && UN.SI.photos) || {};
+    if (Object.keys(P).length) page.appendChild(h('details', { class: 'card vcredits' }, h('summary', null, t('vid.credits')),
+      h('ul', null, Object.keys(P).map(function (k) { var p = P[k]; return h('li', null, h('a', { href: p.source, target: '_blank', rel: 'noopener noreferrer' }, p.title), ' · ' + p.by + ' · ' + p.license + ' · Wikimedia Commons'); }))));
     return page;
   };
 

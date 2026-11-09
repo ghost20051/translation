@@ -270,7 +270,13 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
   });
   const cov = { gaps: new Set(), mcq: new Set(), essay: new Set() };
   V.forEach(v => Object.keys(cov).forEach(k => v.refs[k].forEach(n => cov[k].add(n))));
-  assert.strictEqual(cov.gaps.size, 80, 'every fill-in-the-gap question has a video'); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
+  assert.strictEqual(cov.gaps.size, 80, 'every fill-in-the-gap question has a video');
+  // every photo used exists in the registry and on disk, and has a licence and an author
+  const fsx = require('fs'), P = UN.SI.photos;
+  Object.keys(P).forEach(k => { assert.ok(P[k].license && P[k].by && /^https:\/\/commons\.wikimedia\.org\//.test(P[k].source), k); assert.ok(fsx.existsSync(path.join(__dirname, '..', 'media', 'img', 'si', P[k].file)), 'missing photo file ' + k); });
+  V.forEach(v => v.scenes.forEach(sc => { if (sc.photo) assert.ok(P[sc.photo], v.id + ' unknown photo ' + sc.photo); }));
+  V.forEach(v => { if (v.cover) assert.ok(P[v.cover], v.id + ' unknown cover ' + v.cover); });
+  assert.ok(V.filter(v => v.scenes.some(sc => sc.photo) || v.cover).length >= 17, 'most videos use a real photo'); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
 });
 
 console.log('\n' + n + ' interpretation test groups passed');
