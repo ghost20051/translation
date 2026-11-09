@@ -460,3 +460,14 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .vsbadge { display: inline-block; margin-inline-start: 6px; padding: 0 6px; border-radius: 6px; font-style: normal; font-size: .8em; background: #86efac; } .vsbadge.bad { background: #fca5a5; }
 .vcredits ul { margin: 8px 0 0; padding-inline-start: 1.1em; display: grid; gap: 4px; font-size: .85rem; } .vcredits a { color: var(--link); }
 .vstage.idle .vcover img, .vstage.idle .vphoto img { animation-play-state: paused; }
+
+/* worked example scene */
+.vs-example { width: 100%; max-width: 640px; } .vexrows { width: 100%; display: grid; gap: .45em; }
+.vex { padding: .5em .8em; border-radius: 12px; background: rgba(255, 255, 255, .95); color: #0f172a; text-align: start; box-shadow: 0 4px 12px rgba(0, 0, 0, .2); }
+.vexhead { display: flex; flex-wrap: wrap; align-items: center; gap: .5em; margin-bottom: .15em; } .vexhead small { font-size: .7em; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+.vexhead em { font-style: normal; font-size: .7em; font-weight: 800; padding: 0 .5em; border-radius: 6px; background: #bbf7d0; }
+.vextime { font-size: .72em; padding: 0 .45em; border-radius: 6px; background: #0f172a; color: #fff; font-variant-numeric: tabular-nums; }
+.vextext { font-size: 1.05em; font-weight: 700; line-height: 1.4; }
+.vex-tgt { background: #dcfce7; } .vex-good { background: #dcfce7; border-inline-start: 5px solid #16a34a; } .vex-bad { background: #fee2e2; border-inline-start: 5px solid #dc2626; }
+.vex-note { background: rgba(15, 23, 42, .78); color: #fff; } .vex-note .vexhead small { opacity: .85; }
+.vlang { margin-inline-start: auto; } .vcap[dir="rtl"] { font-family: inherit; }

@@ -11,14 +11,14 @@
   /* ---------- timing (pure, also used by the tests) ---------- */
   function words(s) { return String(s || '').split(/\s+/).filter(Boolean).length; }
   function sceneSeconds(sc) { return Math.max(3.5, words(sc.say) / 2.6 + 1); }
-  function timeline(v) {
+  function timeline(v, sayOf) {
     var t0 = 0;
-    var parts = v.scenes.map(function (sc) { var d = sceneSeconds(sc); var p = { start: t0, dur: d, words: words(sc.say) }; t0 += d; return p; });
+    var parts = v.scenes.map(function (sc, i) { var d = sceneSeconds(sayOf ? { say: sayOf(i) } : sc); var p = { start: t0, dur: d, words: words(sc.say) }; t0 += d; return p; });
     return { parts: parts, total: t0 };
   }
   // where scene boundaries fall inside a recorded narration of a given length (shared out by word count)
-  function boundaries(v, length) {
-    var w = v.scenes.map(function (sc) { return Math.max(4, words(sc.say)); }), sum = w.reduce(function (a, b) { return a + b; }, 0), t0 = 0;
+  function boundaries(v, length, sayOf) {
+    var w = v.scenes.map(function (sc, i) { return Math.max(4, words(sayOf ? sayOf(i) : sc.say)); }), sum = w.reduce(function (a, b) { return a + b; }, 0), t0 = 0;
     return w.map(function (x) { var d = length * x / sum, p = { start: t0, dur: d }; t0 += d; return p; });
   }
   // native emoji as a plain text node (strings go through the icon converter)
@@ -108,6 +108,17 @@
   function credit(ph) { return h('figcaption', null, (ph.by ? ph.by + ' · ' : '') + ph.license); }
 
   var R = {
+    // a worked example: what was said, what the interpreter said, and what to notice
+    example: function (sc) {
+      var DEF = { src: t('vid.who.speaker'), tgt: t('vid.who.interp'), good: '✓', bad: '✗', note: '' };
+      return h('div', { class: 'vs vs-example' }, h('span', { class: 'vchip pop', style: stagger(0) }, t('vid.example')),
+        h('div', { class: 'vexrows' }, sc.rows.map(function (r, k) {
+          var lbl = r.label || DEF[r.who];
+          return h('div', { class: 'vex vex-' + r.who + ' pop', style: stagger(1 + k * 1.3) },
+            (lbl || r.time) ? h('div', { class: 'vexhead' }, r.time ? h('b', { class: 'vextime' }, r.time) : null, lbl ? h('small', null, lbl) : null, r.tag ? h('em', null, r.tag) : null) : null,
+            h('div', { class: 'vextext', dir: 'auto' }, r.text));
+        })));
+    },
     // a real photo of an interpreter at work, with what is said shown on top of it
     story: function (sc) {
       var ph = photoOf(sc.photo || 'conference');
@@ -216,6 +227,7 @@
       else { sc.words.forEach(function (w, j) { c.push([f(j * 0.7), 'blip']); }); (sc.pauses || []).forEach(function (p) { c.push([f(p.after * 0.7 + 0.5), p.kind === 'ok' ? 'pair' : 'miss']); }); }
     }
     else if (sc.t === 'story') { c.push([0.02, 'whoosh']); (sc.beats || []).forEach(function (b, j) { c.push([f(j * 1.4 + 0.2) + 0.05, b.who === 'note' ? 'ding' : 'pop']); }); }
+    else if (sc.t === 'example') { c.push([0.02, 'whoosh']); sc.rows.forEach(function (r, j) { c.push([f(1 + j * 1.3) + 0.04, r.who === 'bad' ? 'miss' : r.who === 'good' ? 'pair' : 'pop']); }); }
     else if (sc.t === 'compare') { c.push([f(0), 'pop'], [f(2.8), 'pop']); }
     else if (sc.t === 'steps') sc.items.forEach(function (it, j) { c.push([f(j * 1.2), 'coin']); });
     else if (sc.t === 'picture') c.push([0.05, 'boing'], [f(1.5), 'pop']);
@@ -247,7 +259,10 @@
     var idx0 = -1;
     UN.videos.forEach(function (v, i) { if (v.id === arg) idx0 = i; });
     if (idx0 < 0) return UN.routes.videos();
-    var v = UN.videos[idx0], page = h('div', { class: 'page' }), tl = timeline(v);
+    var v = UN.videos[idx0], page = h('div', { class: 'page' });
+    var nlang = S().lang === 'ar' ? 'ar' : 'en';
+    function sayOf(i) { var ar = UN.SI && UN.SI.videosAr && UN.SI.videosAr[v.id]; return nlang === 'ar' && ar && ar[i] ? ar[i] : v.scenes[i].say; }
+    var tl = timeline(v, sayOf);
     var cueTimers = [];
     var cur = -1, playing = false, finished = false, voiceOn = true, ccOn = true, mode = 'timer', audio = null, tts = null, boundsMs = null, timer = null, sceneT0 = 0;
     try { voiceOn = localStorage.getItem(VOICE_KEY) !== 'off'; } catch (e) { /* storage may be blocked */ }
@@ -268,7 +283,21 @@
     var bVoice = h('button', { type: 'button', class: 'btn ghost small', 'aria-pressed': String(voiceOn), 'aria-label': t('vid.voice') }, ic(voiceOn ? 'volume' : 'volume-x'));
     var dots = h('div', { class: 'vdots' }, v.scenes.map(function (sc, i) { return h('button', { type: 'button', class: 'vdot', 'aria-label': t('vid.scene', { n: i + 1 }), onclick: function () { goto(i, true); } }, ''); }));
     var modeNote = h('small', { class: 'muted vmode' });
-    var ctrl = h('div', { class: 'vctrl' }, bPrev, bPlay, bNext, bRe, bCC, bVoice);
+    // narration language: English, or Arabic with the terms kept in English
+    var langBox = h('div', { class: 'seg vlang', role: 'group', 'aria-label': t('vid.narr') });
+    function drawLang() {
+      langBox.textContent = '';
+      [['en', 'English'], ['ar', 'عربي']].forEach(function (o) {
+        langBox.appendChild(h('button', { type: 'button', lang: o[0], class: o[0] === nlang ? 'on' : '', 'aria-pressed': String(o[0] === nlang), onclick: function () {
+          if (o[0] === nlang) return;
+          var wasPlaying = playing; stopVoices(); playing = false;
+          nlang = o[0]; tl = timeline(v, sayOf); audio = null; boundsMs = null; chooseMode(); drawLang();
+          if (wasPlaying) { playing = true; setPlayingUI(); playScene(cur < 0 ? 0 : cur); } else { show(cur < 0 ? 0 : cur); setPlayingUI(); }
+        } }, o[1]));
+      });
+    }
+    drawLang();
+    var ctrl = h('div', { class: 'vctrl' }, bPrev, bPlay, bNext, bRe, bCC, bVoice, langBox);
 
     // floating sparkles in the background and a burst of confetti at the end
     var fx = h('div', { class: 'vfx', 'aria-hidden': 'true' });
@@ -299,7 +328,7 @@
       var el = (R[sc.t] || R.title)(sc, v, i, idx0 + 1);
       el.style.setProperty('--d', sceneLength(i).toFixed(2) + 's');
       sceneBox.textContent = ''; sceneBox.appendChild(el);
-      cap.textContent = sc.say; cap.classList.toggle('hidden', !ccOn);
+      cap.textContent = sayOf(i); cap.setAttribute('dir', nlang === 'ar' ? 'rtl' : 'ltr'); cap.classList.toggle('hidden', !ccOn);
       drawDots(); setProgress();
     }
 
@@ -314,7 +343,7 @@
       if (!tts || !voiceOn) return false;
       try {
         window.speechSynthesis.cancel();
-        var u = new SpeechSynthesisUtterance(v.scenes[i].say); u.lang = 'en-US'; u.rate = 0.95;
+        var u = new SpeechSynthesisUtterance(sayOf(i)); u.lang = nlang === 'ar' ? 'ar-EG' : 'en-US'; u.rate = 0.95;
         u.onend = function () { if (playing && cur === i) advance(i); };
         window.speechSynthesis.speak(u); return true;
       } catch (e) { return false; }
@@ -381,12 +410,12 @@
       tts = ('speechSynthesis' in window && typeof SpeechSynthesisUtterance === 'function') ? true : null;
       mode = tts ? 'tts' : 'timer';
       modeNote.textContent = t(tts ? 'vid.modeTts' : 'vid.modeSilent');
-      var src = v.audio || ('media/audio/si/' + v.id + '.mp3');
+      var src = nlang === 'ar' ? ('media/audio/si/ar/' + v.id + '.mp3') : (v.audio || ('media/audio/si/' + v.id + '.mp3'));
       try {
         var a = new Audio(); a.preload = 'metadata';
         a.addEventListener('loadedmetadata', function () {
           if (!isFinite(a.duration) || a.duration < 2) return;
-          audio = a; mode = 'mp3'; boundsMs = boundaries(v, a.duration);
+          audio = a; mode = 'mp3'; boundsMs = boundaries(v, a.duration, sayOf);
           modeNote.textContent = t('vid.modeAudio');
           a.addEventListener('ended', function () { if (playing && cur === v.scenes.length - 1) finish(); });
           if (cur >= 0) { var el = sceneBox.firstChild; if (el) el.style.setProperty('--d', sceneLength(cur).toFixed(2) + 's'); }

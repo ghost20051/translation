@@ -6,7 +6,7 @@ global.window = global;
 global.UN = {};
 const mem = {};
 global.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
-['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'data/interp/gaps', 'data/interp/bank', 'data/interp/videos', 'data/interp/content', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
+['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'data/interp/gaps', 'data/interp/bank', 'data/interp/videos', 'data/interp/videos-ar', 'data/interp/content', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
   .forEach(f => require(path.join('..', 'js', f + '.js')));
 
 let n = 0;
@@ -246,7 +246,7 @@ ok('Typos: a small spelling slip still counts; short or different words do not',
 
 function sc0(v) { return v.scenes[0]; }
 ok('Videos: 19 short explainers with valid scenes, narration and question links; every question is explained somewhere', () => {
-  const V = UN.videos, TYPES = ['title', 'def', 'lanes', 'chunks', 'compare', 'steps', 'picture', 'recap', 'story'];
+  const V = UN.videos, TYPES = ['title', 'def', 'lanes', 'chunks', 'compare', 'steps', 'picture', 'recap', 'story', 'example'];
   assert.strictEqual(V.length, 19);
   assert.strictEqual(new Set(V.map(v => v.id)).size, 19);
   V.forEach((v, i) => {
@@ -262,7 +262,14 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
       if (sc.t === 'picture') assert.ok(sc.caption && (sc.emoji || sc.art));
       if (sc.t === 'compare') assert.ok(sc.left.items.length && sc.right.items.length);
     });
-    assert.ok(words >= 50 && words <= 240, v.id + ' total narration ' + words);
+    assert.ok(words >= 50 && words <= 320, v.id + ' total narration ' + words);
+    // a worked example in every video, and an Arabic narration line for every scene
+    const ex = v.scenes.filter(s => s.t === 'example');
+    assert.ok(ex.length >= 1, v.id + ' needs a worked example');
+    ex.forEach(s => s.rows.forEach(r => assert.ok(['src', 'tgt', 'good', 'bad', 'note'].indexOf(r.who) !== -1 && r.text, v.id + ' example row')));
+    const ar = UN.SI.videosAr[v.id];
+    assert.ok(ar && ar.length === v.scenes.length, v.id + ' Arabic narration lines ' + (ar && ar.length) + ' vs scenes ' + v.scenes.length);
+    ar.forEach((line, i) => assert.ok(/[\u0600-\u06FF]/.test(line) && line.length > 8, v.id + ' Arabic line ' + i));
     assert.ok(v.gist && /\?$|:/.test(v.title) || v.id === 'v19', v.id + ' title should be a clear question');
     if (sc0(v).say.indexOf('Video ') !== 0) assert.fail(v.id + ' title narration');
     (v.scenes.filter(s => s.t === 'story')).forEach(s => s.beats.forEach(b => assert.ok(['speaker', 'interp', 'audience', 'note'].indexOf(b.who) !== -1 && b.text, v.id + ' story beat')));
