@@ -83,3 +83,12 @@ All sounds are generated in the browser with the Web Audio API (no audio files, 
 The top bar shows the current subject by its full name; tap it to choose another (UN Translation, Tourist Translation, Simultaneous Interpretation). Progress is kept separately for each subject. A fourth subject can be added the same way: its content files, one `registerSubject` call, and an icon and description for the picker.
 
 Simultaneous Interpretation uses fill-in-the-gap questions (shown with a real blank and the answer in colour), 20 multiple-choice questions, 20 essay questions with memory tricks, ten key concepts, funny memory pictures, games, lessons and balanced exams of 36 gap questions and 4 essays.
+
+## Short videos (Simultaneous Interpretation)
+
+19 short explainer videos, one for each hard term in the questions (temporal phenomena, ear-voice span, segmentation, syntactic vs lexical, shadowing, cognitive load, bilingualism and more). Each has a clear question as its title, a short story where it fits, a worked example (real sentences and the interpreter's output), a memory photo and a recap that lists the questions it explains (Part 1, 2 or 3 numbers).
+
+- The explanations follow the course book (Simultaneous Interpreting 3, Suez Canal University) and the supplied questions. The memory pictures and examples are study aids, not exam answers.
+- Three ways to watch: English, English with an Arabic line under each sentence, and Arabic (Egyptian Arabic that keeps the terms in English). Big captions follow the voice word by word.
+- Voices: English uses the device's own voice. The Arabic narration was recorded with Belmasry (بالمصري, Applied Innovation Center, Ministry of Communications and Information Technology, beta), one clip per scene in `media/audio/si/ar/`. No terms of use were found for Belmasry; this is a non-commercial study site.
+- Photos: real photos from Wikimedia Commons under free licences (CC0, public domain, CC BY, CC BY-SA), stored in `media/img/si/` and credited on the Short videos page. They move slowly (pan and zoom) inside the videos.
