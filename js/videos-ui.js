@@ -131,7 +131,12 @@
       var ph = photoOf(sc.photo || 'conference');
       if (!ph) return h('div', { class: 'vs vs-story' }, hall(sc));
       var box = h('div', { class: 'vs vs-story' });
-      var fig = h('figure', { class: 'vphoto vstoryph kb-' + (sc.kb || 'left') }, photoImg(ph, function () { box.textContent = ''; box.appendChild(hall(sc)); }), credit(ph));
+      var fig = h('figure', { class: 'vphoto vstoryph kb-' + (sc.kb || 'left') }, photoImg(ph, function () { box.textContent = ''; box.appendChild(hall(sc)); }));
+      // a second photo can take over part-way through, when the narration moves on to something else
+      var ph2 = photoOf(sc.photo2);
+      if (ph2) fig.appendChild(h('div', { class: 'vswap', style: '--at:' + (sc.switchAt || 0.5) }, photoImg(ph2), credit(ph2)));
+      var cr = credit(ph); if (ph2) cr.classList.add('vswapout'); cr.style.setProperty('--at', sc.switchAt || 0.5);
+      fig.appendChild(cr);
       var lines = h('div', { class: 'vsbwrap' }, (sc.beats || []).map(function (b, k) {
         return h('div', { class: 'vsb vsb-' + b.who + ' pop', style: stagger(k * 1.4 + 0.2) },
           b.who === 'note' ? null : h('small', null, t('vid.who.' + b.who)), h('span', { dir: 'auto' }, b.text),

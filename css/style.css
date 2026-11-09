@@ -437,6 +437,12 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .vphoto { position: relative; margin: 0; width: min(78%, 520px); aspect-ratio: 16 / 10; overflow: hidden; border-radius: 14px; box-shadow: 0 10px 24px rgba(0, 0, 0, .35); border: 3px solid rgba(255, 255, 255, .85); }
 .vphoto img { width: 100%; height: 100%; object-fit: cover; display: block; animation: vkbin 14s ease-in-out infinite alternate; }
 .vphoto video, .vcover video { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* a story scene whose photo changes part-way, when the narration moves on (the second photo fades in at --at of the scene) */
+.vswap { position: absolute; inset: 0; opacity: 0; animation: vswapin .7s ease forwards; animation-delay: calc(var(--d) * var(--at)); }
+.vswap img, .vswap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vswapout { animation: vswapout .7s ease forwards; animation-delay: calc(var(--d) * var(--at)); }
+@keyframes vswapin { to { opacity: 1; } } @keyframes vswapout { to { opacity: 0; } }
+.vstage.idle .vswap, .vstage.idle .vswapout { animation: none; }
 /* Learn page: every question in order, part by part, with a "studied" tick on each number */
 .lparts { margin: 4px 0 22px; } .lptabs { display: flex; flex-wrap: wrap; overflow: visible; margin: 6px 0 10px; } .lptabs .tab small { opacity: .7; }
 .lpstatus { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; }
