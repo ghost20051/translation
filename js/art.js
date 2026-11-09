@@ -104,5 +104,86 @@
     return svg;
   }
 
-  UN.art = { make: make, names: Object.keys(DESIGN) };
+  /* Illustrations for the explainer videos, drawn on a 220 x 160 canvas. Animated with the CSS classes in style.css. */
+  function P(d, fill, extra) { var a = { d: d, fill: fill || 'none' }; Object.keys(extra || {}).forEach(function (k) { a[k] = extra[k]; }); return el('path', a); }
+  var SCENE = {
+    // a pizza cut into slices: one slice lifts out
+    pizza: function () {
+      var cx = 110, cy = 82, r = 62, kids = [el('ellipse', { cx: cx, cy: 150, rx: 66, ry: 7, fill: '#000', opacity: '.2' })];
+      for (var k = 0; k < 8; k++) {
+        var a1 = (k * 45 - 90) * Math.PI / 180, a2 = ((k + 1) * 45 - 90) * Math.PI / 180, am = (a1 + a2) / 2;
+        var x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1), x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+        var g = el('g', { class: k === 1 ? 'vslice-out' : '' }, [
+          P('M' + cx + ' ' + cy + ' L' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A' + r + ' ' + r + ' 0 0 1 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z', '#fcd34d', { stroke: '#d97706', 'stroke-width': '4', 'stroke-linejoin': 'round' }),
+          el('circle', { cx: (cx + 38 * Math.cos(am)).toFixed(1), cy: (cy + 38 * Math.sin(am)).toFixed(1), r: '6.5', fill: '#dc2626' }),
+          el('circle', { cx: (cx + 22 * Math.cos(am + .25)).toFixed(1), cy: (cy + 22 * Math.sin(am + .25)).toFixed(1), r: '3', fill: '#16a34a' })]);
+        kids.push(g);
+      }
+      return kids;
+    },
+    // traffic lights that cycle red, yellow, green
+    traffic: function () {
+      return [el('rect', { x: '104', y: '120', width: '12', height: '32', fill: '#475569' }), el('rect', { x: '78', y: '8', width: '64', height: '118', rx: '16', fill: '#1f2937', stroke: '#0f172a', 'stroke-width': '3' }),
+        el('circle', { cx: '110', cy: '38', r: '16', fill: '#ef4444', class: 'vtl vtl-r' }), el('circle', { cx: '110', cy: '67', r: '16', fill: '#facc15', class: 'vtl vtl-y' }), el('circle', { cx: '110', cy: '96', r: '16', fill: '#22c55e', class: 'vtl vtl-g' }),
+        el('ellipse', { cx: '110', cy: '154', rx: '34', ry: '5', fill: '#000', opacity: '.2' })];
+    },
+    // a shout whose echo comes back after a moment
+    echo: function () {
+      return [P('M0 150 L55 70 L95 120 L140 45 L220 150 Z', '#475569'), P('M0 150 L40 100 L80 150 Z', '#64748b'), P('M140 45 L128 62 L140 58 L150 66 Z', '#e2e8f0'),
+        el('circle', { cx: '30', cy: '112', r: '9', fill: '#fcd34d' }), el('rect', { x: '23', y: '120', width: '14', height: '26', rx: '6', fill: '#f97316' }),
+        el('g', { class: 'vecho vecho-out' }, [P('M44 100 Q54 112 44 124', 'none', { stroke: '#fff', 'stroke-width': '3', 'stroke-linecap': 'round' }), P('M54 92 Q70 112 54 132', 'none', { stroke: '#fff', 'stroke-width': '3', 'stroke-linecap': 'round' })]),
+        el('g', { class: 'vecho vecho-back' }, [P('M170 86 Q160 98 170 110', 'none', { stroke: '#fde68a', 'stroke-width': '3', 'stroke-linecap': 'round' }), P('M180 78 Q164 98 180 118', 'none', { stroke: '#fde68a', 'stroke-width': '3', 'stroke-linecap': 'round' })]),
+        el('text', { x: '12', y: '30', fill: '#fff', 'font-size': '16', 'font-weight': '800' }, [document.createTextNode('Hello!')]), el('text', { x: '150', y: '30', fill: '#fde68a', 'font-size': '16', 'font-weight': '800', class: 'vecho-text' }, [document.createTextNode('hello...')])];
+    },
+    // a backpack that sags as tasks are added
+    backpack: function () {
+      return [el('ellipse', { cx: '110', cy: '152', rx: '56', ry: '7', fill: '#000', opacity: '.2' }), el('g', { class: 'vsag' }, [
+        P('M72 52 Q110 20 148 52 L154 134 Q110 148 66 134 Z', '#f59e0b', { stroke: '#b45309', 'stroke-width': '4', 'stroke-linejoin': 'round' }),
+        P('M86 50 Q110 30 134 50', 'none', { stroke: '#b45309', 'stroke-width': '5', 'stroke-linecap': 'round' }),
+        el('rect', { x: '88', y: '92', width: '44', height: '32', rx: '10', fill: '#fbbf24', stroke: '#b45309', 'stroke-width': '3' }),
+        el('rect', { x: '98', y: '102', width: '24', height: '5', rx: '2.5', fill: '#b45309' }),
+        el('rect', { x: '84', y: '36', width: '14', height: '20', rx: '3', fill: '#3b82f6', class: 'vbook b1' }), el('rect', { x: '100', y: '30', width: '14', height: '26', rx: '3', fill: '#ef4444', class: 'vbook b2' }), el('rect', { x: '116', y: '34', width: '14', height: '22', rx: '3', fill: '#22c55e', class: 'vbook b3' })]),
+        el('text', { x: '178', y: '88', fill: '#fff', 'font-size': '18', 'font-weight': '800', class: 'vsag-t' }, [document.createTextNode('😓')])];
+    },
+    // scales that settle level
+    scales: function () {
+      return [el('ellipse', { cx: '110', cy: '152', rx: '46', ry: '6', fill: '#000', opacity: '.2' }), el('rect', { x: '104', y: '40', width: '12', height: '106', rx: '4', fill: '#94a3b8' }), el('rect', { x: '78', y: '140', width: '64', height: '10', rx: '5', fill: '#64748b' }),
+        el('g', { transform: 'translate(110 0) scale(.86) translate(-110 0)' }, [el('g', { class: 'vbeam' }, [el('rect', { x: '30', y: '36', width: '160', height: '8', rx: '4', fill: '#e2e8f0' }),
+          el('path', { d: 'M36 44 L18 92 H70 Z', fill: 'none', stroke: '#e2e8f0', 'stroke-width': '2' }), el('path', { d: 'M184 44 L166 92 H218 Z', fill: 'none', stroke: '#e2e8f0', 'stroke-width': '2' }),
+          P('M14 92 H74 Q44 118 14 92 Z', '#fcd34d'), P('M162 92 H222 Q192 118 162 92 Z', '#fcd34d'),
+          el('circle', { cx: '44', cy: '86', r: '9', fill: '#3b82f6' }), el('circle', { cx: '192', cy: '86', r: '9', fill: '#22c55e' })])]),
+        el('circle', { cx: '110', cy: '40', r: '9', fill: '#f8fafc', stroke: '#94a3b8', 'stroke-width': '3' })];
+    },
+    // a parrot that repeats everything
+    parrot: function () {
+      return [el('rect', { x: '30', y: '136', width: '120', height: '8', rx: '4', fill: '#92400e' }),
+        P('M70 128 Q50 156 38 150 Q56 138 66 120 Z', '#ef4444'), P('M76 128 Q66 160 54 158 Q70 142 74 120 Z', '#3b82f6'),
+        el('ellipse', { cx: '88', cy: '96', rx: '30', ry: '42', fill: '#22c55e' }), P('M76 88 Q50 100 70 132 Q92 118 90 92 Z', '#15803d'),
+        el('g', { class: 'vhead' }, [el('circle', { cx: '96', cy: '52', r: '24', fill: '#4ade80' }), el('circle', { cx: '104', cy: '48', r: '6', fill: '#fff' }), el('circle', { cx: '106', cy: '48', r: '3', fill: '#111' }), P('M114 52 Q140 54 128 74 Q116 70 112 60 Z', '#f59e0b')]),
+        el('g', { class: 'vbubble' }, [el('rect', { x: '124', y: '6', width: '90', height: '34', rx: '12', fill: '#fff' }), P('M132 40 L128 52 L144 40 Z', '#fff'),
+          el('text', { x: '134', y: '28', fill: '#0f172a', 'font-size': '13', 'font-weight': '800' }, [document.createTextNode('Hello, hello!')])])];
+    },
+    // two puzzle pieces that click together
+    puzzle: function () {
+      return [el('ellipse', { cx: '110', cy: '146', rx: '70', ry: '6', fill: '#000', opacity: '.2' }),
+        el('g', { class: 'vpz-a' }, [P('M30 50 H88 V68 A13 13 0 1 1 88 94 V112 H30 Z', '#60a5fa', { stroke: '#1d4ed8', 'stroke-width': '4', 'stroke-linejoin': 'round' }), el('text', { x: '42', y: '88', fill: '#fff', 'font-size': '15', 'font-weight': '800' }, [document.createTextNode('who')])]),
+        el('g', { class: 'vpz-b' }, [P('M90 50 H150 V112 H90 V94 A13 13 0 1 0 90 68 Z', '#34d399', { stroke: '#047857', 'stroke-width': '4', 'stroke-linejoin': 'round' }), el('text', { x: '104', y: '88', fill: '#fff', 'font-size': '13', 'font-weight': '800' }, [document.createTextNode('does')])])];
+    },
+    // a plant that grows with sun and water
+    plant: function () {
+      var drops = [0, 1, 2].map(function (i) { return P('M' + (146 + i * 14) + ' 20 q-5 9 0 12 q5 -3 0 -12 Z', '#38bdf8', { class: 'vdrop d' + i }); });
+      return [el('circle', { cx: '40', cy: '36', r: '16', fill: '#fde047' }), el('g', { stroke: '#fde047', 'stroke-width': '3', 'stroke-linecap': 'round', class: 'vrays' }, [P('M40 8V2M40 70v-6M12 36H6M74 36h-6M20 16l-4-4M60 56l4 4M60 16l4-4M20 56l-4 4')]),
+        P('M78 118 H142 L134 152 H86 Z', '#c2410c', { stroke: '#7c2d12', 'stroke-width': '3', 'stroke-linejoin': 'round' }), el('rect', { x: '74', y: '110', width: '72', height: '12', rx: '5', fill: '#9a3412' }),
+        el('g', { class: 'vplant' }, [P('M110 112 Q108 80 112 56', 'none', { stroke: '#15803d', 'stroke-width': '5', 'stroke-linecap': 'round' }),
+          el('ellipse', { cx: '92', cy: '78', rx: '20', ry: '9', transform: 'rotate(-28 92 78)', fill: '#4ade80' }), el('ellipse', { cx: '132', cy: '66', rx: '20', ry: '9', transform: 'rotate(28 132 66)', fill: '#22c55e' }), el('ellipse', { cx: '112', cy: '48', rx: '10', ry: '18', fill: '#86efac' })])].concat(drops);
+    }
+  };
+  function scene(name) {
+    var d = SCENE[name]; if (!d) return null;
+    var svg = el('svg', { viewBox: '0 0 220 160', class: 'vartsvg art-' + name, role: 'img', 'aria-hidden': 'true', focusable: 'false' });
+    d().forEach(function (n) { svg.appendChild(n); });
+    return svg;
+  }
+
+  UN.art = { make: make, scene: scene, sceneNames: Object.keys(SCENE), names: Object.keys(DESIGN) };
 })();

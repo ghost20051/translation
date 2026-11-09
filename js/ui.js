@@ -57,7 +57,14 @@
     if (!info || !UN.cfg.parts) return '';
     var lang = S().lang, p = UN.cfg.parts[info.part - 1], q = lang === 'ar' ? 'س' : 'Q';
     if (info.part === 4) return p.name[lang] + (info.n != null ? ' · ' + info.n : '');
+    if (info.part === 5) return (lang === 'ar' ? 'الجزء 1 · ' : 'Part 1 · ') + p.name[lang] + (info.n != null ? ' · ' + q + info.n : '');
     return (lang === 'ar' ? 'الجزء ' : 'Part ') + info.part + (full ? ' · ' + p.name[lang] : '') + (info.n != null ? ' · ' + q + info.n : '');
+  }
+  // "Watch the video" links for the questions a short video explains (Simultaneous Interpretation)
+  function videoLink(kind, n) {
+    var list = UN.videoFor ? UN.videoFor(kind, n) : [];
+    if (!list.length) return null;
+    return h('div', { class: 'vlinks' }, list.map(function (v) { return h('a', { class: 'vlink', href: '#/video/' + v.id }, ic('play-circle'), t('vid.watch') + ': ' + v.title); }));
   }
   // A fill-in-the-gap sentence: a visible blank box, or (when the answer is given) the answer in colour.
   function gapSentence(text, ans) {
@@ -158,6 +165,7 @@
   function navItems() {
     var n = NAV_BASE.slice();
     if (UN.cfg && UN.cfg.reading) n.splice(6, 0, ['reading', 'book-open', 'nav.reading']);
+    if (UN.videos && UN.videos.length) n.splice(6, 0, ['videos', 'play-circle', 'nav.videos']);
     return n;
   }
   var BOTTOM = ['home', 'learn', 'games', 'exams'];
@@ -216,7 +224,7 @@
   function refreshChrome() { buildChrome(); markNav(); }
   function curRoute() {
     var cur = (location.hash.replace('#/', '').split('/')[0]) || 'home';
-    if (cur === 'lesson') cur = 'lessons'; if (cur === 'game') cur = 'games'; if (cur === 'exam' || cur === 'exam-run' || cur === 'exam-result') cur = 'exams'; if (cur === 'dashboard') cur = 'progress';
+    if (cur === 'lesson') cur = 'lessons'; if (cur === 'video') cur = 'videos'; if (cur === 'game') cur = 'games'; if (cur === 'exam' || cur === 'exam-run' || cur === 'exam-result') cur = 'exams'; if (cur === 'dashboard') cur = 'progress';
     return cur;
   }
   function markNav() {
@@ -225,7 +233,7 @@
       var on = a.getAttribute('data-r') === cur; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     var more = document.querySelector('#nav .morebtn');
-    if (more) more.classList.toggle('on', ['progress', 'lessons', 'vocab', 'reading', 'achievements', 'settings'].indexOf(cur) !== -1);
+    if (more) more.classList.toggle('on', ['progress', 'lessons', 'vocab', 'reading', 'videos', 'achievements', 'settings'].indexOf(cur) !== -1);
   }
 
   /* ---------- router ---------- */
@@ -451,6 +459,7 @@
   }
   UN.routes.learn = function (arg) {
     var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
+    if (UN.videos && UN.videos.length) page.appendChild(h('a', { class: 'card vbanner', href: '#/videos' }, UN.art ? UN.art.make('si', 40) : ic('play-circle'), h('span', { class: 'vbt' }, h('b', null, t('vid.title')), h('small', { class: 'muted' }, t('vid.bannerSub', { n: UN.videos.length }))), ic('chevron-right', 'flip')));
     var weak = UN.adapt.weakIds();
     var rec = weak.length ? UN.adapt.recommendResources(weak) : [];
     if (rec.length) {
@@ -510,7 +519,7 @@
           if (grp !== 'all' && it.group !== grp) return;
           if (needle && norm(it.q + ' ' + it.answer + ' ' + it.note).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'vrow card def' }, h('span', { class: 'vnum' }, it.n), h('div', { class: 'vdef' }, h('div', { class: 'gapfull' }, gapSentence(it.q, it.answer)), h('div', { class: 'muted small' }, it.note)), h('span', { class: 'pill' }, UN.groups[it.group][lang])));
+          list.appendChild(h('div', { class: 'vrow card def' }, h('span', { class: 'vnum' }, it.n), h('div', { class: 'vdef' }, h('div', { class: 'gapfull' }, gapSentence(it.q, it.answer)), h('div', { class: 'muted small' }, it.note), videoLink('gaps', it.n)), h('span', { class: 'pill' }, UN.groups[it.group][lang])));
         });
       } else if (tab === 'terms') {
         UN.terms.forEach(function (it) {
@@ -663,6 +672,6 @@
   };
 
   UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
-    partText: partText, gapSentence: gapSentence, openSubjects: openSubjects, confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
+    partText: partText, videoLink: videoLink, gapSentence: gapSentence, openSubjects: openSubjects, confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
     defBox: defBox, applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
 })();

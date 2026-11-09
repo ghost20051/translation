@@ -6,7 +6,7 @@ global.window = global;
 global.UN = {};
 const mem = {};
 global.localStorage = { getItem: k => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); }, removeItem: k => { delete mem[k]; } };
-['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'data/interp/gaps', 'data/interp/bank', 'data/interp/content', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
+['data/terms', 'data/questions', 'data/answer-keys', 'data/resources', 'data/lessons', 'data/tourist/terms', 'data/tourist/content', 'data/tourist/reading', 'data/tourist/definitions', 'data/tourist/help', 'data/interp/gaps', 'data/interp/bank', 'data/interp/videos', 'data/interp/content', 'subjects', 'check', 'storage', 'generator', 'adaptive', 'progress', 'exam']
   .forEach(f => require(path.join('..', 'js', f + '.js')));
 
 let n = 0;
@@ -94,7 +94,7 @@ ok('Exam 1: Part 1 fill in the gap (24), Part 2 multiple choice (12), Part 3 wri
   assert.deepStrictEqual(e1.qs.map(q => q.part), [].concat(Array(24).fill(1), Array(12).fill(2), Array(4).fill(3)), 'parts come in order');
   assert.deepStrictEqual(part(1).map(q => q.pn), Array.from({ length: 24 }, (_, i) => i + 1), 'numbered 1..24 inside the part');
   assert.deepStrictEqual(part(2).map(q => q.pn), Array.from({ length: 12 }, (_, i) => i + 1));
-  assert.ok(part(1).every(q => q.fmt === 'mcq-gap' || q.fmt === 'type-gap'));
+  assert.ok(part(1).every(q => q.fmt === 'type-gap' && q.type === 'type'), 'Part 1 is typed, never multiple choice');
   assert.ok(part(2).every(q => q.fmt.indexOf('bank:') === 0 && q.type === 'mcq'));
   assert.ok(part(3).every(q => q.fmt === 'written'));
   const per = {}; part(1).forEach(q => { const g = UN.itemsById[q.item].group; per[g] = (per[g] || 0) + 1; });
@@ -112,12 +112,40 @@ ok('Exam 1: Part 1 fill in the gap (24), Part 2 multiple choice (12), Part 3 wri
   UN.store.reset();
 });
 
+ok('Gap questions with choices are labelled as practice, typed ones as Part 1', () => {
+  UN.gaps.forEach(g => {
+    assert.deepStrictEqual(UN.gen.partOf({ item: g.id, fmt: 'mcq-gap' }), { part: 5, n: g.n });
+    assert.deepStrictEqual(UN.gen.partOf({ item: g.id, fmt: 'type-gap' }), { part: 1, n: g.n });
+  });
+  assert.strictEqual(UN.cfg.parts.length, 5);
+});
+
 ok('Part labels: every question knows its part and number', () => {
   UN.gaps.forEach(g => assert.deepStrictEqual(UN.gen.partOf({ item: g.id, fmt: 'type-gap' }), { part: 1, n: g.n }));
   UN.bank.mcq.forEach((b, i) => assert.deepStrictEqual(UN.gen.partOf({ item: b.item, fmt: 'bank:' + b.id }), { part: 2, n: i + 1 }));
   UN.written.forEach(w => assert.deepStrictEqual(UN.gen.partOf({ item: w.id, fmt: 'written' }), { part: 3, n: w.n }));
   assert.deepStrictEqual(UN.gen.partOf({ item: 'SK3', fmt: 'mcq-def' }), { part: 4, n: 3 });
   UN.useSubject('tour'); assert.strictEqual(UN.gen.partOf({ item: 'R1', fmt: 'mcq-en2ar' }), null, 'other subjects have no parts'); UN.useSubject('si');
+});
+
+ok('Fill-in-the-gap questions are never multiple choice in any exam, many times over', () => {
+  for (let r = 0; r < 25; r++) {
+    UN.store.reset();
+    const a = UN.exam.buildFull(), b = UN.exam.buildAdaptive();
+    [a, b].forEach(e => e.qs.forEach(q => assert.notStrictEqual(q.fmt, 'mcq-gap', 'exam asked a gap as multiple choice')));
+    assert.ok(a.qs.filter(q => q.part === 1).every(q => q.type === 'type'));
+  }
+  // adaptive exam after some history
+  UN.store.reset();
+  const built = UN.exam.buildFull(); const ans = {}; built.qs.forEach((q, i) => { ans[i] = q.type === 'mcq' ? q.options.find(o => o.id !== q.answer).id : 'zzz'; });
+  UN.exam.finish(1, built, ans, {});
+  for (let r = 0; r < 25; r++) UN.exam.buildAdaptive().qs.forEach(q => assert.notStrictEqual(q.fmt, 'mcq-gap'));
+  UN.store.reset();
+});
+
+ok('Practice still offers the multiple-choice version of a gap (games, lessons)', () => {
+  assert.ok(UN.gen.formatsFor('G1').indexOf('mcq-gap') !== -1);
+  assert.ok(UN.gen.drillFormatsFor('G1').indexOf('mcq-gap') !== -1);
 });
 
 ok('Exam 2 targets missed items', () => {
@@ -210,6 +238,31 @@ ok('Typos: a small spelling slip still counts; short or different words do not',
   // no two different gap answers are within typo distance of each other, so a typo can never turn into another answer
   const all = Array.from(new Set(UN.gaps.map(x => x.answer.toLowerCase())));
   all.forEach(a => all.forEach(b => { if (a !== b && a.replace(/s$/, '') !== b.replace(/s$/, '')) assert.ok(!UN.check.nearMiss(a, b, false), a + ' / ' + b); }));
+});
+
+ok('Videos: 19 short explainers with valid scenes, narration and question links; every question is explained somewhere', () => {
+  const V = UN.videos, TYPES = ['title', 'def', 'lanes', 'chunks', 'compare', 'steps', 'picture', 'recap'];
+  assert.strictEqual(V.length, 19);
+  assert.strictEqual(new Set(V.map(v => v.id)).size, 19);
+  V.forEach((v, i) => {
+    assert.strictEqual(v.id, 'v' + ('0' + (i + 1)).slice(-2));
+    assert.ok(v.title && /[\u0600-\u06FF]/.test(v.ar), v.id + ' needs a title and an Arabic summary line');
+    assert.strictEqual(v.scenes[0].t, 'title'); assert.strictEqual(v.scenes[v.scenes.length - 1].t, 'recap');
+    let words = 0;
+    v.scenes.forEach(sc => {
+      assert.ok(TYPES.indexOf(sc.t) !== -1, v.id + ' unknown scene ' + sc.t);
+      const w = sc.say.split(/\s+/).length; words += w;
+      assert.ok(w >= 3 && w <= 75, v.id + ' scene narration length ' + w);
+      if (sc.t === 'chunks') (sc.groups || []).forEach(g => assert.ok(g.from <= g.to && g.to < sc.words.length, v.id + ' chunk group'));
+      if (sc.t === 'picture') assert.ok(sc.caption && (sc.emoji || sc.art));
+      if (sc.t === 'compare') assert.ok(sc.left.items.length && sc.right.items.length);
+    });
+    assert.ok(words >= 50 && words <= 200, v.id + ' total narration ' + words);
+    v.refs.gaps.forEach(n => assert.ok(n >= 1 && n <= 80)); v.refs.mcq.forEach(n => assert.ok(n >= 1 && n <= 20)); v.refs.essay.forEach(n => assert.ok(n >= 1 && n <= 20));
+  });
+  const cov = { gaps: new Set(), mcq: new Set(), essay: new Set() };
+  V.forEach(v => Object.keys(cov).forEach(k => v.refs[k].forEach(n => cov[k].add(n))));
+  assert.strictEqual(cov.gaps.size, 80, 'every fill-in-the-gap question has a video'); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
 });
 
 console.log('\n' + n + ' interpretation test groups passed');

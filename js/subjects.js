@@ -5,7 +5,7 @@
  */
 (function () {
   var UN = window.UN = window.UN || {};
-  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps'];
+  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps', 'videos'];
 
   UN.subjects = {};
   UN.subjectOrder = [];

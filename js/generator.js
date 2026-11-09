@@ -251,6 +251,7 @@
     if (it.kind === 'wq') return { part: 3, n: it.n };
     if (it.kind === 'sub') return { part: 4, n: +String(it.id).replace('SK', '') };
     if (String(q.fmt).indexOf('bank:') === 0) return { part: 2, n: +String(q.fmt).replace('bank:SM', '') };
+    if (q.fmt === 'mcq-gap') return { part: 5, n: it.n };   // practice with choices: revision only, never in an exam
     return { part: 1, n: it.n };
   }
 

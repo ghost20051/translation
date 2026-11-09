@@ -63,6 +63,14 @@
       tone(c, o, { f: N.C6, at: 0.4, dur: 0.6, vol: 0.2 });
     },
     finish: function (c, o) { tone(c, o, { f: N.G4, dur: 0.2, vol: 0.32, type: 'triangle' }); tone(c, o, { f: N.C5, at: 0.18, dur: 0.4, vol: 0.32, type: 'triangle' }); },
+    // sounds used by the explainer videos
+    whoosh: function (c, o) { noise(c, o, { f: 250, to: 2800, dur: 0.3, vol: 0.4 }); },
+    pop: function (c, o) { tone(c, o, { f: 520, to: 780, dur: 0.09, vol: 0.3, type: 'sine', atk: 0.004 }); },
+    blip: function (c, o) { tone(c, o, { f: 880, dur: 0.08, vol: 0.2, type: 'triangle', atk: 0.004 }); },
+    blipLow: function (c, o) { tone(c, o, { f: 440, dur: 0.1, vol: 0.2, type: 'triangle', atk: 0.004 }); },
+    ding: function (c, o) { tone(c, o, { f: 1319, dur: 0.45, vol: 0.24, type: 'sine' }); tone(c, o, { f: 2637, at: 0.01, dur: 0.25, vol: 0.06 }); },
+    boing: function (c, o) { tone(c, o, { f: 170, to: 540, dur: 0.24, vol: 0.3, type: 'sine', atk: 0.01 }); },
+    sparkle: function (c, o) { [1568, 2093, 2637].forEach(function (f, i) { tone(c, o, { f: f, at: i * 0.05, dur: 0.14, vol: 0.14, type: 'sine' }); }); },
     time: function (c, o) { tone(c, o, { f: 880, dur: 0.06, vol: 0.25, type: 'square', atk: 0.004 }); tone(c, o, { f: 880, at: 0.12, dur: 0.06, vol: 0.25, type: 'square', atk: 0.004 }); }
   };
 

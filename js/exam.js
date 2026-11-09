@@ -10,6 +10,8 @@
   function cfg() { return UN.cfg.exam; }
 
   function qFor(id, rng, avoid) {
+    // fill-in-the-gap questions in an exam are always typed; the multiple-choice version is for practice only
+    if (cfg().typedGaps && UN.itemsById[id].kind === 'gap') avoid = (avoid || []).concat(['mcq-gap']);
     var fmt = G().chooseFormat(id, UN.adapt.formatCounts(id), rng, false, avoid);
     return G().make(id, fmt, rng);
   }
@@ -58,10 +60,10 @@
   function bankFor(id) { return UN.bank.mcq.filter(function (b) { return b.item === id; })[0]; }
 
   // Exam 1 / 3 for a subject made of parts: Part 1 fill in the gap, Part 2 multiple choice, Part 3 written
-  function buildParts(rng, r, prev, prevWritten) {
+  function buildParts(rng, r, prev, prevWritten, prevMcq) {
     var p = cfg().plan;
     var mcqIds = r.ids.filter(function (id) { return UN.itemsById[id].kind === 'gap' && bankFor(id); });
-    var freshM = mcqIds.filter(function (id) { return !prev[id]; });
+    var freshM = mcqIds.filter(function (id) { return !prevMcq[id]; });
     mcqIds = freshM.concat(mcqIds.filter(function (id) { return freshM.indexOf(id) === -1; })).slice(0, p.mcq);
     var skip = {}; mcqIds.forEach(function (id) { skip[id] = 1; });
     var gapIds = stratified(p.gap, r, prev, 'gap', skip);
@@ -78,12 +80,12 @@
   }
 
   function buildFull(rng) {
-    var c = cfg(), r = UN.adapt.rank(rng), last = lastFull(), prevTerms = {}, prevExtras = [], prevWritten = [];
+    var c = cfg(), r = UN.adapt.rank(rng), last = lastFull(), prevTerms = {}, prevMcq = {}, prevExtras = [], prevWritten = [];
     if (last) {
-      last.rows.forEach(function (row) { prevTerms[row.item] = 1; });
+      last.rows.forEach(function (row) { prevTerms[row.item] = 1; if (String(row.fmt).indexOf('bank:') === 0) prevMcq[row.item] = 1; });
       prevExtras = last.extras || []; prevWritten = last.writtenIds || [];
     }
-    if (c.plan) return buildParts(rng, r, prevTerms, prevWritten);
+    if (c.plan) return buildParts(rng, r, prevTerms, prevWritten, prevMcq);
     var termIds = c.terms === 'all' ? UN.terms.map(function (t) { return t.id; }) : (c.terms ? stratified(c.terms, r, prevTerms, 'term') : []);
     var gapIds = c.gaps ? stratified(c.gaps, r, prevTerms, 'gap') : [];
 
