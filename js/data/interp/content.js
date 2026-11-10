@@ -12,7 +12,7 @@
 
   // Answers that would also fit the same blank, so they are never offered together in a multiple-choice question.
   SI.clash = [
-    ['input', 'output', 'source', 'target', 'source-language', 'speeches', 'streams', 'language'],
+    ['input', 'output', 'source', 'target', 'source-language', 'speeches', 'streams', 'language', 'languages'],
     ['easier', 'longer', 'hinder'],
     ['storage', 'acquisition', 'processes', 'mechanisms', 'variables', 'features', 'dimensions'],
     ['syntactic', 'lexical'],

@@ -1,7 +1,8 @@
 /*
  * Simultaneous Interpretation: 80 fill-in-the-gap questions with answers and explanations, exactly as supplied.
  * Line format:  group | answer | other accepted answers separated by ";" | question (__ marks the gap) | explanation
- * Questions 61, 65 and 79 follow the course book where it differs from the question bank (each note says so).
+ * Questions 15, 35, 36, 61, 65 and 79 follow the course book where it differs from the question bank (each note says so).
+ * Question 59 follows the class correction: languages, not speeches.
  */
 (function () {
   var UN = window.UN = window.UN || {};
@@ -76,7 +77,7 @@
     'segm|Units||Interpreters process information in meaningful __.|They process speech in meaningful sections.',
     'time|Source||The source speaker provides the __ input.|The source is the original message.',
     'time|Target||The interpreter produces the __ output.|The target is the translated message.',
-    'time|Speeches||Structural correspondence may exist between source and target __.|The original and translated speeches may have similar structures.',
+    'time|Languages||Structural correspondence may exist between source and target __.|The source and target languages may have similar structures.',
     'bil|Proficiency||Effective interpreting requires both comprehension and language __.|Interpreters need understanding and strong language skills.',
     'evs|Décalage|decalage;time delay;delay|Ear-voice span (EVS) is also known as __ or time lag.|The course book: "Ear-voice span (EVS), also known as décalage or time lag". Your question bank gave "time delay", which means the same and is also accepted.',
     'evs|Interpretation|interpreting;the interpretation|EVS refers to the interval between hearing the source speech and delivering the __.|It is the time between hearing the original and producing the translation.',
