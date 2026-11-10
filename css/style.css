@@ -296,6 +296,12 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .subjnow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
 .quip { margin-top: 8px; font-size: .92rem; color: var(--muted); font-style: italic; }
 @media (max-width: 560px) { .subjbtn { max-width: 46vw; padding: 6px 8px; font-size: .8rem; } .topbar .logo { display: none; } }
+/* phones: the tools may be narrower than their content, so the subject name shortens (…) instead of pushing the page sideways */
+.subjbtn .sn-short { display: none; }
+/* long links and codes (an ORCID or DOI link) wrap inside cards instead of widening the page */
+.mopts li, .vdef, .qprompt, .opt, .given, .feedback, .chapter p, .chapter li, .chapter .quote { overflow-wrap: anywhere; }
+@media (max-width: 560px) { .tools { min-width: 0; flex: 0 1 auto; } .subjbtn { flex: 0 1 auto; } .subjbtn .sn-long { display: none; } .subjbtn .sn-short { display: block; } }
+@media (max-width: 360px) { .subjbtn .ico.down { display: none; } .subjbtn { gap: 5px; } }
 
 /* fill-in-the-gap sentences: a real blank, and the answer in colour */
 .gapline { line-height: 2; }

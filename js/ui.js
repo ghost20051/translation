@@ -189,7 +189,7 @@
     var lang = S().lang, dark = resolvedTheme() === 'dark';
     hdr.appendChild(h('div', { class: 'tools' },
       (inExam || UN.subjectOrder.length < 2) ? null : h('button', { type: 'button', class: 'subjbtn', 'aria-haspopup': 'dialog', title: t('subject.pick'), 'aria-label': t('subject.pick') + ': ' + UN.cfg.name[lang], onclick: openSubjects },
-        UN.art ? UN.art.make(UN.cfg.art, 24) : ic(UN.cfg.icon || 'book-open'), h('span', { class: 'sn' }, UN.cfg.name[lang]), ic('chevron-right', 'down')),
+        UN.art ? UN.art.make(UN.cfg.art, 24) : ic(UN.cfg.icon || 'book-open'), h('span', { class: 'sn sn-long' }, UN.cfg.name[lang]), h('span', { class: 'sn sn-short' }, (UN.cfg.short || UN.cfg.name)[lang]), ic('chevron-right', 'down')),
       h('div', { class: 'seg lang', role: 'group', 'aria-label': t('set.lang') },
         [['en', 'English'], ['ar', 'العربية']].map(function (o) { return h('button', { type: 'button', lang: o[0], class: o[0] === lang ? 'on' : '', 'aria-pressed': String(o[0] === lang), onclick: function () { if (o[0] !== S().lang) setLang(o[0]); } }, o[1]); })),
       h('button', { class: 'icon-btn round', type: 'button', 'data-nosfx': '1', 'aria-pressed': String(!UN.sfx || UN.sfx.enabled()), onclick: toggleSound, 'aria-label': t('sfx.toggle'), title: t('sfx.toggle') }, ic(UN.sfx && !UN.sfx.enabled() ? 'volume-x' : 'volume')),
