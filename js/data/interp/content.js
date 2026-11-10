@@ -14,11 +14,11 @@
   SI.clash = [
     ['input', 'output', 'source', 'target', 'source-language', 'speeches', 'streams', 'language'],
     ['easier', 'longer', 'hinder'],
-    ['storage', 'acquisition', 'processes', 'mechanisms', 'dimensions'],
+    ['storage', 'acquisition', 'processes', 'mechanisms', 'variables', 'features', 'dimensions'],
     ['syntactic', 'lexical'],
     ['native', 'english', 'french'],
-    ['proficiency', 'performance'],
-    ['evs', 'lag', 'time delay', 'decalage'],
+    ['proficiency', 'performance', 'acquisition'],
+    ['evs', 'lag', 'time delay', 'delay', 'decalage'],
     ['units', 'constituents', 'positions'],
     ['bilingual', 'bilinguals', 'balanced', 'dominant']
   ];

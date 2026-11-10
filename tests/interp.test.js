@@ -42,6 +42,24 @@ ok('Source answers are kept exactly as supplied (spot checks)', () => {
   assert.ok(/early sequential/i.test(UN.gaps[78].note));
 });
 
+ok('Answers follow the course book (Q15, Q35, Q36); the question bank answers and other book words still count', () => {
+  const g = i => UN.gaps[i - 1], M = (i, s) => UN.check.matchGap(s, g(i));
+  assert.strictEqual(g(15).answer, 'Variables'); assert.strictEqual(g(35).answer, 'Proficiency'); assert.strictEqual(g(36).answer, 'Proficiency');
+  assert.ok(M(15, 'variables') && M(15, 'variable') && M(15, 'Dimensions') && M(15, 'features') && !M(15, 'mechanisms'));
+  assert.ok(M(35, 'proficiency') && M(35, 'acquisition') && M(36, 'Proficiency') && M(36, 'Acquisition') && !M(35, 'performance'));
+  assert.ok(M(38, 'native') && M(38, 'first') && M(38, 'L1'));
+  assert.ok(M(43, 'processes') && M(43, 'mechanisms'));
+  assert.ok(M(69, 'lag') && M(69, 'delay'));
+  [15, 35, 36].forEach(i => assert.ok(/course book/i.test(g(i).note), 'Q' + i + ' explains the book'));
+  // multiple choice never offers a word that typing would also accept
+  for (let k = 0; k < 40; k++) {
+    const t35 = UN.gen.make(g(35).id, 'mcq-gap').options.map(o => o.text.toLowerCase());
+    assert.ok(t35.indexOf('acquisition') === -1, 'Q35 offers acquisition: ' + t35);
+    const t15 = UN.gen.make(g(15).id, 'mcq-gap').options.map(o => o.text.toLowerCase());
+    assert.ok(t15.indexOf('mechanisms') === -1 && t15.indexOf('dimensions') === -1, 'Q15 options: ' + t15);
+  }
+});
+
 ok('Typed answers: exact, case, plural, "the", listed alternatives; wrong answers rejected', () => {
   UN.gaps.forEach(g => {
     const q = UN.gen.make(g.id, 'type-gap');
