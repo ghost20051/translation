@@ -511,3 +511,19 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 
 /* small note on the home page and dashboard */
 .ainote { margin: 26px auto 6px; max-width: 640px; text-align: center; color: var(--muted); font-size: .78rem; line-height: 1.5; } .ainote svg { width: 13px; height: 13px; vertical-align: -2px; opacity: .8; }
+
+/* Learn page with explanations (Discourse Analysis) */
+.xnote { color: var(--muted); font-size: .85rem; background: var(--primary-soft); border-radius: 10px; padding: 8px 12px; } .xnote svg { width: 15px; height: 15px; vertical-align: -3px; }
+.xsec summary .rt { display: flex; flex-direction: column; gap: 2px; } .xalt { font-weight: 500; }
+.bi p { margin: 6px 0; line-height: 1.6; } .bi .bi2 { color: var(--muted); font-size: .93em; }
+.xpoints { margin: 6px 0; padding-inline-start: 18px; } .xpoints li { margin: 4px 0; }
+.xexamples { display: grid; gap: 10px; margin: 8px 0; } .xex { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); }
+.xtext { font-weight: 600; margin: 4px 0; } .xctx { display: block; color: var(--muted); font-weight: 700; }
+.xbadges { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; } .xbadge { font-size: .78rem; font-weight: 800; padding: 3px 10px; border-radius: 999px; }
+.xbadge.yes { background: rgba(22, 163, 74, .14); color: #15803d; } .xbadge.no { background: rgba(220, 38, 38, .12); color: #b91c1c; }
+.xitems { display: grid; gap: 10px; margin: 8px 0; } .xitem { border-top: 1px dashed var(--line); padding-top: 8px; } .xexlist { margin: 4px 0; padding-inline-start: 18px; font-size: .92em; }
+.xchead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; } .xchead b { font-size: 1.05rem; } .xar { font-weight: 700; color: var(--link); }
+.xconcept { display: grid; gap: 2px; } .xconcept .dlbl { margin-top: 8px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 800; font-size: .7rem; }
+.xshort p:first-child { font-weight: 700; } .xgroup { margin: 22px 0 8px; } .xremember .bi p { margin: 2px 0; }
+.res-counts { font-weight: 700; margin: 6px 0; }
+.xsec > .bi, .xsec > .xpoints, .xsec > .xexamples, .xsec > .xitems, .xsec > .tip { margin-top: 10px; }

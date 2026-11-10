@@ -43,13 +43,13 @@
   function note(q, v, given) { if (q && q.item && UN.itemsById[q.item] && q.type !== 'written') { keep(rowOf(q, v, given)); UN.store.save(); } }
   function noteItem(id, v) { var r = rowOfItem(id, v); if (r) { keep(r); UN.store.save(); } }
   function noteRows(rows, ts) {
-    rows.forEach(function (r) { if (r.graded !== false && r.type !== 'written' && UN.itemsById[r.item]) keep(Object.assign({}, r, { at: ts || Date.now() })); });
+    rows.forEach(function (r) { if (r.graded !== false && !r.skipped && r.type !== 'written' && UN.itemsById[r.item]) keep(Object.assign({}, r, { at: ts || Date.now() })); });
     UN.store.save();
   }
   // a game round starts: the mistakes made from now on are "this round"
   function start() { UN.state.reviseT0 = Date.now(); }
   function since(ts) { return book().filter(function (r) { return r.at >= ts; }); }
-  function examRows(att) { return att.rows.filter(function (r) { return r.graded && r.v < 0.99; }); }
+  function examRows(att) { return att.rows.filter(function (r) { return r.graded && r.v < 0.99 && !r.skipped; }); }
 
   // the button at the end of a game or an exam
   function button(att) {

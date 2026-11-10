@@ -1,10 +1,11 @@
-# Translation Revision (UN Translation + Tourist Translation)
+# Translation Revision (UN Translation, Tourist Translation, Simultaneous Interpretation, Discourse Analysis)
 
 A bilingual (English / Arabic) study game with two subjects: **UN Translation** and **Tourist Translation**. Use the UN / Tourism switch in the top bar; each subject keeps its own scores, XP, weak areas and achievements. Plain HTML, CSS and JavaScript. No server, no accounts, no AI, no external services. Progress is saved only in the student's own browser.
 
 ## Subjects
 - **UN Translation:** 20 terms, 5 written questions, the six characteristics of UN translation (31 items). Exams cover every item.
 - **Tourist Translation:** about 340 English-Arabic terms from the lecture glossaries (11 categories: types of tourism, transport, air travel, hotels, rates and plans, booking and procedures, food, attractions, tours, people and jobs, the tourism industry), plus definitions of the types of tourism, etiquette and the language of tourism. Exams 1 and 3 are balanced 40-question samples (28 terms from every category, 4 written questions, 8 definition checks) that avoid repeating terms where possible; Exam 2 targets weak items. Games 2 and 3 have a full-material mode. A **Reading & Translation** page holds the lecture summaries and nine translation passages with translations for review (no questions are made from them). The passage translations and the Arabic lesson text were written by Claude and need a native-speaker check.
+- **Discourse Analysis (تحليل الخطاب):** cohesion, coherence, acceptability, the five cohesive devices and the seven standards of textuality. The Learn page explains each concept in full and in a short version, in English and Arabic, with labelled examples (cohesive or not, coherent or not, acceptable or not). 108 multiple-choice questions with explanations, used in the games and exams; the full exam (Exam 4) has every question and can be finished at any time (only answered questions are marked). Content prepared from standard references (Halliday and Hasan, 1976; de Beaugrande and Dressler, 1981), not from a course book (`js/data/discourse/content.js`).
 - Source quirks in the PDFs (typos, conflicting Arabic for the same word) were fixed or merged; terms with the same Arabic (for example tour and trip) are accepted for each other when typing.
 
 ## Answers and revision

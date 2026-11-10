@@ -56,7 +56,7 @@
   function submit() {
     var ex = UN.state.exam; if (!ex) return;
     ex.running = false;
-    var att = UN.exam.finish(ex.no, ex.built, ex.answers, { durSec: Math.round((Date.now() - ex.startedAt) / 1000) });
+    var att = UN.exam.finish(ex.no, ex.built, ex.answers, { durSec: Math.round((Date.now() - ex.startedAt) / 1000), partial: ex.no === 4 });
     UN.state.exam = null;
     if (UN.sfx) UN.sfx.play('finish');
     ui.afterProgress();
@@ -96,6 +96,10 @@
       ctrl.appendChild(h('button', { class: 'btn ghost', disabled: ex.idx === 0, onclick: function () { ex.idx--; show(); } }, [ui.ic('arrow-left'), t('prev')]));
       if (ex.idx < qs.length - 1) ctrl.appendChild(h('button', { class: 'btn primary', onclick: function () { ex.idx++; show(); } }, [t('next'), ui.ic('arrow-right')]));
       else ctrl.appendChild(h('button', { class: 'btn ok', onclick: confirmSubmit }, '✔ ' + t('exam.submit')));
+      if (ex.no === 4 && ex.idx < qs.length - 1) ctrl.appendChild(h('button', { class: 'btn ghost', onclick: function () {
+        var done = qs.filter(function (x, i) { return answered(i); }).length;
+        ui.confirmDialog(t('exam.finishNowQ', { n: done }), t('exam.finishNow'), submit);
+      } }, '⏹ ' + t('exam.finishNow')));
       drawNav();
     }
     function confirmSubmit() {
@@ -117,6 +121,12 @@
 
   function groupOf(item) { return UN.itemsById[item].group; }
 
+  function resCounts(att) {
+    var live = att.rows.filter(function (r) { return !r.skipped; });
+    var c = function (f) { return live.filter(f).length; };
+    return h('p', { class: 'res-counts' }, t('res.counts', { a: live.length, n: att.rows.length, r: c(function (r) { return r.graded && r.v >= 0.99; }), p: c(function (r) { return r.graded && r.v > 0 && r.v < 0.99; }), w: c(function (r) { return r.graded && r.v === 0; }), s: att.rows.length - live.length }));
+  }
+
   UN.routes['exam-result'] = function (arg) {
     var id = +arg, att = S().attempts.filter(function (a) { return a.id === id; })[0];
     if (!att) return UN.routes.exams();
@@ -131,12 +141,13 @@
     page.appendChild(h('section', { class: 'card result' },
       h('div', { class: 'ring', style: '--p:' + att.pct }, h('span', null, att.pct + '%')),
       h('div', null, h('h2', null, t(lbl)), h('p', null, t('res.score', { s: att.score % 1 ? att.score.toFixed(1) : att.score, n: att.max })),
-        pend ? h('p', { class: 'note' }, '✍️ ' + t('res.pending', { n: pend })) : null,
+        resCounts(att),
+        pend ? h('p', { class: 'note' }, '✍️ ' + t('res.pending', { n: pend }), ' ', h('button', { type: 'button', class: 'btn small primary', onclick: function () { var el = document.querySelector('.card.corr.pending'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }, t('res.markNow'))) : null,
         prevPct != null ? h('p', null, t('res.vsPrev') + ': ' + (att.pct - prevPct >= 0 ? '▲ +' : '▼ ') + (att.pct - prevPct) + '%') : null,
         otherNo.length ? h('p', null, t('res.vsExam', { n: att.no - 1 }) + ': ' + (att.pct - otherNo[otherNo.length - 1] >= 0 ? '▲ +' : '▼ ') + (att.pct - otherNo[otherNo.length - 1]) + '%') : null)));
 
     // by category
-    var cat = {}; att.rows.forEach(function (r) { var g = groupOf(r.item), c = cat[g] || (cat[g] = { s: 0, n: 0 }); c.s += r.v; c.n++; });
+    var cat = {}; att.rows.forEach(function (r) { if (r.skipped) return; var g = groupOf(r.item), c = cat[g] || (cat[g] = { s: 0, n: 0 }); c.s += r.v; c.n++; });
     var cb = h('div', { class: 'card' });
     Object.keys(cat).forEach(function (g) {
       var r = cat[g].s / cat[g].n;
@@ -145,12 +156,12 @@
     page.appendChild(h('section', null, h('h2', null, t('res.byCat')), cb));
 
     // revision recommendation
-    var weakIds = att.rows.filter(function (r) { return r.graded && r.v < 0.75; }).map(function (r) { return r.item; });
+    var weakIds = att.rows.filter(function (r) { return r.graded && r.v < 0.75 && !r.skipped; }).map(function (r) { return r.item; });
     var recs = UN.adapt.recommendResources(weakIds);
     var next = att.no === 1 ? ['#/game/2', 'game2.name'] : att.no === 2 ? ['#/game/3', 'game3.name'] : ['#/dashboard', 'nav.progress'];
     page.appendChild(h('section', { class: 'card' }, h('h2', null, '🎯 ' + t('res.next')),
       weakIds.length ? h('p', null, t('res.weakCount', { n: weakIds.length })) : h('p', null, t('res.noWeak')),
-      recs.length ? h('ul', { class: 'list' }, recs.map(function (r) { return h('li', null, h('a', { href: '#/lesson/' + r.id }, '📚 ' + r.title[S().lang])); })) : null,
+      recs.length ? h('ul', { class: 'list' }, recs.map(function (r) { var ls = (UN.lessons || []).filter(function (l) { return (l.res || l.id) === r.id; })[0]; return h('li', null, h('a', { href: ls ? '#/lesson/' + ls.id : '#/learn/' + r.id }, '📚 ' + r.title[S().lang])); })) : null,
       UN.revise && UN.revise.button(att) ? h('div', { class: 'row' }, UN.revise.button(att)) : null,
       h('div', { class: 'row' }, h('a', { class: 'btn primary', href: next[0] }, '▶ ' + t(next[1])), h('a', { class: 'btn ghost', href: '#/exams' }, t('nav.exams')),
         h('a', { class: 'btn ghost', href: '#/dashboard' }, t('nav.progress')))));
@@ -158,7 +169,10 @@
     // corrections
     page.appendChild(h('h2', null, t('res.corrections')));
     var list = h('div', { class: 'stack' });
+    var nSkip = att.rows.filter(function (r) { return r.skipped; }).length;
+    if (nSkip) list.appendChild(h('p', { class: 'muted' }, t('res.skippedHidden', { n: nSkip })));
     att.rows.forEach(function (r, i) {
+      if (r.skipped) return;
       var cls = !r.graded ? 'pending' : r.v >= 0.99 ? 'ok' : r.v > 0 ? 'part' : 'bad';
       var card = h('div', { class: 'card corr ' + cls },
         h('div', { class: 'row between' }, h('b', null, (r.part ? ui.partText({ part: r.part, n: r.pn }, true) : '#' + (i + 1)) + ' · ' + t('qt.' + r.type)), h('span', { class: 'badge ' + cls }, !r.graded ? '✍️' : r.v >= 0.99 ? '✅' : r.v > 0 ? '🟡' : '❌')),
@@ -179,6 +193,11 @@
         if (r.typo) card.appendChild(h('div', { class: 'typo' }, '✏️ ' + t(r.typoKind === 'short' ? 'fb.short' : 'fb.typo') + ' ', h('b', null, ui.mixed(String(r.typo)))));
         if (r.gapQ) card.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(r.gapQ, r.gapA)));
         if (r.note) card.appendChild(h('div', { class: 'muted small' }, r.note));
+        if (r.type === 'type' && r.given && (r.v < 0.99 || r.self)) card.appendChild(h('div', { class: 'row grade' }, h('span', { class: 'muted' }, t('res.selfType')),
+          [[1, 'sg.yes', 'ok'], [0.5, 'sg.part', 'part'], [0, 'sg.no', 'bad']].map(function (g) {
+            return h('button', { class: 'btn small ' + (r.self && r.v === g[0] ? g[2] : 'ghost'), onclick: function () {
+              UN.exam.selfGrade(att.id, i, g[0]); ui.afterProgress(); var y = window.scrollY; ui.render(); window.scrollTo(0, y); } }, t(g[1]));
+          })));
       }
       list.appendChild(card);
     });

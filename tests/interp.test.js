@@ -316,6 +316,11 @@ ok('Exam 4 (full exam) has every question in order: Part 1 80 typed gaps, Part 2
   qs.slice(100).forEach((q, i) => { assert.strictEqual(q.part, 3); assert.strictEqual(q.pn, i + 1); assert.strictEqual(q.type, 'written'); });
   const att = UN.exam.finish(4, b, {}, { durSec: 5 });
   assert.strictEqual(att.rows.length, 120); assert.strictEqual(UN.exam.pending(att), 20, 'the 20 written answers wait for self-grading');
+  // a typed answer the checker marked wrong can be marked again by the student
+  const att2 = UN.exam.finish(4, UN.exam.build(4), { 0: 'understanding the meaning' }, { durSec: 5 });
+  assert.strictEqual(att2.rows[0].v, 0);
+  const before = att2.score; UN.exam.selfGrade(att2.id, 0, 1);
+  assert.strictEqual(att2.rows[0].v, 1); assert.ok(att2.rows[0].self); assert.strictEqual(att2.score, before + 1);
 });
 
 ok('A short answer that keeps the key word counts (dominant = Dominant bilingual), and the full answer is shown', () => {

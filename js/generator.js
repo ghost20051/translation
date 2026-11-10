@@ -16,6 +16,7 @@
     UN.written.forEach(function (w) { w.kind = 'wq'; UN.itemsById[w.id] = w; });
     UN.subs.forEach(function (s) { s.kind = 'sub'; UN.itemsById[s.id] = s; });
     (UN.gaps || []).forEach(function (g) { g.kind = 'gap'; UN.itemsById[g.id] = g; });
+    (UN.qitems || []).forEach(function (q) { q.kind = 'q'; UN.itemsById[q.id] = q; });   // one multiple-choice question per item
     UN.itemIds = Object.keys(UN.itemsById);
     // terms that share an Arabic form (e.g. "tour" and "trip" are both رحلة) must not be used as each other's distractors
     var byAr = {};
@@ -108,6 +109,7 @@
   // formats available for each item
   function formatsFor(id) {
     var it = UN.itemsById[id];
+    if (it.kind === 'q') return UN.bank.mcq.concat(UN.bank.tf).filter(function (b) { return b.item === id; }).map(function (b) { return 'bank:' + b.id; });
     if (it.kind === 'gap') {
       var gf = ['mcq-gap', 'type-gap'];
       UN.bank.mcq.forEach(function (b) { if (b.item === id) gf.push('bank:' + b.id); });
@@ -207,7 +209,7 @@
         var ids = shuffle(Object.keys(b.opts), rng);
         return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'mcq', prompt: b.text, promptLang: 'en',
           options: ids.map(function (k) { return { id: k, text: b.opts[k], lang: 'en' }; }), answer: key, correctText: b.opts[key],
-          extra: it.kind === 'gap' ? { note: it.note, q: it.q, ans: it.answer } : null };
+          extra: it.kind === 'gap' ? { note: it.note, q: it.q, ans: it.answer } : (b.note ? { note: b.note } : null) };
       }
       for (i = 0; i < UN.bank.cloze.length; i++) if (UN.bank.cloze[i].id === bid) {
         b = UN.bank.cloze[i];

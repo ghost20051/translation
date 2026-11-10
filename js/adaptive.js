@@ -90,7 +90,7 @@
   function recommendResources(ids) {
     var out = [];
     (UN.resources || []).forEach(function (r) {
-      var hit = r.items.filter(function (x) { return ids.indexOf(x) !== -1; }).length;
+      var hit = r.items.concat(r.related || []).filter(function (x) { return ids.indexOf(x) !== -1; }).length;
       if (hit) out.push({ r: r, hit: hit });
     });
     out.sort(function (a, b) { return b.hit - a.hit; });
@@ -105,8 +105,8 @@
     if (ev.length > 4000) ev.splice(0, ev.length - 4000);
   }
 
-  function setEventValue(attemptId, item, v) {
-    events().forEach(function (e) { if (e.a === attemptId && e.i === item && (e.f === 'written')) { e.v = v; delete e.p; } });
+  function setEventValue(attemptId, item, v, fmt) {
+    events().forEach(function (e) { if (e.a === attemptId && e.i === item && e.f === (fmt || 'written')) { e.v = v; delete e.p; } });
   }
 
   UN.adapt = {

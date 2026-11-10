@@ -87,9 +87,11 @@
       box.appendChild(h('p', { class: 'lead' }, t('game1.lead')));
       var gapMode = UN.cfg.flipKind === 'gap';
       var list = [
+        ['quiz', '🧠', 'g1.quiz', quizAct],
         ['flip', '🃏', gapMode ? 'g1.gflip' : 'g1.flip', flip], ['match1', '🔗', 'g1.matchEnAr', function () { match('en2ar'); }], ['match2', '🔗', 'g1.matchArEn', function () { match('ar2en'); }],
         ['match3', '📖', 'g1.matchDef', function () { match('def'); }], ['speed', '⚡', 'g1.speed', speed], ['fill', '✏️', 'g1.fill', fill], ['body', '🏛️', UN.cfg.bodyKey, body], ['type', '🎯', 'g1.gtype', gapType]];
       if (!gapMode) list = list.filter(function (a) { return a[0] !== 'type'; });
+      if (!(UN.qitems && UN.qitems.length)) list = list.filter(function (a) { return a[0] !== 'quiz'; });
       if (UN.cfg.acts) list = list.filter(function (a) { return UN.cfg.acts.indexOf(a[0]) !== -1; });
       var grid = h('div', { class: 'grid3' });
       list.forEach(function (a) {
@@ -227,6 +229,13 @@
       nextQ();
     }
 
+    // --- ten quick multiple-choice questions (subjects made of question items)
+    function quizAct() {
+      var ids = shuffle(UN.qitems.map(function (x) { return x.id; })).slice(0, 10);
+      var qs = ids.map(function (id) { return G().make(id, G().chooseFormat(id, UN.adapt.formatCounts(id), null, true)); });
+      quiz(box, qs, { src: 'game1', onDone: function (res) { finishAct('quiz', res, res.length * 6, quizAct); } });
+    }
+
     // --- missing word
     function gapQuiz(fmt, name, again) {
       var qs = shuffle(UN.gaps.slice()).slice(0, 8).map(function (x) { return G().make(x.id, fmt); });
@@ -279,10 +288,14 @@
       card.appendChild(h('p', { class: 'muted' }, it.note));
     } else if (it.kind === 'sub') {
       card.appendChild(h('div', { class: 'big-term' }, L(it.name, 'en'))); card.appendChild(h('p', null, L(it.def, 'en')));
+    } else if (it.kind === 'q') {
+      var gl = UN.groupLesson && UN.groupLesson[it.group];
+      card.appendChild(h('div', { class: 'big-term' }, UN.groups[it.group][S().lang]));
+      if (gl) { card.appendChild(h('p', null, L(gl.en, 'en'))); card.appendChild(h('p', { class: 'muted', dir: 'rtl' }, L(gl.ar, 'ar'))); }
     } else {
       card.appendChild(h('p', null, h('b', null, L(it.q, 'en')))); card.appendChild(h('div', { class: 'quote model' }, L(UN.keys.written[id].model, 'en')));
     }
-    var res = UN.resources.filter(function (r) { return r.items.indexOf(id) !== -1; })[0];
+    var res = UN.resources.filter(function (r) { return r.items.indexOf(id) !== -1 || (r.related || []).indexOf(id) !== -1; })[0];
     if (res) card.appendChild(h('div', { class: 'tip' }, '💡 ', res.tip[S().lang]));
     return card;
   }

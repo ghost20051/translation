@@ -88,6 +88,7 @@
     if (c.plan) return buildParts(rng, r, prevTerms, prevWritten, prevMcq);
     var termIds = c.terms === 'all' ? UN.terms.map(function (t) { return t.id; }) : (c.terms ? stratified(c.terms, r, prevTerms, 'term') : []);
     var gapIds = c.gaps ? stratified(c.gaps, r, prevTerms, 'gap') : [];
+    var qIds = c.qitems ? stratified(c.qitems, r, prevTerms, 'q') : [];
 
     var allW = r.ids.filter(function (id) { return UN.itemsById[id].kind === 'wq'; });
     var wIds = allW;
@@ -101,7 +102,7 @@
     var extras = freshE.concat(cands.filter(function (id) { return freshE.indexOf(id) === -1; })).slice(0, c.extras);
 
     var qs = [];
-    termIds.concat(gapIds).forEach(function (id) { qs.push(qFor(id, rng, ['written'])); });
+    termIds.concat(gapIds, qIds).forEach(function (id) { qs.push(qFor(id, rng, ['written'])); });
     wIds.forEach(function (id) { qs.push(G().make(id, 'written', rng)); });
     extras.forEach(function (id) { qs.push(qFor(id, rng, ['written'])); });
     return { mode: 'full', qs: G().shuffle(qs, rng), extras: extras, writtenIds: wIds, targeted: [] };
@@ -119,13 +120,18 @@
   // Exam 4 (subjects made of parts): every question, in the order of the question bank. Part 1 all fill in the gap (typed),
   // Part 2 all multiple choice, Part 3 all written questions.
   function buildAll(rng) {
+    if (!(UN.gaps && UN.gaps.length)) {   // a subject made of question items: every question, topic by topic
+      var order = UN.cfg.termGroups || [];
+      var ids = (UN.qitems || []).slice().sort(function (a, b) { return order.indexOf(a.group) - order.indexOf(b.group) || a.n - b.n; }).map(function (x) { return x.id; });
+      return { mode: 'all', qs: ids.map(function (id) { return G().make(id, G().formatsFor(id)[0], rng); }), extras: [], writtenIds: [], targeted: [] };
+    }
     var q1 = UN.gaps.map(function (g) { return G().make(g.id, 'type-gap', rng); });
     var q2 = UN.bank.mcq.map(function (b) { return G().make(b.item, 'bank:' + b.id, rng); });
     var w = UN.written.map(function (x) { return x.id; });
     var q3 = w.map(function (id) { return G().make(id, 'written', rng); });
     return { mode: 'all', qs: labelParts(q1.concat(q2, q3)), extras: [], writtenIds: w, targeted: [] };
   }
-  function hasAll() { return !!(cfg().plan && UN.gaps && UN.gaps.length); }
+  function hasAll() { return !!((cfg().plan && UN.gaps && UN.gaps.length) || (cfg().all && UN.qitems && UN.qitems.length)); }
 
   function build(no, rng) { return no === 4 && hasAll() ? buildAll(rng) : no === 2 ? buildAdaptive(rng) : buildFull(rng); }
 
@@ -135,9 +141,11 @@
     return G().grade(q, given);
   }
 
+  // skipped questions (the exam was finished early) do not count either way
   function totals(rows) {
-    var s = 0; rows.forEach(function (r) { s += r.v; });
-    return { score: s, max: rows.length, pct: rows.length ? Math.round(100 * s / rows.length) : 0 };
+    var live = rows.filter(function (r) { return !r.skipped; }), s = 0;
+    live.forEach(function (r) { s += r.v; });
+    return { score: s, max: live.length, pct: live.length ? Math.round(100 * s / live.length) : 0 };
   }
 
   function givenText(q, given) {
@@ -161,11 +169,13 @@
       }
       return row;
     });
-    var att = { id: id, kind: 'exam', no: no, ts: Date.now(), mode: built.mode, rows: rows, extras: built.extras, writtenIds: built.writtenIds, targeted: built.targeted, durSec: meta && meta.durSec };
+    // finished early: the questions left without an answer are skipped, not wrong
+    if (meta && meta.partial) rows.forEach(function (r, i) { var a = answers[i]; if (a === undefined || a === null || a === '') { r.skipped = true; r.graded = true; r.v = 0; } });
+    var att = { id: id, kind: 'exam', no: no, ts: Date.now(), mode: built.mode, rows: rows, partial: !!(meta && meta.partial), extras: built.extras, writtenIds: built.writtenIds, targeted: built.targeted, durSec: meta && meta.durSec };
     var t = totals(rows); att.score = t.score; att.max = t.max; att.pct = t.pct;
     store.attempts.push(att);
     if (UN.revise) UN.revise.noteRows(rows, att.ts);
-    rows.forEach(function (r) { UN.adapt.recordEvent(id, r.item, r.fmt, r.v, 'exam' + no, !r.graded); });
+    rows.forEach(function (r) { if (!r.skipped) UN.adapt.recordEvent(id, r.item, r.fmt, r.v, 'exam' + no, !r.graded); });
     var e = store.exams[no] || (store.exams[no] = { history: [] });
     e.history.push({ id: id, pct: att.pct, ts: att.ts });
     UN.prog.addXP(rows.reduce(function (a, r) { return a + (r.v >= 1 ? 10 : 0); }, 0) + 40);
@@ -174,12 +184,14 @@
   }
 
   // Student self-grade for a written answer: v in {1, 0.5, 0}
+  // the student marks an answer: a written answer, or a typed answer the checker marked wrong (it may be right in other words)
   function selfGrade(attId, rowIndex, v) {
     var store = UN.store.get(), att = store.attempts.filter(function (a) { return a.id === attId; })[0];
     if (!att) return null;
     var row = att.rows[rowIndex];
-    row.v = v; row.graded = true;
-    UN.adapt.setEventValue(attId, row.item, v);
+    row.v = v; row.graded = true; if (row.type !== 'written') row.self = true;
+    UN.adapt.setEventValue(attId, row.item, v, row.type === 'written' ? 'written' : row.fmt);
+    if (UN.revise && row.type !== 'written') UN.revise.noteRows([row], att.ts);
     var t = totals(att.rows); att.score = t.score; att.pct = t.pct;
     var h = store.exams[att.no].history.filter(function (x) { return x.id === attId; })[0];
     if (h) h.pct = att.pct;

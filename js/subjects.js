@@ -5,7 +5,7 @@
  */
 (function () {
   var UN = window.UN = window.UN || {};
-  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps', 'videos'];
+  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps', 'videos', 'qitems', 'explain', 'explainNote', 'groupLesson'];
 
   UN.subjects = {};
   UN.subjectOrder = [];
@@ -44,6 +44,13 @@
     FIELDS.forEach(function (f) { si[f] = UN.SI[f]; });
     si.cfg = UN.SI.cfg;
     UN.registerSubject('si', si);
+  }
+
+  // Subject 4: Discourse Analysis (one multiple-choice question per item, explanations; content in UN.DA)
+  if (UN.DA) {
+    var da = {};
+    FIELDS.forEach(function (f) { da[f] = UN.DA[f]; });
+    UN.registerSubject('disc', da);
   }
 
   UN.useSubject = function (id) {

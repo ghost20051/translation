@@ -81,6 +81,7 @@
     if (it.kind === 'term') return h('span', null, L(it.en, 'en'), ' · ', L(it.arShow, 'ar'));
     if (it.kind === 'sub') return L(it.name, 'en');
     if (it.kind === 'gap') return gapSentence(it.q);
+    if (it.kind === 'q') return mixed(it.q.length > 90 ? it.q.slice(0, 88) + '…' : it.q);
     return L(it.q, 'en');
   }
   function later(fn, ms) { var id = setTimeout(fn, ms); UN.state.timers.push(id); return id; }
@@ -460,6 +461,59 @@
     var mb = mediaBlock(r); if (mb) d.appendChild(mb);
     return d;
   }
+  // Learn page of a subject made of explanations (Discourse Analysis): understand it first with labelled examples, then every
+  // concept with a full explanation and a short version. Both languages are shown: the interface language first.
+  function explainLearn(arg) {
+    var lang = S().lang, other = lang === 'ar' ? 'en' : 'ar';
+    var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
+    var revCard = UN.revise ? UN.revise.card() : null; if (revCard) page.appendChild(revCard);
+    function two(o, cls) {
+      return h('div', { class: 'bi ' + (cls || '') }, h('p', { lang: lang, dir: lang === 'ar' ? 'rtl' : 'ltr' }, o[lang]), h('p', { class: 'bi2', lang: other, dir: other === 'ar' ? 'rtl' : 'ltr' }, o[other]));
+    }
+    function badges(tags) {
+      return h('div', { class: 'xbadges' }, Object.keys(tags).map(function (k) { var v = tags[k]; return h('span', { class: 'xbadge ' + (v ? 'yes' : 'no') }, (v ? '✓ ' : '✗ ') + t('da.' + k + (v ? '' : 'No'))); }));
+    }
+    if (UN.explainNote) page.appendChild(h('p', { class: 'xnote' }, ic('info'), ' ', UN.explainNote[lang]));
+    page.appendChild(h('h2', null, t('da.understand')));
+    UN.explain.forEach(function (sec, k) {
+      var d = h('details', { class: 'card res xsec', id: sec.id });
+      if (k === 0) d.setAttribute('open', '');
+      d.appendChild(h('summary', null, h('span', { class: 'rt' }, sec.title[lang], h('small', { class: 'muted xalt', dir: other === 'ar' ? 'rtl' : 'ltr' }, sec.title[other])), ic('chevron-right', 'caret')));
+      if (sec.text) d.appendChild(two(sec.text));
+      if (sec.points) d.appendChild(h('ul', { class: 'xpoints' }, sec.points.map(function (p) { return h('li', null, two(p)); })));
+      if (sec.examples) d.appendChild(h('div', { class: 'xexamples' }, sec.examples.map(function (e) {
+        return h('div', { class: 'xex' }, e.context ? h('small', { class: 'xctx' }, t('da.context') + ': ' + e.context[lang]) : null,
+          h('div', { class: 'quote xtext', lang: 'en', dir: 'ltr' }, e.text), badges(e.tags), two(e.why, 'xwhy'));
+      })));
+      if (sec.items) d.appendChild(h('div', { class: 'xitems' }, sec.items.map(function (it) {
+        return h('div', { class: 'xitem' }, h('div', { class: 'xchead' }, h('b', { lang: 'en' }, it.name.en), h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, it.name.ar)), two(it.text),
+          it.ex ? h('ul', { class: 'xexlist', lang: 'en', dir: 'ltr' }, it.ex.map(function (x) { return h('li', null, x); })) : null);
+      })));
+      if (sec.remember) d.appendChild(h('div', { class: 'tip xremember' }, ic('lightbulb'), two(sec.remember)));
+      page.appendChild(d);
+    });
+    page.appendChild(h('h2', null, t('da.concepts')));
+    (UN.cfg.termGroups || []).forEach(function (g) {
+      var subs = UN.subs.filter(function (x) { return x.group === g; });
+      if (!subs.length) return;
+      page.appendChild(h('h3', { class: 'xgroup', id: 'r-' + g }, UN.groups[g][lang]));
+      subs.forEach(function (c) {
+        page.appendChild(h('div', { class: 'card xconcept', id: c.id },
+          h('div', { class: 'xchead' }, h('b', { lang: 'en' }, c.name), h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, c.arName)),
+          h('small', { class: 'dlbl' }, t('da.full')), two(c.full),
+          h('small', { class: 'dlbl' }, t('da.short')), two(c.short, 'xshort'),
+          c.ex && c.ex.length ? h('div', { class: 'xexamples' }, h('small', { class: 'dlbl' }, t('da.examples')), c.ex.map(function (x) {
+            return h('div', { class: 'xex' }, h('div', { class: 'quote xtext', lang: 'en', dir: 'ltr' }, x.t), two(x.n, 'xwhy'));
+          })) : null));
+      });
+    });
+    page.appendChild(h('section', { class: 'card xpractise' }, h('h2', null, t('da.practise')), h('div', { class: 'row' },
+      h('a', { class: 'btn primary', href: '#/game/1' }, '🎮 ' + t('game1.name')),
+      UN.exam && UN.exam.hasAll() ? h('a', { class: 'btn ghost', href: '#/exam/4' }, '📚 ' + t('exam4.name')) : null,
+      h('a', { class: 'btn ghost', href: '#/vocab' }, '📋 ' + t('nav.vocab')))));
+    if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    return page;
+  }
   // Every question in its original order, part by part (Part 1 fill in the gap 1-80, Part 2 MCQ, Part 3 written),
   // with a tick on each number so a student always knows where they stopped.
   function learnParts() {
@@ -528,6 +582,7 @@
     return h('section', { class: 'lparts', id: 'parts' }, h('h2', null, t('learn.byPart')), h('p', { class: 'muted' }, t('learn.byPartLead')), bar, status, list);
   }
   UN.routes.learn = function (arg) {
+    if (UN.explain) return explainLearn(arg);
     var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
     if (UN.videos && UN.videos.length) page.appendChild(h('a', { class: 'card vbanner', href: '#/videos' }, UN.art ? UN.art.make('si', 40) : ic('play-circle'), h('span', { class: 'vbt' }, h('b', null, t('vid.title')), h('small', { class: 'muted' }, t('vid.bannerSub', { n: UN.videos.length }))), ic('chevron-right', 'flip')));
     var revCard = UN.revise ? UN.revise.card() : null; if (revCard) page.appendChild(revCard);
@@ -556,7 +611,7 @@
 
   /* ---------- page: vocabulary ---------- */
   UN.routes.vocab = function () {
-    var gapMode = UN.cfg.flipKind === 'gap', tab = gapMode ? 'gaps' : 'terms', q = '', grp = 'all', lang = S().lang;
+    var gapMode = UN.cfg.flipKind === 'gap', tab = gapMode ? 'gaps' : (UN.cfg.vocabTabs ? UN.cfg.vocabTabs[0][0] : 'terms'), q = '', grp = 'all', lang = S().lang;
     var page = h('div', { class: 'page' }, pageHead(t('vocab.title'), t('vocab.lead')));
     var tabs = h('div', { class: 'tabs', role: 'tablist' }), chips = h('div', { class: 'chips-row' }), list = h('div', { class: 'vlist' });
     var search = h('input', { type: 'search', class: 'txt', placeholder: t('vocab.search'), 'aria-label': t('vocab.search'), autocomplete: 'off' });
@@ -565,7 +620,7 @@
     function norm(s) { return UN.check.normEn(s) + ' ' + UN.check.normAr(s); }
     function drawTabs() {
       tabs.textContent = '';
-      (gapMode ? [['gaps', 'vocab.part1'], ['mcq', 'vocab.part2'], ['written', 'vocab.part3'], ['defs', 'vocab.part4']] : [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']]).forEach(function (x) {
+      (gapMode ? [['gaps', 'vocab.part1'], ['mcq', 'vocab.part2'], ['written', 'vocab.part3'], ['defs', 'vocab.part4']] : (UN.cfg.vocabTabs || [['terms', 'vocab.terms'], ['defs', 'vocab.defs'], ['written', 'vocab.written']])).forEach(function (x) {
         tabs.appendChild(h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === x[0]), class: 'tab' + (tab === x[0] ? ' on' : ''), onclick: function () { tab = x[0]; draw(); } }, t(x[1])));
       });
     }
@@ -585,7 +640,7 @@
           if (needle && norm(b.text + ' ' + Object.keys(b.opts).map(function (k) { return b.opts[k]; }).join(' ')).indexOf(needle) === -1) return;
           n++;
           list.appendChild(h('div', { class: 'vrow card def mcqrow' }, h('span', { class: 'vnum' }, i + 1), h('div', { class: 'vdef' }, h('b', null, b.text),
-            h('ul', { class: 'mopts' }, Object.keys(b.opts).map(function (k) { return h('li', { class: k === key ? 'right' : '' }, h('span', { class: 'letter' }, k.toUpperCase()), k === key ? h('mark', { class: 'gans' }, b.opts[k]) : b.opts[k]); })))));
+            h('ul', { class: 'mopts' }, Object.keys(b.opts).map(function (k) { return h('li', { class: k === key ? 'right' : '' }, h('span', { class: 'letter' }, k.toUpperCase()), k === key ? h('mark', { class: 'gans' }, b.opts[k]) : b.opts[k]); })), b.note ? h('div', { class: 'muted small' }, b.note) : null)));
         });
       } else if (tab === 'gaps') {
         UN.gaps.forEach(function (it) {

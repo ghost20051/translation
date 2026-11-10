@@ -91,9 +91,24 @@
         el('circle', { cx: '34.5', cy: '58.5', r: '3', fill: '#fde68a' })
       ]];
     }
+,
+    // Discourse Analysis: two speech bubbles joined by a chain link (sentences tied together)
+    disc: function (id) {
+      return [[
+        grad(id('bg'), '1', '1', [['0', '#b45309'], ['1', '#f59e0b']]),
+        grad(id('gloss'), '0', '1', [['0', '#ffffff', '.3'], ['1', '#ffffff', '0']])
+      ], [
+        el('circle', { cx: '32', cy: '32', r: '31', fill: 'url(#' + id('bg') + ')' }),
+        el('path', { d: 'M32 1a31 31 0 0 1 31 31H1A31 31 0 0 1 32 1z', fill: 'url(#' + id('gloss') + ')' }),
+        el('path', { d: 'M9 16h22a5 5 0 0 1 5 5v9a5 5 0 0 1-5 5H19l-6 5v-5h-4a5 5 0 0 1-5-5v-9a5 5 0 0 1 5-5z', fill: '#ffffff' }),
+        el('path', { d: 'M55 28H35a5 5 0 0 0-5 5v9a5 5 0 0 0 5 5h11l6 5v-5h3a5 5 0 0 0 5-5v-9a5 5 0 0 0-5-5z', fill: '#fff7e6' }),
+        el('g', { stroke: '#d97706', 'stroke-width': '2.2', 'stroke-linecap': 'round' }, [el('path', { d: 'M11 23h18M11 28h12' }), el('path', { d: 'M36 35h17M36 40h11' })]),
+        el('g', { fill: 'none', stroke: '#7c2d12', 'stroke-width': '2.6' }, [el('rect', { x: '25', y: '29', width: '9', height: '6', rx: '3' }), el('rect', { x: '30', y: '31', width: '9', height: '6', rx: '3' })])
+      ]];
+    }
   };
 
-  // name: brand | un | tour | si (anything else falls back to the logo)
+  // name: brand | un | tour | si | disc (anything else falls back to the logo)
   function make(name, size) {
     var d = DESIGN[name] || DESIGN.brand, uid = ++seq;
     var id = function (k) { return 'art' + uid + k; };
