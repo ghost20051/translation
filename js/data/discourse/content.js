@@ -1,4 +1,4 @@
-/* Subject 4: Discourse Analysis (تحليل الخطاب): cohesion, coherence and acceptability, and nothing else.
+/* Subject 4: Discourse Analysis (تحليل الخطاب): cohesion and coherence, and nothing else.
    Prepared from standard discourse analysis references, not from a course book.
    The technical terms stay in English; the Arabic explains them in plain Egyptian Arabic, the way a lecturer would.
    Every multiple-choice question is its own item (kind "q"), so exams can hold all of them and the weak ones come back. */
@@ -10,13 +10,12 @@
   D.groups = {
     coh: s('Cohesion', 'Cohesion'),
     cohr: s('Coherence', 'Coherence'),
-    mix: s('Cohesive or coherent?', 'Cohesive ولا coherent؟'),
-    acc: s('Acceptability', 'Acceptability')
+    mix: s('Cohesive or coherent?', 'Cohesive ولا coherent؟')
   };
-  D.groupOrder = ['coh', 'cohr', 'mix', 'acc'];
+  D.groupOrder = ['coh', 'cohr', 'mix'];
   D.terms = []; D.confusable = []; D.written = []; D.parts = {}; D.partsOrder = {}; D.lessons = [];
 
-  /* ---------- the three concepts: a full explanation and a short version (English, then an Arabic explanation that keeps
+  /* ---------- the two concepts: a full explanation and a short version (English, then an Arabic explanation that keeps
      the English terms), with examples. def (the short English line) is what the games use. ---------- */
   function ex(t, en, ar) { return { t: t, n: s(en, ar) }; }
   var K = [
@@ -32,13 +31,7 @@
               "الـ coherence معناه إن أفكار النص ماشية مع بعض والكلام كله طالع له معنى واحد مفهوم. ده مش بيبان في كلمة معينة، لكن بييجي من ترتيب الأفكار بشكل منطقي، ومن إن مفيش أفكار بتناقض بعضها، ومن معرفة القارئ نفسه بالدنيا، لأنه هو اللي بيكمّل الفراغات بين الجمل. علشان كده ممكن النص يبقى coherent حتى لو مفيهوش ولا كلمة ربط."),
       short: s('The ideas make sense together as one whole.', 'الأفكار راكبة على بعض والكلام كله له معنى.'),
       ex: [ex('The ice cream melted. The sun was very hot.', "There is no 'because', but we understand the cause: coherent.", "مفيش 'because'، بس فاهمين إن الشمس هي السبب، يبقى النص coherent."),
-        ex('Omar is a vegetarian, so he eats meat every day.', "'So' and 'he' link the sentence, but the ideas contradict each other: not coherent.", "'so' و'he' رابطين الكلام، بس الأفكار بتناقض بعض، فالنص مش coherent.")] },
-    { g: 'acc', name: 'Acceptability',
-      full: s("Acceptability looks at a text from the receiver's side: does the reader or listener accept it as a clear, connected and useful text in this situation? It depends on who the receiver is, on the situation and on the culture, so the same text can be acceptable in one place and not in another. Receivers also tolerate small mistakes when the text is useful to them.",
-              "الـ acceptability بتبص للنص من ناحية اللي بيستقبله: القارئ أو السامع هيقبل الكلام ده على إنه واضح ومترابط ومفيد في الموقف ده ولا لأ؟ وده بيفرق حسب الشخص نفسه والموقف والثقافة، فنفس الكلام ممكن يبقى acceptable في مكان ومش acceptable في مكان تاني. وكمان الناس بتعدّي الأخطاء الصغيرة لو الكلام مفيد ليهم."),
-      short: s('Would this reader accept this text here?', 'هل اللي هيقرا أو يسمع هيقبل الكلام ده في الموقف ده؟'),
-      ex: [ex('A formal email to the dean: "Hey man, fix my grades ASAP."', 'Connected and clear, but not acceptable for this receiver.', 'الكلام مترابط وواضح، بس مش acceptable خالص لما يتبعت للعميد.'),
-        ex('A road sign near a school: "SLOW. SCHOOL."', 'Not a full sentence, but acceptable: drivers understand it at once.', 'مش جملة كاملة، بس acceptable: أي سوّاق بيفهمها على طول.')] }
+        ex('Omar is a vegetarian, so he eats meat every day.', "'So' and 'he' link the sentence, but the ideas contradict each other: not coherent.", "'so' و'he' رابطين الكلام، بس الأفكار بتناقض بعض، فالنص مش coherent.")] }
   ];
   D.subs = K.map(function (k, i) { return { id: 'DK' + (i + 1), group: k.g, name: k.name, arName: '', def: k.short.en, full: k.full, short: k.short, ex: k.ex }; });
 
@@ -61,13 +54,13 @@
     ['coh', 'Which word links these two sentences? "It was raining. However, we went out."', ['However', 'raining', 'went', 'out'], 'a', "'However' joins the two ideas and shows a contrast: it is a linking word."],
     ['coh', 'Which pair of sentences is linked by a repeated word?', ['"I saw a snake. The snake was huge."', '"I saw a snake. It was huge."', '"I saw a snake, but I was not afraid."', '"Tea is hot. Cars have wheels."'], 'a', "'The snake' repeats 'a snake'. The second pair is linked by the pronoun 'it', the third by 'but', and the last has no links."],
     ['coh', 'Which text has NO cohesive links at all?', ['"Rain. Traffic. Late again."', '"Omar was late because of the rain."', '"It rained, so the traffic was slow."', '"The rain stopped. Then the traffic moved."'], 'a', 'The first text has no pronouns, no linking words and no repeated words. We can still guess the story, but nothing on the surface links it.'],
-    ['coh', "Linking words such as 'and', 'but', 'so' and 'then' are part of…", ['cohesion: they tie the sentences together on the surface', 'acceptability: they make any text acceptable', "the reader's background knowledge", 'punctuation'], 'a', 'They are links you can see in the text, so they belong to cohesion.'],
+    ['coh', "Linking words such as 'and', 'but', 'so' and 'then' are part of…", ['cohesion: they tie the sentences together on the surface', 'coherence: they make sure the text makes sense', "the reader's background knowledge", 'punctuation'], 'a', 'They are links you can see in the text, so they belong to cohesion.'],
     ['coh', 'Why is "Omar came late. He missed the bus." cohesive?', ["'He' points back to Omar, linking the two sentences", 'Both sentences are short', 'It ends with a full stop', 'It is about a bus'], 'a', "The pronoun 'he' is a visible link between the sentences."],
     ['coh', 'Which text has the most cohesive links?', ['"Ahmed was hungry, so he made a sandwich and ate it."', '"Hungry. Sandwich."', '"Ahmed was hungry."', '"Sandwiches are popular."'], 'a', "'So', 'he', 'and' and 'it' all link the parts of the first text. The others have no links."],
     ['coh', "What do pronouns such as 'he', 'it' and 'they' usually do in a text?", ['They point back to people or things already mentioned, linking the sentences', 'They make the text longer', "They show the writer's opinion", 'They always start a new topic'], 'a', 'Each pronoun ties its sentence to an earlier one: one of the visible links of cohesion.'],
     ['coh', 'Which text is linked by a linking word?', ['"He was ill. Therefore, he stayed at home."', '"He was ill. He stayed at home."', '"Ill. Home. Bed."', '"Ahmed is ill. His brother is a doctor."'], 'a', "'Therefore' is a linking word that shows the result. The second and fourth texts are linked only by pronouns, and the third has no links."],
     ['coh', 'In "Youssef bought a car. The car was cheap.", how are the two sentences linked?', ["By repeating the word 'car'", 'By a linking word', 'They are not linked', 'By the full stop'], 'a', "'The car' repeats 'a car', so the reader sees that both sentences talk about the same car."],
-    ['coh', 'Which one can you check by underlining words in the text?', ['Cohesion', 'Coherence', 'Acceptability'], 'a', 'You can underline the links (he, it, so, then, repeated words): that is cohesion. Coherence is about the meaning and acceptability is about the receiver, so you cannot just underline them.'],
+    ['coh', 'Which one can you check by underlining words in the text?', ['Cohesion', 'Coherence'], 'a', 'You can underline the links (he, it, so, then, repeated words): that is cohesion. Coherence is about the meaning, so you cannot just underline it.'],
     // coherence
     ['cohr', 'Coherence is mainly about…', ['whether the ideas connect logically and make sense as a whole', 'the number of pronouns', 'the spelling', 'the font size'], 'a', 'Coherence is about meaning: do the ideas fit together into one sensible whole?'],
     ['cohr', 'Coherence depends on…', ["the logical order of ideas and the reader's background knowledge", 'the number of linking words only', 'the length of the sentences only', 'the use of capital letters'], 'a', 'Readers use logic and what they already know to connect the ideas.'],
@@ -135,34 +128,7 @@
     ['mix', 'Which text is coherent but NOT cohesive?', ['"Power cut. Candles. Dinner in the dark."', '"Ahmed wanted to lose weight, so he started walking."', '"I have a pen. The pen is blue. Blue is the colour of the sky."', '"Lions eat meat. My bag is heavy. Wednesday comes after Tuesday."'], 'a', 'The first text has no links, but we picture one evening without electricity.'],
     ['mix', 'Which text is cohesive but NOT coherent?', ['"The baby read the newspaper. Then he drove his car to work."', '"Rain all night. Roads flooded."', '"Youssef missed the train, so he took a taxi."', '"Ice is cold. Trains are fast. My pen is blue."'], 'a', "'Then' and 'he' link the first text, but a baby cannot read a newspaper or drive."],
     ['mix', 'Which text is both cohesive and coherent?', ['"The library opens at nine, so students wait outside until then."', '"Power cut. Candles. Dinner in the dark."', '"Karim drinks coffee. Coffee is brown. Brown is a colour."', '"Lions eat meat. My bag is heavy."'], 'a', "'So' and 'then' link the first text, and its meaning is clear."],
-    ['mix', 'Which text is neither cohesive nor coherent?', ['"Ice is cold. My uncle Hassan sells shoes. Trains are faster than bicycles."', '"Rain all night. Roads flooded. School closed."', '"Ahmed was hungry, so he made a sandwich."', '"My phone is black. Black is a colour. Colours are nice."'], 'a', 'No links and no shared meaning.'],
-    // acceptability
-    ['acc', 'Situation: a formal email to the dean. Text: "Hey man, fix my grades ASAP." Is it acceptable here?', ['Not acceptable: the receiver would not accept this text in this situation', 'Acceptable: it is short and clear'], 'a', 'It is cohesive and coherent, but its tone does not suit the receiver or the situation.'],
-    ['acc', 'Situation: a friend texts "Coming to the match?" Reply: "Yes! See you at 8." Is it acceptable?', ['Acceptable: it is clear and suits the situation', 'Not acceptable: it is too short'], 'a', 'Short, friendly and useful: exactly what the receiver needs here.'],
-    ['acc', 'Situation: a road sign near a school. Text: "SLOW. SCHOOL." Is it acceptable?', ['Acceptable: drivers understand it at once in this situation', 'Not acceptable: it is not a full sentence'], 'a', 'Receivers accept the short form because the situation makes the meaning clear.'],
-    ['acc', 'Situation: a job interview. "Tell us about yourself." Answer: "My favourite food is koshari and I hate Mondays." Is it acceptable?', ['Not acceptable: it is not useful or relevant for the interviewer', 'Acceptable: it is cohesive and coherent'], 'a', 'The answer may be connected, but the receiver does not find it relevant to the situation.'],
-    ['acc', 'Situation: a teacher asks, "What is the capital of Egypt?" Student: "Cairo." Is it acceptable?', ['Acceptable: the short answer is complete in this situation', 'Not acceptable: it has no verb'], 'a', 'With the question as context, one word is a full and useful answer.'],
-    ['acc', 'Acceptability is mainly about…', ["the receiver's attitude: does the reader or listener accept the text as useful and suitable?", "the writer's spelling", 'the number of paragraphs', 'the use of pronouns only'], 'a', "Acceptability takes the receiver's point of view."],
-    ['acc', 'Whose point of view does acceptability take?', ["The receiver's (the reader or listener)", "The writer's only", "The printer's", "The translator's grammar book"], 'a', "Acceptability looks at the text from the receiver's side: the reader or listener."],
-    ['acc', 'A text can be cohesive and coherent but still not acceptable when…', ['it does not suit the receiver or the situation', 'it has too many pronouns', 'it is printed in black', 'it has a title'], 'a', 'Acceptability depends on the receiver and the situation, not only on the text.'],
-    ['acc', 'Readers often accept a text with small mistakes if it is useful to them. This shows that acceptability…', ["depends on the receiver's needs and tolerance", 'means a text must be perfect', 'has nothing to do with the receiver', 'is only about grammar'], 'a', 'Receivers tolerate small problems when the text serves their purpose.'],
-    ['acc', 'Situation: a medicine leaflet. Text: "Take two tablets after meals, three times a day." Is it acceptable?', ['Acceptable: it is clear and useful for the patient', 'Not acceptable: it is too direct'], 'a', 'Clear, direct instructions are exactly what this receiver needs.'],
-    ['acc', 'Situation: a condolence message to a friend whose father has died. Text: "LOL, life goes on!" Is it acceptable?', ['Not acceptable: it is unsuitable for the receiver and the situation', 'Acceptable: it is short'], 'a', 'The tone hurts the receiver; he would not accept this text in this situation.'],
-    ['acc', 'Situation: exam instructions. Text: "Answer all questions. Use a blue pen." Is it acceptable?', ['Acceptable: clear and suitable for students', 'Not acceptable: it gives orders'], 'a', 'Instructions are expected to give clear orders: acceptable.'],
-    ['acc', 'Which things affect acceptability?', ['The receiver, the situation and the culture', 'Only the length of the text', 'Only the font', 'Only the number of verbs'], 'a', 'The same text can be acceptable to one receiver or in one situation and not in another.'],
-    ['acc', 'Situation: a weather forecast on the radio. Text: "Tomorrow: sunny, 30 degrees, light wind." Is it acceptable?', ['Acceptable: the short form is normal for a forecast', 'Not acceptable: it has no full sentences'], 'a', 'Listeners expect this short style in a forecast.'],
-    ['acc', 'Situation: a cover letter for a job at a bank. Text: "I want the job coz I need cash lol." Is it acceptable?', ['Not acceptable: the style does not suit the receiver or the situation', 'Acceptable: the meaning is clear'], 'a', 'The bank manager expects a formal, polite letter. He would not accept this text.'],
-    ['acc', 'Situation: a restaurant menu. Text: "Grilled chicken with rice: 120 pounds." Is it acceptable?', ['Acceptable: this short form is normal for a menu', 'Not acceptable: it has no verb'], 'a', 'Customers expect short lines like this on a menu.'],
-    ['acc', 'Situation: a speech at a graduation ceremony. Text: "Whatever. You finished. Go home." Is it acceptable?', ['Not acceptable: it does not suit this formal, happy occasion', 'Acceptable: it is short and clear'], 'a', 'The audience expects warm congratulations, so this text is not acceptable here.'],
-    ['acc', 'Situation: a text message to your brother, who is waiting for you. Text: "At the gate. Come down." Is it acceptable?', ['Acceptable: it is clear and suits the situation', 'Not acceptable: it is not a full sentence'], 'a', 'Your brother understands it at once; full sentences are not needed here.'],
-    ['acc', 'Situation: a tourist asks a policeman the way to the museum. The policeman gives a long talk about the history of the city and never says where the museum is. Is his answer acceptable?', ['Not acceptable: it is not useful for the receiver', 'Acceptable: it is full of information'], 'a', 'The tourist needed directions. A text that does not meet his need is not acceptable to him.'],
-    ['acc', 'A tourist leaflet has two small spelling mistakes, but its map and directions are clear and helpful. Will most tourists accept it?', ['Yes: receivers tolerate small mistakes when the text is useful', 'No: any mistake makes a text unacceptable'], 'a', 'Acceptability depends on the receiver, and receivers forgive small problems in a useful text.'],
-    ['acc', 'The same joke is acceptable at a party with friends but not in a funeral speech. What does this show?', ['Acceptability depends on the situation and the receiver', 'Jokes are never acceptable', 'Acceptability depends only on grammar', 'Acceptability is the same everywhere'], 'a', 'The text did not change; the situation did.'],
-    ['acc', "Situation: a story for six-year-old children. Text: \"The protagonist's existential dilemma intensified.\" Is it acceptable?", ['Not acceptable: children would not understand it', 'Acceptable: it is correct English'], 'a', 'Correct English is not enough: the text must suit its receivers.'],
-    ['acc', 'Situation: a sign on a door. Text: "PUSH". Is it acceptable?', ['Acceptable: one word is enough in this situation', 'Not acceptable: it is too short'], 'a', 'The situation makes the meaning clear, so the receiver accepts it.'],
-    ['acc', 'Which question checks acceptability?', ['Would this reader accept this text in this situation?', 'Can I point to the linking words?', 'Do the ideas make sense together?', 'How many paragraphs are there?'], 'a', 'The second question checks cohesion and the third checks coherence. Acceptability is about the receiver.'],
-    ['acc', 'Situation: a university email to all students. Text: "Dear students, the library will close at 5 pm on Thursday for cleaning." Is it acceptable?', ['Acceptable: it is clear, polite and useful', 'Not acceptable: it is too formal'], 'a', 'Students get exactly the information they need, in a suitable style.'],
-    ['acc', 'Situation: a radio news bulletin. Text: "Um, so, like, there was a fire, I think, somewhere, maybe yesterday." Is it acceptable?', ['Not acceptable: it is too vague for the news', 'Acceptable: it mentions a fire'], 'a', 'Listeners expect clear facts in the news: where, when and what happened.']
+    ['mix', 'Which text is neither cohesive nor coherent?', ['"Ice is cold. My uncle Hassan sells shoes. Trains are faster than bicycles."', '"Rain all night. Roads flooded. School closed."', '"Ahmed was hungry, so he made a sandwich."', '"My phone is black. Black is a colour. Colours are nice."'], 'a', 'No links and no shared meaning.']
   ];
   var LETTERS = 'abcd';
   D.qitems = []; D.bank = { mcq: [], tf: [], cloze: [] }; D.keys = { mcq: {}, tf: {}, cloze: {}, written: {} };
@@ -178,14 +144,12 @@
   var TOPIC = {
     coh: s('The links you can see between sentences.', 'الروابط اللي تقدر تشوفها بين الجمل.'),
     cohr: s('Meaning that holds together: logic, order and what the reader already knows.', 'معنى ماسك في بعضه: منطق وترتيب ومعرفة القارئ.'),
-    mix: s('Practise telling the four kinds of text apart.', 'اتدرب تفرّق بين الأنواع الأربعة للنصوص.'),
-    acc: s('Would the reader or listener accept this text here?', 'هل القارئ أو السامع هيقبل الكلام ده في الموقف ده؟')
+    mix: s('Practise telling the four kinds of text apart.', 'اتدرب تفرّق بين الأنواع الأربعة للنصوص.')
   };
   var TIP = {
     coh: s('Ask: can I point to the links?', 'اسأل نفسك: أقدر أشاور على الروابط؟'),
     cohr: s('Ask: does the whole text make sense?', 'اسأل نفسك: هل الكلام كله له معنى؟'),
-    mix: s('Check links first, then meaning.', 'شوف الروابط الأول، وبعدين المعنى.'),
-    acc: s('Same text, different situation, different answer.', 'نفس الكلام، موقف مختلف، إجابة مختلفة.')
+    mix: s('Check links first, then meaning.', 'شوف الروابط الأول، وبعدين المعنى.')
   };
   D.resources = D.groupOrder.map(function (g) {
     return { id: 'r-' + g, group: g, title: D.groups[g], text: TOPIC[g], tip: TIP[g], video: null, audio: null,
@@ -196,8 +160,7 @@
   D.groupLesson = {
     coh: s('Cohesion = the visible links: pronouns (he, it, this), linking words (and, but, so) and repeated words.', 'الـ cohesion = الروابط اللي بتبان: ضمائر (he وit وthis)، وكلمات ربط (and وbut وso)، وكلمات بتتكرر.'),
     cohr: s('Coherence = the meaning holds together. Check the order of ideas, contradictions and whether the reader can connect them with what he already knows.', 'الـ coherence = المعنى ماسك في بعضه. بص على ترتيب الأفكار، وهل فيه تناقض، وهل القارئ يقدر يربطها باللي يعرفه.'),
-    mix: s('Two questions: Are there links I can point to? (cohesion) Does it make sense as a whole? (coherence) Both, one of them, or neither.', 'سؤالين: فيه روابط أقدر أشاور عليها؟ (cohesion) والكلام كله له معنى؟ (coherence) الإجابة يا الاتنين، يا واحد بس، يا ولا واحد.'),
-    acc: s("Acceptability = the receiver's view. Is the text clear, useful and suitable for this reader in this situation?", 'الـ acceptability = رأي اللي بيستقبل الكلام. هل الكلام واضح ومفيد ومناسب للشخص ده في الموقف ده؟')
+    mix: s('Two questions: Are there links I can point to? (cohesion) Does it make sense as a whole? (coherence) Both, one of them, or neither.', 'سؤالين: فيه روابط أقدر أشاور عليها؟ (cohesion) والكلام كله له معنى؟ (coherence) الإجابة يا الاتنين، يا واحد بس، يا ولا واحد.')
   };
 
   /* ---------- the Learn page: understand it first, with labelled examples ---------- */
@@ -229,20 +192,7 @@
           why: s("No word links the two lines, but we understand that B means 'no': the meaning connects.", "مفيش ولا كلمة بتربط السطرين، بس كلنا فاهمين إن B قصده 'لأ مش هقدر'، فالمعنى متوصل.") },
         { text: 'Salt is white. The bus is late. Seven is an odd number.', tags: { coh: false, cohr: false },
           why: s('No links and no shared meaning.', 'لا فيه روابط، ولا فيه معنى يجمع الجمل.') }],
-      remember: s('Cohesion helps coherence, but it is not enough: a text can be linked and still make no sense, and a text with no links can still make sense.', 'الـ cohesion بيساعد الـ coherence بس مش كفاية لوحده: ممكن الكلام يبقى مربوط ومع ذلك ملوش معنى، وممكن يبقى من غير روابط وله معنى.') },
-    { id: 'x-acc', title: s('Acceptability', 'Acceptability'),
-      text: s("Acceptability looks at the text from the receiver's side: does the reader or listener accept it as clear, useful and suitable here? The same text can be acceptable in one situation and not in another. Receivers also tolerate small mistakes when the text is useful to them.",
-              'الـ acceptability بتبص للكلام من ناحية اللي بيستقبله: القارئ أو السامع هيقبله على إنه واضح ومفيد ومناسب هنا ولا لأ؟ ونفس الكلام ممكن يبقى acceptable في موقف ومش acceptable في موقف تاني. وكمان الناس بتعدّي الأخطاء الصغيرة لو الكلام مفيد ليهم.'),
-      examples: [
-        { context: s('Texting a friend', 'رسالة لصاحبك'), text: 'Coming to the match? Yes! See you at 8.', tags: { acc: true },
-          why: s('Short, friendly and clear: exactly right for this receiver.', 'قصيرة وودودة وواضحة، ومظبوطة جدًا لصاحبك.') },
-        { context: s('A formal email to the dean', 'إيميل رسمي لعميد الكلية'), text: 'Hey man, fix my grades ASAP.', tags: { acc: false },
-          why: s('It is cohesive and coherent, but the tone does not suit this receiver or situation.', 'الكلام cohesive وcoherent، بس الأسلوب ده مينفعش خالص مع العميد ولا في الموقف ده.') },
-        { context: s('A road sign near a school', 'لافتة طريق جنب مدرسة'), text: 'SLOW. SCHOOL.', tags: { acc: true },
-          why: s('Not a full sentence, but drivers understand it at once in this place.', 'مش جملة كاملة، بس أي سوّاق بيفهمها على طول في المكان ده.') },
-        { context: s('A job interview: "Tell us about yourself."', 'مقابلة شغل: "احكيلنا عن نفسك."'), text: 'My favourite food is koshari and I hate Mondays.', tags: { acc: false },
-          why: s('Connected, but not useful or relevant for the interviewer.', 'كلام مترابط، بس ملوش أي علاقة باللي المقابلة عايزة تعرفه.') }],
-      remember: s('Cohesion and coherence are about the text. Acceptability is about the receiver and the situation.', 'الـ cohesion والـ coherence بيتكلموا عن النص نفسه، أما الـ acceptability فبتتكلم عن اللي بيستقبل الكلام وعن الموقف.') }
+      remember: s('Cohesion helps coherence, but it is not enough: a text can be linked and still make no sense, and a text with no links can still make sense.', 'الـ cohesion بيساعد الـ coherence بس مش كفاية لوحده: ممكن الكلام يبقى مربوط ومع ذلك ملوش معنى، وممكن يبقى من غير روابط وله معنى.') }
   ];
   D.explainNote = s('These explanations and questions were prepared from standard discourse analysis references, not from your course book. If your lecturer explains something differently, tell us and we will match it.',
                     'الشرح والأسئلة دي متجهزة من المراجع المعروفة في الـ discourse analysis، مش من كتاب المادة. لو الدكتور بيشرح حاجة بشكل مختلف، قولنا وهنظبطها.');
@@ -254,15 +204,15 @@
     name: s('Discourse Analysis', 'تحليل الخطاب'),
     short: s('Discourse', 'الخطاب'),
     icon: 'link', art: 'disc',
-    desc: s('Cohesion, coherence and acceptability, with ' + N + ' practice questions', 'Cohesion وcoherence وacceptability، مع ' + N + ' سؤال تدريب'),
+    desc: s('Cohesion and coherence, with ' + N + ' practice questions', 'Cohesion وcoherence، مع ' + N + ' سؤال تدريب'),
     subNoun: 'concept', parts: null, reading: false,
     termGroups: D.groupOrder, waveCap: 6, flipGoal: 10, flipDeck: 10,
     acts: ['quiz', 'speed'],
     vocabTabs: [['mcq', 'vocab.allMcq'], ['defs', 'vocab.defs']],
     exam: { qitems: 30, terms: 0, gaps: 0, written: 0, extras: 0, extraPool: [], all: true, sample: true, adaptive: { total: 20, targeted: 15 },
       desc: {
-        1: s('30 multiple-choice questions from every topic: cohesion, coherence, classifying texts and acceptability. It sets your starting point.',
-             '30 سؤال اختيار من متعدد من كل المحاور: cohesion وcoherence وتصنيف النصوص وacceptability. بيحدد إنت واقف فين.'),
+        1: s('30 multiple-choice questions from every topic: cohesion, coherence and classifying texts. It sets your starting point.',
+             '30 سؤال اختيار من متعدد من كل المحاور: cohesion وcoherence وتصنيف النصوص. بيحدد إنت واقف فين.'),
         2: s('Aims at your weak spots: 15 of your weakest questions plus 5 general ones (20 questions). Without data yet, it is the same as Exam 1.',
              'بيركز على نقط ضعفك: 15 سؤال من أضعف أسئلتك و5 أسئلة عامة (20 سؤال). ولو لسه مفيش بيانات، بيبقى زي الامتحان 1.'),
         3: s('The final check: a fresh set of 30 questions, avoiding the ones asked in your last exam where possible.',
@@ -272,10 +222,10 @@
       } },
     text: {
       en: { 'game1.name': 'Game 1: Quick Practice', 'game1.desc': 'Quick questions and a speed round across all topics.',
-        'vocab.title': 'All questions and answers', 'vocab.lead': 'Every multiple-choice question with its answer and explanation, and the three concepts.', 'vocab.search': 'Search questions…', 'nav.vocab': 'All answers',
+        'vocab.title': 'All questions and answers', 'vocab.lead': 'Every multiple-choice question with its answer and explanation, and the two concepts.', 'vocab.search': 'Search questions…', 'nav.vocab': 'All answers',
         'learn.lead': 'Understand it first: short explanations with examples, then each concept in full and in short.' },
       ar: { 'game1.name': 'اللعبة 1: تدريب سريع', 'game1.desc': 'أسئلة سريعة وجولة سرعة في كل المحاور.',
-        'vocab.title': 'كل الأسئلة والإجابات', 'vocab.lead': 'كل أسئلة الاختيار من متعدد بإجاباتها وشرحها، والمفاهيم التلاتة.', 'vocab.search': 'ابحث في الأسئلة…', 'nav.vocab': 'كل الإجابات',
+        'vocab.title': 'كل الأسئلة والإجابات', 'vocab.lead': 'كل أسئلة الاختيار من متعدد بإجاباتها وشرحها، والمفهومين.', 'vocab.search': 'ابحث في الأسئلة…', 'nav.vocab': 'كل الإجابات',
         'learn.lead': 'افهم الأول: شرح قصير بالأمثلة، وبعدين كل مفهوم بالتفصيل وباختصار.' }
     }
   };

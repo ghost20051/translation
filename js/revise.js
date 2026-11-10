@@ -8,6 +8,7 @@
   var MAX = 300;
 
   function book() { var s = S(); s.mistakes = s.mistakes || []; return s.mistakes; }
+  function live(r) { return !!UN.itemsById[r.item]; }   // a question removed from the subject is not shown
   function txt(s) { s = String(s == null ? '' : s); return /[؀-ۿ]/.test(s) && !/[a-z]{3}/i.test(s) ? L(s, 'ar') : ui.mixed(s); }
   function givenText(q, given) {
     if (given == null || given === '' || given === 'self') return '';
@@ -48,8 +49,8 @@
   }
   // a game round starts: the mistakes made from now on are "this round"
   function start() { UN.state.reviseT0 = Date.now(); }
-  function since(ts) { return book().filter(function (r) { return r.at >= ts; }); }
-  function examRows(att) { return att.rows.filter(function (r) { return r.graded && r.v < 0.99 && !r.skipped; }); }
+  function since(ts) { return book().filter(function (r) { return r.at >= ts && live(r); }); }
+  function examRows(att) { return att.rows.filter(function (r) { return r.graded && r.v < 0.99 && !r.skipped && live(r); }); }
 
   // the button at the end of a game or an exam
   function button(att) {
@@ -59,7 +60,7 @@
   }
   // the card on the Learn page
   function card() {
-    var n = book().length;
+    var n = book().filter(live).length;
     if (!n) return null;
     return h('a', { class: 'card vbanner revcard', href: '#/revise' }, h('span', { class: 'revicon' }, '📝'),
       h('span', { class: 'vbt' }, h('b', null, t('rev.title')), h('small', { class: 'muted' }, t('rev.cardSub', { n: n }))), ic('chevron-right', 'flip'));
@@ -97,11 +98,11 @@
       arg = arg || '';
       if (arg.charAt(0) === 'a') { var att = S().attempts.filter(function (a) { return a.id === +arg.slice(1); })[0]; return att ? examRows(att) : []; }
       if (arg.charAt(0) === 's') return since(+arg.slice(1));
-      return book().slice();
+      return book().filter(live);
     }
     function draw() {
       box.textContent = '';
-      var list = rows(), all = book().length, inBook = !arg || arg.charAt(0) === 's';
+      var list = rows(), all = book().filter(live).length, inBook = !arg || arg.charAt(0) === 's';
       if (arg && all) box.appendChild(h('p', null, h('a', { href: '#/revise' }, '📚 ' + t('rev.all', { n: all }))));
       if (!list.length) { box.appendChild(h('div', { class: 'card center' }, h('div', { class: 'big-emoji' }, '🎉'), h('p', null, t('rev.none')))); return; }
       var practisable = list.filter(function (r) { return r.type !== 'written'; });

@@ -119,7 +119,7 @@
     return page;
   };
 
-  function groupOf(item) { return UN.itemsById[item].group; }
+  function groupOf(item) { var it = UN.itemsById[item]; return it ? it.group : null; }
 
   function resCounts(att) {
     var live = att.rows.filter(function (r) { return !r.skipped; });
@@ -147,7 +147,7 @@
         otherNo.length ? h('p', null, t('res.vsExam', { n: att.no - 1 }) + ': ' + (att.pct - otherNo[otherNo.length - 1] >= 0 ? '▲ +' : '▼ ') + (att.pct - otherNo[otherNo.length - 1]) + '%') : null)));
 
     // by category
-    var cat = {}; att.rows.forEach(function (r) { if (r.skipped) return; var g = groupOf(r.item), c = cat[g] || (cat[g] = { s: 0, n: 0 }); c.s += r.v; c.n++; });
+    var cat = {}; att.rows.forEach(function (r) { if (r.skipped) return; var g = groupOf(r.item); if (!g) return; var c = cat[g] || (cat[g] = { s: 0, n: 0 }); c.s += r.v; c.n++; });
     var cb = h('div', { class: 'card' });
     Object.keys(cat).forEach(function (g) {
       var r = cat[g].s / cat[g].n;

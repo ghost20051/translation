@@ -18,7 +18,7 @@ ok('Subject is registered with key concepts and one multiple-choice question per
   assert.ok(UN.subjectOrder.indexOf('disc') !== -1);
   assert.strictEqual(UN.subjectId, 'disc');
   assert.strictEqual(UN.cfg.name.en, 'Discourse Analysis'); assert.strictEqual(UN.cfg.name.ar, 'تحليل الخطاب');
-  assert.ok(UN.qitems.length >= 100, 'many questions');
+  assert.ok(UN.qitems.length >= 80, 'many questions');
   assert.strictEqual(UN.bank.mcq.length, UN.qitems.length);
   assert.strictEqual(UN.itemIds.length, UN.qitems.length + UN.subs.length);
   UN.cfg.termGroups.forEach(g => assert.ok(UN.qitems.filter(q => q.group === g).length >= 10, 'questions in ' + g));
@@ -37,11 +37,9 @@ ok('Every question: a valid key, distinct options, an explanation; options are s
   assert.ok(firsts.size > 1, 'the right answer is not always first');
 });
 
-ok('Classification questions cover all four kinds of text, and acceptability questions both verdicts', () => {
+ok('Classification questions cover all four kinds of text', () => {
   const mixKeys = UN.bank.mcq.filter(b => UN.itemsById[b.item].group === 'mix').map(b => b.opts[UN.keys.mcq[b.id]]);
   ['Cohesive and coherent', 'Cohesive but not coherent', 'Coherent but not cohesive', 'Neither cohesive nor coherent'].forEach(k => assert.ok(mixKeys.filter(x => x === k).length >= 5, k));
-  const acc = UN.bank.mcq.filter(b => UN.itemsById[b.item].group === 'acc').map(b => b.opts[UN.keys.mcq[b.id]]);
-  assert.ok(acc.some(x => /^Acceptable/.test(x)) && acc.some(x => /^Not acceptable/.test(x)));
 });
 
 ok('Learn content: every concept has a full explanation and a short version in English and Arabic, with an example', () => {
@@ -58,15 +56,16 @@ ok('Learn content: every concept has a full explanation and a short version in E
   assert.strictEqual(new Set(four).size, 4, 'the four combinations');
 });
 
-ok('Only cohesion, coherence and acceptability: no other standards or device names, and the terms are not translated word for word', () => {
-  assert.deepStrictEqual(UN.subs.map(c => c.name), ['Cohesion', 'Coherence', 'Acceptability']);
-  assert.deepStrictEqual(UN.cfg.termGroups, ['coh', 'cohr', 'mix', 'acc']);
-  const all = JSON.stringify([UN.bank.mcq, UN.subs, UN.explain, UN.groups, UN.groupLesson, UN.resources, UN.cfg.desc, UN.cfg.exam.desc, UN.explainNote]);
-  const other = /\breference\b|substitution|ellipsis|\bconjunctions?\b|lexical|anaphor|cataphor|exophor|intentional|informativ|situational|intertext|textuality|halliday|beaugrande|cohesive device/i;
+ok('Only cohesion and coherence: no acceptability, other standards or device names, and the terms are not translated word for word', () => {
+  assert.deepStrictEqual(UN.subs.map(c => c.name), ['Cohesion', 'Coherence']);
+  assert.deepStrictEqual(UN.cfg.termGroups, ['coh', 'cohr', 'mix']);
+  const all = JSON.stringify([UN.bank.mcq, UN.subs, UN.explain, UN.groups, UN.groupLesson, UN.resources, UN.cfg.desc, UN.cfg.exam.desc, UN.cfg.text, UN.explainNote]);
+  const other = /acceptab|\breference\b|substitution|ellipsis|\bconjunctions?\b|lexical|anaphor|cataphor|exophor|intentional|informativ|situational|intertext|textuality|halliday|beaugrande|cohesive device/i;
   assert.ok(!other.test(all), 'other topics: ' + (all.match(other) || [])[0]);
   const ui = require('fs').readFileSync(path.join(__dirname, '..', 'js', 'i18n-ui.js'), 'utf8');
-  const badges = (ui.match(/"da\.(coh|cohr|acc)(No)?": "[^"]*"/g) || []).join(' ');
-  assert.strictEqual((badges.match(/"da\./g) || []).length, 12, 'six badges in both languages');
+  assert.ok(!/"da\.acc/.test(ui), 'no acceptability labels');
+  const badges = (ui.match(/"da\.(coh|cohr)(No)?": "[^"]*"/g) || []).join(' ');
+  assert.strictEqual((badges.match(/"da\./g) || []).length, 8, 'four labels in both languages');
   const literal = /السبك|الحبك|الاتساق|الانسجام|المقبولية|متسق|منسجم|مقبول|الإحالة|الاستبدال|الربط النحوي/;
   assert.ok(!literal.test(all + badges), 'word-for-word Arabic term: ' + ((all + badges).match(literal) || [])[0]);
 });
