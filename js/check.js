@@ -71,7 +71,8 @@
   function matchGap(input, it) {
     lastFuzzy = null; lastKind = 'typo';
     var g = normEn(input); if (!g) return false;
-    var all = [it.answer].concat(it.alt || []), tries = [g], i, j, core = dropContext(g, it.q);
+    // "Variables / Dimensions": each word on its own counts too
+    var all = [it.answer].concat(String(it.answer).indexOf('/') !== -1 ? String(it.answer).split(/\s*\/\s*/) : [], it.alt || []), tries = [g], i, j, core = dropContext(g, it.q);
     if (core && core !== g) tries.push(core);
     for (j = 0; j < tries.length; j++) for (i = 0; i < all.length; i++) { var n = normEn(all[i]); if (n === tries[j] || gapStem(all[i]) === gapStem(tries[j])) return true; }
     for (j = 0; j < tries.length; j++) for (i = 0; i < all.length; i++) if (nearMiss(tries[j], normEn(all[i]), false) || nearMiss(gapStem(tries[j]), gapStem(all[i]), false)) { lastFuzzy = all[i]; return true; }

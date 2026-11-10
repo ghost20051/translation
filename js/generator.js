@@ -61,10 +61,16 @@
   }
 
   // Distractors for a fill-in-the-gap question: other questions' answers that cannot also fit this blank.
-  function gapKey(a) { return UN.check.normEn(a).replace(/s$/, ''); }
+  // an answer written "Variables / Dimensions" has two correct words; a choice shows the first one
+  function forms(a) { return String(a).split(/\s*\/\s*/); }
+  function gapKey(a) { return UN.check.normEn(forms(a)[0]).replace(/s$/, ''); }
   function clashes(a, b) {
-    var x = UN.check.normEn(a), y = UN.check.normEn(b);
-    return (UN.cfg.clash || []).some(function (set) { return set.indexOf(x) !== -1 && set.indexOf(y) !== -1; });
+    return forms(a).some(function (fa) {
+      return forms(b).some(function (fb) {
+        var x = UN.check.normEn(fa), y = UN.check.normEn(fb);
+        return (UN.cfg.clash || []).some(function (set) { return set.indexOf(x) !== -1 && set.indexOf(y) !== -1; });
+      });
+    });
   }
   function distractGaps(id, n, rng) {
     var it = UN.itemsById[id], num = /^\d/.test(it.answer), art = /\ba __/.test(it.q) ? 'a' : /\ban __/.test(it.q) ? 'an' : '';
@@ -145,7 +151,7 @@
     switch (fmt) {
       case 'mcq-gap': {
         var gd = distractGaps(id, 3, rng);
-        return mcq(id, fmt, gapPrompt(it), 'en', it.answer, gd.map(function (x) { return x.answer; }), 'en', rng, { note: it.note, q: it.q, ans: it.answer });
+        return mcq(id, fmt, gapPrompt(it), 'en', forms(it.answer)[0], gd.map(function (x) { return forms(x.answer)[0]; }), 'en', rng, { note: it.note, q: it.q, ans: it.answer });
       }
       case 'type-gap':
         return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'type', answerLang: 'en', answerKind: 'gap', prompt: gapPrompt(it), promptLang: 'en', correctText: it.answer, extra: { note: it.note, q: it.q, ans: it.answer } };

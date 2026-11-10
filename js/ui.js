@@ -381,8 +381,11 @@
     right.appendChild(h('section', { class: 'card quote' }, ic('quote'), h('p', null, t('quote.text')), h('small', { class: 'muted' }, '— ' + t('quote.by'))));
 
     page.appendChild(h('div', { class: 'cols' }, left, right));
+    page.appendChild(aiNote());
     return page;
   };
+  // small note on the home page and the dashboard: how the material was made, and asking to report mistakes
+  function aiNote() { return h('p', { class: 'ainote' }, ic('sparkles'), ' ', t('foot.ai')); }
 
   /* ---------- page: learn ---------- */
   /* A definition shown exactly as in the course material, with two optional helpers:
@@ -721,6 +724,7 @@
         return h('li', null, h('div', { class: 'q' }, r.pl === 'ar' ? L(r.prompt, 'ar') : mixed(r.prompt)), h('div', { class: 'ans' }, ic('check'), mixed(r.correct)));
       })) : empty('check-circle', t('dash.noWrong'), ''))));
     page.appendChild(h('section', null, h('a', { class: 'btn ghost', href: '#/achievements' }, ic('trophy'), t('ach.title'))));
+    page.appendChild(aiNote());
     return page;
   };
 

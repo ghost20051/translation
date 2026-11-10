@@ -32,7 +32,7 @@
     'segm|Verb||A predicate is usually formed by a __ phrase.|The verb phrase usually forms the predicate.',
     'time|Simultaneity||Temporal phenomena in SI deal with the mechanism of __.|Listening and speaking happen at the same time.',
     'time|Output||Researchers investigated the delivery pattern of SI input and __.|They studied the relationship between incoming speech and the interpreter\'s speech.',
-    'time|Variables|features;dimensions|Fluency, pausing, and lag are examples of temporal __.|The course book: SI studies measure "fluency, pausing and the lag" between the two streams, and Setton divides this research on temporal (surface) variables into three dimensions: synchronicity, EVS and segmentation. (Your question bank said "dimensions"; it is still accepted.)',
+    'time|Variables / Dimensions|features|Fluency, pausing, and lag are examples of temporal __.|Both words count. The course book calls these temporal (surface) variables: SI studies measure "fluency, pausing and the lag" between the two streams, and Setton divides this research into three dimensions (synchronicity, EVS and segmentation). "Dimensions" is the word in your question bank.',
     'time|EVS||Ear-voice span is abbreviated as __.|EVS means Ear-Voice Span.',
     'time|Task||Measuring synchronicity between input and output is considered a difficult __.|Measuring how closely listening and speaking happen together is difficult.',
     'time|Listening||An interpreter must speak while simultaneously __.|The interpreter listens while speaking.',

@@ -508,3 +508,6 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 
 /* video speed */
 .vspeed { align-items: center; } .vspeed .vspeed-l { display: inline-flex; align-items: center; padding: 0 4px 0 6px; color: var(--muted); } .vspeed .vspeed-l svg { width: 16px; height: 16px; }
+
+/* small note on the home page and dashboard */
+.ainote { margin: 26px auto 6px; max-width: 640px; text-align: center; color: var(--muted); font-size: .78rem; line-height: 1.5; } .ainote svg { width: 13px; height: 13px; vertical-align: -2px; opacity: .8; }

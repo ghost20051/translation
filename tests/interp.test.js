@@ -44,7 +44,8 @@ ok('Source answers are kept exactly as supplied (spot checks)', () => {
 
 ok('Answers follow the course book (Q15, Q35, Q36); the question bank answers and other book words still count', () => {
   const g = i => UN.gaps[i - 1], M = (i, s) => UN.check.matchGap(s, g(i));
-  assert.strictEqual(g(15).answer, 'Variables'); assert.strictEqual(g(35).answer, 'Proficiency'); assert.strictEqual(g(36).answer, 'Proficiency');
+  assert.strictEqual(g(15).answer, 'Variables / Dimensions'); assert.strictEqual(g(35).answer, 'Proficiency');
+  assert.ok(M(15, 'variables / dimensions') && M(15, 'temporal variables') && M(15, 'temporal dimensions')); assert.strictEqual(g(36).answer, 'Proficiency');
   assert.ok(M(15, 'variables') && M(15, 'variable') && M(15, 'Dimensions') && M(15, 'features') && !M(15, 'mechanisms'));
   assert.ok(M(35, 'proficiency') && M(35, 'acquisition') && M(36, 'Proficiency') && M(36, 'Acquisition') && !M(35, 'performance'));
   assert.ok(M(38, 'native') && M(38, 'first') && M(38, 'L1'));
@@ -92,10 +93,10 @@ ok('Multiple choice: 4 distinct options, one correct, no clashing distractors, a
       assert.strictEqual(q.options.length, 4, g.id);
       assert.strictEqual(new Set(q.options.map(o => o.text.toLowerCase())).size, 4, 'duplicate option ' + g.id);
       assert.strictEqual(UN.gen.grade(q, q.answer), 1);
-      assert.strictEqual(q.options.find(o => o.id === q.answer).text, g.answer);
+      assert.strictEqual(q.options.find(o => o.id === q.answer).text, g.answer.split(' / ')[0]);   // "Variables / Dimensions": the choice shows the first word
       const wrong = q.options.filter(o => o.id !== q.answer).map(o => o.text);
       wrong.forEach(w => {
-        assert.ok(!clash(w, g.answer), 'clashing distractor ' + w + ' for ' + g.id);
+        assert.ok(!g.answer.split(' / ').some(f => clash(w, f)), 'clashing distractor ' + w + ' for ' + g.id);
         if (!/^\d/.test(g.answer)) assert.ok(!/^\d/.test(w), 'numeric distractor for ' + g.id);
         if (/\ba __/.test(g.q)) assert.ok(!/^[aeiou]/i.test(w), '"a" gives away ' + g.id);
         if (/\ban __/.test(g.q)) assert.ok(/^[aeiou]/i.test(w), '"an" gives away ' + g.id);
@@ -304,6 +305,17 @@ ok('Videos: 19 short explainers with valid scenes, narration and question links;
   assert.ok(V.filter(v => v.scenes.some(sc => sc.photo) || v.cover).length >= 17, 'most videos use a real photo');
   assert.ok(!P.tango && !P.backpack && P.clockwork && P.weights, 'replaced photos');
   V.forEach(v => { assert.ok(Array.isArray(v.terms) && v.terms.length >= 2, v.id + ' key terms'); v.terms.forEach(p => assert.ok(p[0] && /[\u0600-\u06FF]/.test(p[1]), v.id + ' term pair')); }); assert.strictEqual(cov.mcq.size, 20); assert.strictEqual(cov.essay.size, 20);
+});
+
+ok('Exam 4 (full exam) has every question in order: Part 1 80 typed gaps, Part 2 20 MCQs, Part 3 20 written', () => {
+  assert.ok(UN.exam.hasAll());
+  const b = UN.exam.build(4), qs = b.qs;
+  assert.strictEqual(qs.length, 120); assert.strictEqual(b.mode, 'all');
+  qs.slice(0, 80).forEach((q, i) => { assert.strictEqual(q.part, 1); assert.strictEqual(q.pn, i + 1); assert.strictEqual(q.type, 'type'); assert.strictEqual(q.item, UN.gaps[i].id); });
+  qs.slice(80, 100).forEach((q, i) => { assert.strictEqual(q.part, 2); assert.strictEqual(q.pn, i + 1); assert.strictEqual(q.fmt, 'bank:' + UN.bank.mcq[i].id); });
+  qs.slice(100).forEach((q, i) => { assert.strictEqual(q.part, 3); assert.strictEqual(q.pn, i + 1); assert.strictEqual(q.type, 'written'); });
+  const att = UN.exam.finish(4, b, {}, { durSec: 5 });
+  assert.strictEqual(att.rows.length, 120); assert.strictEqual(UN.exam.pending(att), 20, 'the 20 written answers wait for self-grading');
 });
 
 ok('A short answer that keeps the key word counts (dominant = Dominant bilingual), and the full answer is shown', () => {

@@ -12,10 +12,10 @@
   UN.routes.exams = function () {
     var page = h('div', { class: 'page' }, h('h1', null, t('exams.title')), h('p', { class: 'lead' }, t('exams.lead')));
     var grid = h('div', { class: 'grid3' });
-    [1, 2, 3].forEach(function (n) {
+    [1, 2, 3].concat(UN.exam.hasAll() ? [4] : []).forEach(function (n) {
       var b = best(n);
       grid.appendChild(h('div', { class: 'card exam-card e' + n },
-        h('div', { class: 'big-emoji' }, ['📝', '🎯', '🏁'][n - 1]),
+        h('div', { class: 'big-emoji' }, ['📝', '🎯', '🏁', '📚'][n - 1]),
         h('h2', null, t('exam' + n + '.name')), h('p', null, examDesc(n)),
         h('div', { class: 'muted' }, b == null ? t('exams.notTaken') : t('exams.best') + ': ' + b + '%'),
         h('a', { class: 'btn primary', href: '#/exam/' + n }, b == null ? t('exams.start') : t('exams.retake'))));
@@ -29,7 +29,7 @@
     var no = +arg || 1;
     var data = no === 2 && UN.adapt.hasData();
     var sel = h('select', { id: 'limit', 'aria-label': t('exam.limit') },
-      [[0, t('exam.nolimit')], [15, '15 ' + t('exam.min')], [30, '30 ' + t('exam.min')], [45, '45 ' + t('exam.min')]].map(function (o) { return h('option', { value: o[0] }, o[1]); }));
+      (no === 4 ? [[0, t('exam.nolimit')], [60, '60 ' + t('exam.min')], [90, '90 ' + t('exam.min')], [120, '120 ' + t('exam.min')]] : [[0, t('exam.nolimit')], [15, '15 ' + t('exam.min')], [30, '30 ' + t('exam.min')], [45, '45 ' + t('exam.min')]]).map(function (o) { return h('option', { value: o[0] }, o[1]); }));
     var hist = UN.prog.examPcts(no);
     return h('div', { class: 'page narrow' },
       h('h1', null, t('exam' + no + '.name')),
@@ -125,7 +125,7 @@
     var lbl = att.pct >= 85 ? 'res.great' : att.pct >= 65 ? 'res.good' : att.pct >= 50 ? 'res.ok' : 'res.low';
     var hist = S().exams[att.no].history, idx = hist.map(function (x) { return x.id; }).indexOf(att.id);
     var prevPct = idx > 0 ? hist[idx - 1].pct : null;
-    var otherNo = att.no > 1 ? UN.prog.examPcts(att.no - 1) : [];
+    var otherNo = att.no > 1 && att.no < 4 ? UN.prog.examPcts(att.no - 1) : [];
     page.appendChild(h('h1', null, t('exam' + att.no + '.name') + ' — ' + t('res.title')));
     if (UN.fun) page.appendChild(h('p', { class: 'quip' }, UN.fun.band(att.pct)));
     page.appendChild(h('section', { class: 'card result' },

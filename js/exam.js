@@ -116,7 +116,18 @@
     return { mode: 'adaptive', qs: UN.cfg.parts ? inParts(qs, rng) : G().shuffle(qs, rng), extras: [], writtenIds: [], targeted: targeted };
   }
 
-  function build(no, rng) { return no === 2 ? buildAdaptive(rng) : buildFull(rng); }
+  // Exam 4 (subjects made of parts): every question, in the order of the question bank. Part 1 all fill in the gap (typed),
+  // Part 2 all multiple choice, Part 3 all written questions.
+  function buildAll(rng) {
+    var q1 = UN.gaps.map(function (g) { return G().make(g.id, 'type-gap', rng); });
+    var q2 = UN.bank.mcq.map(function (b) { return G().make(b.item, 'bank:' + b.id, rng); });
+    var w = UN.written.map(function (x) { return x.id; });
+    var q3 = w.map(function (id) { return G().make(id, 'written', rng); });
+    return { mode: 'all', qs: labelParts(q1.concat(q2, q3)), extras: [], writtenIds: w, targeted: [] };
+  }
+  function hasAll() { return !!(cfg().plan && UN.gaps && UN.gaps.length); }
+
+  function build(no, rng) { return no === 4 && hasAll() ? buildAll(rng) : no === 2 ? buildAdaptive(rng) : buildFull(rng); }
 
   // Score of one answered question (written items are 0 until self-graded).
   function valueOf(q, given) {
@@ -178,5 +189,5 @@
 
   function pending(att) { return att.rows.filter(function (r) { return !r.graded; }).length; }
 
-  UN.exam = { build: build, buildFull: buildFull, buildAdaptive: buildAdaptive, finish: finish, selfGrade: selfGrade, totals: totals, pending: pending, valueOf: valueOf };
+  UN.exam = { build: build, buildFull: buildFull, buildAdaptive: buildAdaptive, buildAll: buildAll, hasAll: hasAll, finish: finish, selfGrade: selfGrade, totals: totals, pending: pending, valueOf: valueOf };
 })();

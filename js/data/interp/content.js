@@ -38,7 +38,9 @@
         2: s('Aims at your weak spots: 15 of your weakest questions plus 5 general ones (20 questions). Fill-in-the-gap questions are typed. Without data yet, it is the same as Exam 1.',
              'يستهدف نقاط ضعفك: 15 سؤالًا من أضعف أسئلتك و5 أسئلة عامة (20 سؤالًا). لو لسه مفيش بيانات يبقى زي الامتحان 1.'),
         3: s('The final check: the same three parts with a fresh set of 40 questions, avoiding the ones asked in your last exam where possible.',
-             'الاختبار النهائي: نفس الأجزاء التلاتة بـ 40 سؤالًا جديدة، بنتجنب فيها أسئلة آخر امتحان قدر الإمكان.')
+             'الاختبار النهائي: نفس الأجزاء التلاتة بـ 40 سؤالًا جديدة، بنتجنب فيها أسئلة آخر امتحان قدر الإمكان.'),
+        4: s('Every question in one exam, in the order of the question bank: Part 1 all 80 fill-in-the-gap questions (typed), Part 2 all 20 multiple-choice questions and Part 3 all 20 written questions. 120 questions, for a full revision before the real exam.',
+             'كل الأسئلة في امتحان واحد، بنفس ترتيب بنك الأسئلة: الجزء 1 كل أسئلة املأ الفراغ الـ 80 (بالكتابة)، الجزء 2 كل أسئلة الاختيار من متعدد الـ 20، الجزء 3 كل الأسئلة المقالية الـ 20. 120 سؤالًا، لمراجعة شاملة قبل الامتحان الحقيقي.')
       } },
     clash: SI.clash,
     text: {
