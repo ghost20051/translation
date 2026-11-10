@@ -9,7 +9,7 @@
 
   function book() { var s = S(); s.mistakes = s.mistakes || []; return s.mistakes; }
   function live(r) { return !!UN.itemsById[r.item]; }   // a question removed from the subject is not shown
-  function txt(s) { s = String(s == null ? '' : s); return /[؀-ۿ]/.test(s) && !/[a-z]{3}/i.test(s) ? L(s, 'ar') : ui.mixed(s); }
+  function txt(s) { return ui.smart(s); }
   function givenText(q, given) {
     if (given == null || given === '' || given === 'self') return '';
     if (q.type === 'mcq') { var o = (q.options || []).filter(function (x) { return x.id === given; })[0]; return o ? o.text : ''; }
@@ -81,7 +81,7 @@
     if (r.given) card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), ' ', h('s', null, txt(r.given))));
     card.appendChild(h('div', { class: 'given right' }, h('small', null, t('fb.answer')), ' ', h('b', null, txt(r.correct))));
     if (r.gapQ) card.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(r.gapQ, r.gapA)));
-    if (r.note) card.appendChild(h('div', { class: 'muted small' }, r.note));
+    if (r.note) card.appendChild(h('div', { class: 'muted small' }, txt(r.note)));
     var vl = videoFor(r); if (vl) card.appendChild(vl);
     if (inBook) card.appendChild(h('div', { class: 'row end' }, h('button', { type: 'button', class: 'btn small ghost', onclick: function () {
       var b = book(), k = b.indexOf(r); if (k !== -1) b.splice(k, 1); UN.store.save(); redraw();

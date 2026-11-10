@@ -207,8 +207,8 @@
         b = UN.bank.mcq[i];
         var key = UN.keys.mcq[bid];
         var ids = shuffle(Object.keys(b.opts), rng);
-        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'mcq', prompt: b.text, promptLang: 'en',
-          options: ids.map(function (k) { return { id: k, text: b.opts[k], lang: 'en' }; }), answer: key, correctText: b.opts[key],
+        return { id: id + ':' + fmt, item: id, fmt: fmt, type: 'mcq', prompt: b.text, promptLang: b.lang || 'en',
+          options: ids.map(function (k) { return { id: k, text: b.opts[k], lang: b.lang || 'en' }; }), answer: key, correctText: b.opts[key],
           extra: it.kind === 'gap' ? { note: it.note, q: it.q, ans: it.answer } : (b.note ? { note: b.note } : null) };
       }
       for (i = 0; i < UN.bank.cloze.length; i++) if (UN.bank.cloze[i].id === bid) {

@@ -188,11 +188,11 @@
               UN.exam.selfGrade(att.id, i, g[0]); ui.afterProgress(); var y = window.scrollY; ui.render(); window.scrollTo(0, y); } }, t(g[1]));
           })));
       } else {
-        card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), ' ', r.given ? ui.mixed(r.given) : h('i', null, t('res.blank'))));
-        if (r.v < 0.99) card.appendChild(h('div', { class: 'given right' }, h('small', null, t('fb.answer')), ' ', ui.mixed(String(r.correct))));
+        card.appendChild(h('div', { class: 'given' }, h('small', null, t('res.yours')), ' ', r.given ? ui.smart(r.given) : h('i', null, t('res.blank'))));
+        if (r.v < 0.99) card.appendChild(h('div', { class: 'given right' }, h('small', null, t('fb.answer')), ' ', ui.smart(String(r.correct))));
         if (r.typo) card.appendChild(h('div', { class: 'typo' }, '✏️ ' + t(r.typoKind === 'short' ? 'fb.short' : 'fb.typo') + ' ', h('b', null, ui.mixed(String(r.typo)))));
         if (r.gapQ) card.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(r.gapQ, r.gapA)));
-        if (r.note) card.appendChild(h('div', { class: 'muted small' }, r.note));
+        if (r.note) card.appendChild(h('div', { class: 'muted small' }, ui.smart(r.note)));
         if (r.type === 'type' && r.given && (r.v < 0.99 || r.self)) card.appendChild(h('div', { class: 'row grade' }, h('span', { class: 'muted' }, t('res.selfType')),
           [[1, 'sg.yes', 'ok'], [0.5, 'sg.part', 'part'], [0, 'sg.no', 'bad']].map(function (g) {
             return h('button', { class: 'btn small ' + (r.self && r.v === g[0] ? g[2] : 'ghost'), onclick: function () {

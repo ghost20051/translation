@@ -52,6 +52,11 @@
     });
     return out;
   }
+  // text that may be Arabic with English terms inside ("عامل OR"): mostly Arabic reads right to left, anything else as mixed()
+  function smart(text) {
+    var s = String(text == null ? '' : text), ar = (s.match(/[؀-ۿ]/g) || []).length, la = (s.match(/[A-Za-z]/g) || []).length;
+    return ar && ar >= la ? L(s, 'ar') : mixed(s);
+  }
   // "Part 1 · Fill in the gap · Q12" (full) or "Part 1 · Q12"
   function partText(info, full) {
     if (!info || !UN.cfg.parts) return '';
@@ -516,6 +521,40 @@
     if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     return page;
   }
+  // Learn page of a subject made of chapter summaries (Internet Research Skills): every chapter with its topics, its
+  // conclusion and a button that practises its questions. The chapter blocks are Arabic in both interface languages.
+  function chapterLearn(arg) {
+    var lang = S().lang;
+    var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
+    var revCard = UN.revise ? UN.revise.card() : null; if (revCard) page.appendChild(revCard);
+    if (UN.explainNote) page.appendChild(h('p', { class: 'xnote' }, ic('info'), ' ', smart(UN.explainNote[lang] || UN.explainNote.ar)));
+    page.appendChild(h('nav', { class: 'row chnav' }, UN.chapters.map(function (c) { return h('a', { class: 'chipbtn', href: '#/learn/r-' + c.g }, UN.groups[c.g][lang]); })));
+    UN.chapters.forEach(function (c) {
+      var n = UN.qitems.filter(function (q) { return q.group === c.g; }).length;
+      var sec = h('section', { class: 'chapter', id: 'r-' + c.g, lang: 'ar', dir: 'rtl' }, h('h2', null, c.title));
+      if (c.by) sec.appendChild(h('p', { class: 'muted chby' }, c.by));
+      if (c.intro) sec.appendChild(h('p', null, c.intro));
+      c.topics.forEach(function (tp, k) {
+        var d = h('details', { class: 'card res xsec', id: c.g + '-' + (k + 1) });
+        d.appendChild(h('summary', null, h('span', { class: 'rt' }, tp.title), ic('chevron-right', 'caret')));
+        if (tp.text) d.appendChild(h('p', null, tp.text));
+        if (tp.items) d.appendChild(h('div', { class: 'xitems' }, tp.items.map(function (it) {
+          return h('div', { class: 'xitem' }, h('div', { class: 'xchead' }, h('b', null, it.name)), h('p', null, it.text), it.ex ? h('div', { class: 'quote xtext', dir: 'auto' }, it.ex) : null);
+        })));
+        if (tp.points) d.appendChild(h('ul', { class: 'xpoints' }, tp.points.map(function (p) { return h('li', null, p); })));
+        sec.appendChild(d);
+      });
+      if (c.sum) sec.appendChild(h('div', { class: 'tip xremember' }, ic('lightbulb'), h('p', null, h('b', null, 'خلاصة الفصل:'), ' ', c.sum)));
+      sec.appendChild(h('div', { class: 'row' }, h('a', { class: 'btn primary', href: '#/practice/' + c.g }, '🎯 ' + t('ch.practise', { n: n }))));
+      page.appendChild(sec);
+    });
+    page.appendChild(h('section', { class: 'card xpractise' }, h('h2', null, t('da.practise')), h('div', { class: 'row' },
+      h('a', { class: 'btn primary', href: '#/game/1' }, '🎮 ' + t('game1.name')),
+      UN.exam && UN.exam.hasAll() ? h('a', { class: 'btn ghost', href: '#/exam/4' }, '📚 ' + t('exam4.name')) : null,
+      h('a', { class: 'btn ghost', href: '#/vocab' }, '📋 ' + t('nav.vocab')))));
+    if (arg) later(function () { var el = document.getElementById(arg); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    return page;
+  }
   // Every question in its original order, part by part (Part 1 fill in the gap 1-80, Part 2 MCQ, Part 3 written),
   // with a tick on each number so a student always knows where they stopped.
   function learnParts() {
@@ -584,6 +623,7 @@
     return h('section', { class: 'lparts', id: 'parts' }, h('h2', null, t('learn.byPart')), h('p', { class: 'muted' }, t('learn.byPartLead')), bar, status, list);
   }
   UN.routes.learn = function (arg) {
+    if (UN.chapters) return chapterLearn(arg);
     if (UN.explain) return explainLearn(arg);
     var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
     if (UN.videos && UN.videos.length) page.appendChild(h('a', { class: 'card vbanner', href: '#/videos' }, UN.art ? UN.art.make('si', 40) : ic('play-circle'), h('span', { class: 'vbt' }, h('b', null, t('vid.title')), h('small', { class: 'muted' }, t('vid.bannerSub', { n: UN.videos.length }))), ic('chevron-right', 'flip')));
@@ -641,7 +681,7 @@
           var key = UN.keys.mcq[b.id];
           if (needle && norm(b.text + ' ' + Object.keys(b.opts).map(function (k) { return b.opts[k]; }).join(' ')).indexOf(needle) === -1) return;
           n++;
-          list.appendChild(h('div', { class: 'vrow card def mcqrow' }, h('span', { class: 'vnum' }, i + 1), h('div', { class: 'vdef' }, h('b', null, b.text),
+          list.appendChild(h('div', { class: 'vrow card def mcqrow' }, h('span', { class: 'vnum' }, i + 1), h('div', { class: 'vdef', lang: b.lang || null, dir: b.lang === 'ar' ? 'rtl' : null }, h('b', null, b.text),
             h('ul', { class: 'mopts' }, Object.keys(b.opts).map(function (k) { return h('li', { class: k === key ? 'right' : '' }, h('span', { class: 'letter' }, k.toUpperCase()), k === key ? h('mark', { class: 'gans' }, b.opts[k]) : b.opts[k]); })), b.note ? h('div', { class: 'muted small' }, b.note) : null)));
         });
       } else if (tab === 'gaps') {
@@ -802,7 +842,7 @@
         } }, ic('trash'), t('set.reset'))));
   };
 
-  UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
+  UN.ui = { h: h, ic: ic, t: t, L: L, mixed: mixed, smart: smart, promptNode: promptNode, termLabel: termLabel, later: later, every: every, bar: bar, pct: pct, go: go, toast: toast, setText: setText,
     partText: partText, videoLink: videoLink, gapSentence: gapSentence, openSubjects: openSubjects, confirmDialog: confirmDialog, speak: speak, speakBtn: speakBtn, afterProgress: afterProgress, render: render, refreshChrome: refreshChrome, journey: journey, resourceCard: resourceCard,
     defBox: defBox, applyLang: applyLang, applyTheme: applyTheme, tile: tile, pageHead: pageHead, empty: empty };
 })();

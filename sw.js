@@ -1,8 +1,8 @@
 /* Offline cache. Only caches this site's own files; no network calls to anywhere else. */
-var CACHE = 'unrev-v33';
+var CACHE = 'unrev-v34';
 var FILES = [
   './', 'index.html', 'manifest.webmanifest', 'icon.svg', 'css/style.css',
-  'js/data/terms.js', 'js/data/questions.js', 'js/data/answer-keys.js', 'js/data/resources.js', 'js/data/lessons.js', 'js/data/tourist/terms.js', 'js/data/tourist/content.js', 'js/data/tourist/reading.js', 'js/data/tourist/definitions.js', 'js/data/tourist/help.js', 'js/data/interp/gaps.js', 'js/data/interp/bank.js', 'js/data/interp/videos.js', 'js/data/interp/videos-ar.js', 'js/videos-ui.js', 'js/data/interp/content.js', 'js/data/discourse/content.js', 'js/subjects.js', 'js/i18n.js', 'js/i18n-ui.js', 'js/icons.js', 'js/check.js', 'js/storage.js',
+  'js/data/terms.js', 'js/data/questions.js', 'js/data/answer-keys.js', 'js/data/resources.js', 'js/data/lessons.js', 'js/data/tourist/terms.js', 'js/data/tourist/content.js', 'js/data/tourist/reading.js', 'js/data/tourist/definitions.js', 'js/data/tourist/help.js', 'js/data/interp/gaps.js', 'js/data/interp/bank.js', 'js/data/interp/videos.js', 'js/data/interp/videos-ar.js', 'js/videos-ui.js', 'js/data/interp/content.js', 'js/data/discourse/content.js', 'js/data/research/ch1.js', 'js/data/research/ch2.js', 'js/data/research/ch3.js', 'js/data/research/ch4.js', 'js/data/research/content.js', 'js/subjects.js', 'js/i18n.js', 'js/i18n-ui.js', 'js/icons.js', 'js/check.js', 'js/storage.js',
   'js/generator.js', 'js/adaptive.js', 'js/progress.js', 'js/exam.js', 'js/art.js', 'js/sfx.js', 'js/fun.js', 'js/ui.js', 'js/qview.js', 'js/exam-ui.js', 'js/games.js', 'js/revise.js', 'js/lessons-ui.js', 'js/reading-ui.js', 'js/main.js', 'js/visits.js'
 ];
 

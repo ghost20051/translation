@@ -105,10 +105,23 @@
         el('g', { stroke: '#d97706', 'stroke-width': '2.2', 'stroke-linecap': 'round' }, [el('path', { d: 'M11 23h18M11 28h12' }), el('path', { d: 'M36 35h17M36 40h11' })]),
         el('g', { fill: 'none', stroke: '#7c2d12', 'stroke-width': '2.6' }, [el('rect', { x: '25', y: '29', width: '9', height: '6', rx: '3' }), el('rect', { x: '30', y: '31', width: '9', height: '6', rx: '3' })])
       ]];
+    },
+    // Internet Research Skills: a magnifying glass over a globe (searching the web)
+    web: function (id) {
+      return [[
+        grad(id('bg'), '1', '1', [['0', '#0f766e'], ['1', '#14b8a6']]),
+        grad(id('gloss'), '0', '1', [['0', '#ffffff', '.3'], ['1', '#ffffff', '0']])
+      ], [
+        el('circle', { cx: '32', cy: '32', r: '31', fill: 'url(#' + id('bg') + ')' }),
+        el('path', { d: 'M32 1a31 31 0 0 1 31 31H1A31 31 0 0 1 32 1z', fill: 'url(#' + id('gloss') + ')' }),
+        el('g', { fill: 'none', stroke: '#ffffff', 'stroke-width': '2' }, [el('circle', { cx: '27', cy: '27', r: '13' }), el('ellipse', { cx: '27', cy: '27', rx: '5.5', ry: '13' }), el('path', { d: 'M14 27h26M16 20.5h22M16 33.5h22' })]),
+        el('circle', { cx: '27', cy: '27', r: '16.5', fill: 'none', stroke: '#fde68a', 'stroke-width': '4' }),
+        el('path', { d: 'M39 39l11.5 11.5', stroke: '#fde68a', 'stroke-width': '6.5', 'stroke-linecap': 'round' })
+      ]];
     }
   };
 
-  // name: brand | un | tour | si | disc (anything else falls back to the logo)
+  // name: brand | un | tour | si | disc | web (anything else falls back to the logo)
   function make(name, size) {
     var d = DESIGN[name] || DESIGN.brand, uid = ++seq;
     var id = function (k) { return 'art' + uid + k; };

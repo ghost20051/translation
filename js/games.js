@@ -74,6 +74,21 @@
       h('div', { class: 'row center' }, h('button', { class: 'btn primary', onclick: again }, '🔁 ' + t('sum.again')), (onBack ? h('button', { class: 'btn ghost', onclick: onBack }, t('back')) : h('a', { class: 'btn ghost', href: backHref }, t('back'))))));
   }
 
+  /* ---------- practise one chapter (subjects made of question items): its questions that need practice most ---------- */
+  UN.routes.practice = function (arg) {
+    var g = UN.groups && UN.groups[arg] ? arg : null, back = g ? '#/learn/r-' + g : '#/learn';
+    var page = h('div', { class: 'page' }, backBar(g ? UN.groups[g][S().lang] : t('g1.quiz'), back)), box = h('div');
+    page.appendChild(box);
+    function round() {
+      var ids = UN.adapt.rank().ids.filter(function (id) { var it = UN.itemsById[id]; return it.kind === 'q' && (!g || it.group === g); }).slice(0, 15);
+      if (!ids.length) { box.textContent = ''; box.appendChild(h('p', { class: 'muted' }, t('vocab.none'))); return; }
+      var qs = ids.map(function (id) { return G().make(id, G().chooseFormat(id, UN.adapt.formatCounts(id), null, true)); });
+      quiz(box, qs, { src: 'practice', onDone: function (res) { reward(res.length * 4); summary(box, res, res.length * 4, round, back); } });
+    }
+    round();
+    return page;
+  };
+
   /* =====================  GAME 1  ===================== */
   function game1() {
     var page = h('div', { class: 'page' }), box = h('div');
@@ -291,7 +306,7 @@
     } else if (it.kind === 'q') {
       var gl = UN.groupLesson && UN.groupLesson[it.group];
       card.appendChild(h('div', { class: 'big-term' }, UN.groups[it.group][S().lang]));
-      if (gl) { card.appendChild(h('p', null, L(gl.en, 'en'))); card.appendChild(h('p', { class: 'muted', dir: 'rtl' }, L(gl.ar, 'ar'))); }
+      if (gl) { if (gl.en && gl.en !== gl.ar) card.appendChild(h('p', null, L(gl.en, 'en'))); card.appendChild(h('p', { class: 'muted', dir: 'rtl' }, L(gl.ar, 'ar'))); }
     } else {
       card.appendChild(h('p', null, h('b', null, L(it.q, 'en')))); card.appendChild(h('div', { class: 'quote model' }, L(UN.keys.written[id].model, 'en')));
     }

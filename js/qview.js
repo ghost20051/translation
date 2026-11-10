@@ -23,12 +23,12 @@
       fb.className = 'feedback show ' + (v >= 0.99 ? 'ok' : v > 0 ? 'part' : 'bad');
       fb.textContent = '';
       fb.appendChild(h('b', null, v >= 0.99 ? '✅ ' + t('fb.correct') : v > 0 ? '🟡 ' + t('fb.partly') : '❌ ' + t('fb.wrong')));
-      if (v < 0.99 && q.type !== 'recall') fb.appendChild(h('div', null, t('fb.answer') + ' ', ui.mixed(String(q.correctText))));
+      if (v < 0.99 && q.type !== 'recall') fb.appendChild(h('div', null, t('fb.answer') + ' ', ui.smart(String(q.correctText))));
       var blank = !exam && q.extra && q.extra.ans ? box.querySelector('.gblank') : null;
       if (blank) blank.replaceWith(h('mark', { class: 'gans' }, q.extra.ans));   // fill the blank right where the student is looking
       if (q.extra && q.extra.q && !blank) fb.appendChild(h('div', { class: 'gapfull' }, ui.gapSentence(q.extra.q, q.extra.ans)));
       if (typo && !exam) fb.appendChild(h('div', { class: 'typo' }, '✏️ ' + t(typoKind === 'short' ? 'fb.short' : 'fb.typo') + ' ', h('b', null, ui.mixed(String(typo)))));
-      if (q.extra && q.extra.note) fb.appendChild(h('div', { class: 'muted small' }, q.extra.note));
+      if (q.extra && q.extra.note) fb.appendChild(h('div', { class: 'muted small' }, ui.smart(q.extra.note)));
       if (!exam && UN.fun) fb.appendChild(h('div', { class: 'quip' }, UN.fun.answer(v)));
       if (!exam && UN.sfx) UN.sfx.play(v >= 0.99 ? 'correct' : v > 0 ? 'partly' : 'wrong');
       if (!exam && UN.revise) UN.revise.note(q, v, given);

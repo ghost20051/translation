@@ -527,3 +527,10 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .xshort p:first-child { font-weight: 700; } .xgroup { margin: 22px 0 8px; } .xremember .bi p { margin: 2px 0; }
 .res-counts { font-weight: 700; margin: 6px 0; }
 .xsec > .bi, .xsec > .xpoints, .xsec > .xexamples, .xsec > .xitems, .xsec > .tip { margin-top: 10px; }
+
+/* chapter summaries (Internet Research Skills) */
+.chnav { flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.chapter { margin-top: 20px; display: grid; gap: 10px; }
+.chapter > h2 { margin: 0; }
+.chapter .chby { margin: -6px 0 0; }
+.chapter .xitem .quote { font-size: .9rem; }

@@ -5,7 +5,7 @@
  */
 (function () {
   var UN = window.UN = window.UN || {};
-  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps', 'videos', 'qitems', 'explain', 'explainNote', 'groupLesson'];
+  var FIELDS = ['cfg', 'groups', 'confusable', 'terms', 'written', 'subs', 'bank', 'keys', 'resources', 'lessons', 'parts', 'partsOrder', 'reading', 'gaps', 'videos', 'qitems', 'explain', 'explainNote', 'groupLesson', 'chapters'];
 
   UN.subjects = {};
   UN.subjectOrder = [];
@@ -51,6 +51,13 @@
     var da = {};
     FIELDS.forEach(function (f) { da[f] = UN.DA[f]; });
     UN.registerSubject('disc', da);
+  }
+
+  // Subject 5: Internet Research Skills (chapter summaries, one multiple-choice question per item; content in UN.WR)
+  if (UN.WR && UN.WR.cfg) {
+    var wr = {};
+    FIELDS.forEach(function (f) { wr[f] = UN.WR[f]; });
+    UN.registerSubject('web', wr);
   }
 
   UN.useSubject = function (id) {
