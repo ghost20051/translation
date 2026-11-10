@@ -471,14 +471,14 @@
       return h('div', { class: 'bi ' + (cls || '') }, h('p', { lang: lang, dir: lang === 'ar' ? 'rtl' : 'ltr' }, o[lang]), h('p', { class: 'bi2', lang: other, dir: other === 'ar' ? 'rtl' : 'ltr' }, o[other]));
     }
     function badges(tags) {
-      return h('div', { class: 'xbadges' }, Object.keys(tags).map(function (k) { var v = tags[k]; return h('span', { class: 'xbadge ' + (v ? 'yes' : 'no') }, (v ? '✓ ' : '✗ ') + t('da.' + k + (v ? '' : 'No'))); }));
+      return h('div', { class: 'xbadges' }, Object.keys(tags).map(function (k) { var v = tags[k]; return h('span', { class: 'xbadge ' + (v ? 'yes' : 'no'), lang: 'en', dir: 'ltr' }, (v ? '✓ ' : '✗ ') + t('da.' + k + (v ? '' : 'No'))); }));
     }
     if (UN.explainNote) page.appendChild(h('p', { class: 'xnote' }, ic('info'), ' ', UN.explainNote[lang]));
     page.appendChild(h('h2', null, t('da.understand')));
     UN.explain.forEach(function (sec, k) {
       var d = h('details', { class: 'card res xsec', id: sec.id });
       if (k === 0) d.setAttribute('open', '');
-      d.appendChild(h('summary', null, h('span', { class: 'rt' }, sec.title[lang], h('small', { class: 'muted xalt', dir: other === 'ar' ? 'rtl' : 'ltr' }, sec.title[other])), ic('chevron-right', 'caret')));
+      d.appendChild(h('summary', null, h('span', { class: 'rt' }, sec.title[lang], sec.title[other] !== sec.title[lang] ? h('small', { class: 'muted xalt', dir: other === 'ar' ? 'rtl' : 'ltr' }, sec.title[other]) : null), ic('chevron-right', 'caret')));
       if (sec.text) d.appendChild(two(sec.text));
       if (sec.points) d.appendChild(h('ul', { class: 'xpoints' }, sec.points.map(function (p) { return h('li', null, two(p)); })));
       if (sec.examples) d.appendChild(h('div', { class: 'xexamples' }, sec.examples.map(function (e) {
@@ -486,7 +486,7 @@
           h('div', { class: 'quote xtext', lang: 'en', dir: 'ltr' }, e.text), badges(e.tags), two(e.why, 'xwhy'));
       })));
       if (sec.items) d.appendChild(h('div', { class: 'xitems' }, sec.items.map(function (it) {
-        return h('div', { class: 'xitem' }, h('div', { class: 'xchead' }, h('b', { lang: 'en' }, it.name.en), h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, it.name.ar)), two(it.text),
+        return h('div', { class: 'xitem' }, h('div', { class: 'xchead' }, h('b', { lang: 'en' }, it.name.en), it.name.ar !== it.name.en ? h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, it.name.ar) : null), two(it.text),
           it.ex ? h('ul', { class: 'xexlist', lang: 'en', dir: 'ltr' }, it.ex.map(function (x) { return h('li', null, x); })) : null);
       })));
       if (sec.remember) d.appendChild(h('div', { class: 'tip xremember' }, ic('lightbulb'), two(sec.remember)));
@@ -496,10 +496,12 @@
     (UN.cfg.termGroups || []).forEach(function (g) {
       var subs = UN.subs.filter(function (x) { return x.group === g; });
       if (!subs.length) return;
-      page.appendChild(h('h3', { class: 'xgroup', id: 'r-' + g }, UN.groups[g][lang]));
+      // a topic with one concept of the same name needs no heading of its own (the anchor stays for links to the topic)
+      var same = subs.length === 1 && subs[0].name === UN.groups[g].en;
+      page.appendChild(same ? h('span', { id: 'r-' + g }) : h('h3', { class: 'xgroup', id: 'r-' + g }, UN.groups[g][lang]));
       subs.forEach(function (c) {
         page.appendChild(h('div', { class: 'card xconcept', id: c.id },
-          h('div', { class: 'xchead' }, h('b', { lang: 'en' }, c.name), h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, c.arName)),
+          h('div', { class: 'xchead' }, h('b', { lang: 'en' }, c.name), c.arName ? h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, c.arName) : null),
           h('small', { class: 'dlbl' }, t('da.full')), two(c.full),
           h('small', { class: 'dlbl' }, t('da.short')), two(c.short, 'xshort'),
           c.ex && c.ex.length ? h('div', { class: 'xexamples' }, h('small', { class: 'dlbl' }, t('da.examples')), c.ex.map(function (x) {
