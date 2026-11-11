@@ -161,11 +161,18 @@
     UN.store.setSubject(id); UN.useSubject(id);
     UN.state.exam = null; go('#/home');
   }
-  // a direct link to a subject: #/subject/<id> switches to it and opens its Learn page; #/subject/<id>/<page> opens that page
+  // a direct link to a subject: #/subject/<id> switches to it and opens its Learn page; #/subject/<id>/<page>[/<arg>] opens that page.
+  // 404.html turns the short form /subject/sci/learn into this. Plain names work too: /subject/scientific/read
+  var SUBJ_ALIAS = { scientific: 'sci', science: 'sci', research: 'web', internet: 'web', discourse: 'disc', interpretation: 'si', simultaneous: 'si', interpreting: 'si', tourist: 'tour', tourism: 'tour' };
+  var PAGE_ALIAS = { read: 'reading', texts: 'reading', words: 'vocab', vocabulary: 'vocab', answers: 'vocab', dashboard: 'home', game: 'games', exam: 'exams', lesson: 'lessons', video: 'videos' };
   UN.routes.subject = function (arg) {
-    var page = String(location.hash.split('/')[3] || '');
-    if (UN.subjects[arg]) { UN.store.setSubject(arg); UN.useSubject(arg); UN.state.exam = null; }
-    setTimeout(function () { location.replace('#/' + (page && page !== 'subject' && UN.routes[page] ? page : 'learn')); }, 0);
+    var id = String(arg || '').toLowerCase(), bits = location.hash.split('/').slice(3);
+    var page = String(bits[0] || '').toLowerCase(), rest = bits.slice(1).join('/');
+    id = SUBJ_ALIAS[id] || id;
+    if (UN.subjects[id]) { UN.store.setSubject(id); UN.useSubject(id); UN.state.exam = null; }
+    if (!rest) page = PAGE_ALIAS[page] || page;
+    var ok = page && page !== 'subject' && UN.routes[page] && (page !== 'reading' || UN.cfg.reading) && (!/^videos?$/.test(page) || (UN.videos && UN.videos.length));
+    setTimeout(function () { location.replace('#/' + (ok ? page + (rest ? '/' + rest : '') : 'learn')); }, 0);
     return h('div', { class: 'page' });
   };
   function toggleSound() { if (UN.sfx) { UN.sfx.setEnabled(!UN.sfx.enabled()); refreshChrome(); } }

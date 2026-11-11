@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Translation Revision</title>
+<script>
+  // Short links: /<site>/subject/sci/learn opens /<site>/#/subject/sci/learn (GitHub Pages serves this page for unknown paths).
+  (function () {
+    var parts = location.pathname.split('/').filter(Boolean);
+    var base = '/' + (parts.length ? parts[0] + '/' : '');
+    var rest = parts.slice(1).join('/');
+    location.replace(base + (rest ? '#/' + rest : location.hash));
+  })();
+</script>
+<style>body { font-family: system-ui, sans-serif; background: #0b1120; color: #e2e8f0; display: grid; place-items: center; min-height: 100vh; margin: 0; }</style>
+</head>
+<body>
+<p>Opening… <a href="./" style="color:#93c5fd">Translation Revision</a></p>
+</body>
+</html>
