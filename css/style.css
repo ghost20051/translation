@@ -540,6 +540,12 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .chapter > h2 { margin: 0; }
 .chapter .chby { margin: -6px 0 0; }
 .chapter .xitem .quote { font-size: .9rem; }
+.chgist { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--primary-soft); line-height: 1.7; } .chgist b { color: var(--link); }
+.tip.xremember .chgist { background: none; padding: 0; margin-top: 6px; }
+.tlist { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 10px; }
+.trow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 7px 12px; align-items: baseline; }
+.trow + .trow { border-top: 1px solid var(--line); } .trow:nth-child(even) { background: var(--bg); }
+.trow .te { font-weight: 600; } .trow .te, .trow .ta { overflow-wrap: anywhere; }
 
 /* texts with their translation, paragraph by paragraph (Scientific Translation) */
 .passage.pairs { display: grid; gap: 10px; }

@@ -130,10 +130,27 @@
         el('circle', { cx: '27', cy: '27', r: '16.5', fill: 'none', stroke: '#fde68a', 'stroke-width': '4' }),
         el('path', { d: 'M39 39l11.5 11.5', stroke: '#fde68a', 'stroke-width': '6.5', 'stroke-linecap': 'round' })
       ]];
+    },
+    // Sports Translation: a stopwatch
+    sport: function (id) {
+      return [[
+        grad(id('bg'), '1', '1', [['0', '#c2410c'], ['1', '#f59e0b']]),
+        grad(id('gloss'), '0', '1', [['0', '#ffffff', '.3'], ['1', '#ffffff', '0']])
+      ], [
+        el('circle', { cx: '32', cy: '32', r: '31', fill: 'url(#' + id('bg') + ')' }),
+        el('path', { d: 'M32 1a31 31 0 0 1 31 31H1A31 31 0 0 1 32 1z', fill: 'url(#' + id('gloss') + ')' }),
+        el('rect', { x: '28', y: '8', width: '8', height: '6', rx: '2', fill: '#ffffff' }),
+        el('path', { d: 'M44.5 18.5l3.5-3.5', stroke: '#ffffff', 'stroke-width': '3.4', 'stroke-linecap': 'round' }),
+        el('circle', { cx: '32', cy: '35', r: '18', fill: '#ffffff' }),
+        el('path', { d: 'M32 20v3.5M47 35h-3.5M32 50v-3.5M17 35h3.5', stroke: '#fdba74', 'stroke-width': '2.4', 'stroke-linecap': 'round' }),
+        el('path', { d: 'M32 35V24.5', stroke: '#c2410c', 'stroke-width': '3.2', 'stroke-linecap': 'round' }),
+        el('path', { d: 'M32 35l6.5 4', stroke: '#7c2d12', 'stroke-width': '2.6', 'stroke-linecap': 'round' }),
+        el('circle', { cx: '32', cy: '35', r: '2.8', fill: '#7c2d12' })
+      ]];
     }
   };
 
-  // name: brand | un | tour | si | disc | web | sci (anything else falls back to the logo)
+  // name: brand | un | tour | si | disc | web | sci | sport (anything else falls back to the logo)
   function make(name, size) {
     var d = DESIGN[name] || DESIGN.brand, uid = ++seq;
     var id = function (k) { return 'art' + uid + k; };

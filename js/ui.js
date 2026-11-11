@@ -163,7 +163,7 @@
   }
   // a direct link to a subject: #/subject/<id> switches to it and opens its Learn page; #/subject/<id>/<page>[/<arg>] opens that page.
   // 404.html turns the short form /subject/sci/learn into this. Plain names work too: /subject/scientific/read
-  var SUBJ_ALIAS = { scientific: 'sci', science: 'sci', research: 'web', internet: 'web', discourse: 'disc', interpretation: 'si', simultaneous: 'si', interpreting: 'si', tourist: 'tour', tourism: 'tour' };
+  var SUBJ_ALIAS = { scientific: 'sci', science: 'sci', research: 'web', internet: 'web', discourse: 'disc', interpretation: 'si', simultaneous: 'si', interpreting: 'si', tourist: 'tour', tourism: 'tour', sports: 'sport', physical: 'sport' };
   var PAGE_ALIAS = { read: 'reading', texts: 'reading', words: 'vocab', vocabulary: 'vocab', answers: 'vocab', dashboard: 'home', game: 'games', exam: 'exams', lesson: 'lessons', video: 'videos' };
   UN.routes.subject = function (arg) {
     var id = String(arg || '').toLowerCase(), bits = location.hash.split('/').slice(3);
@@ -183,6 +183,7 @@
   var NAV_BASE = [['home', 'layout-dashboard', 'nav.dashboard'], ['learn', 'book-open', 'nav.learn'], ['games', 'gamepad', 'nav.games'], ['exams', 'file-text', 'nav.exams'],
     ['progress', 'bar-chart', 'nav.progress'], ['lessons', 'lightbulb', 'nav.lessons'], ['vocab', 'languages', 'nav.vocab'], ['achievements', 'trophy', 'nav.achievements'], ['settings', 'settings', 'nav.settings']];
   function navItems() {
+    if (UN.cfg && UN.cfg.summaryOnly) return NAV_BASE.filter(function (n) { return n[0] === 'learn' || n[0] === 'settings'; });   // summaries only: no games, exams or progress
     var n = NAV_BASE.slice();
     if (UN.cfg && UN.cfg.reading) n.splice(6, 0, ['reading', 'book-open', 'nav.reading']);
     if (UN.videos && UN.videos.length) n.splice(6, 0, ['videos', 'play-circle', 'nav.videos']);
@@ -216,8 +217,9 @@
     side.appendChild(h('div', { class: 'levelcard' }, h('span', { class: 'tile amber' }, ic('trophy')), h('b', null, t('lvl.label', { n: xp.level })),
       h('small', null, t('lvl.sub')), bar(xp.into / xp.per), h('small', { class: 'xpnum', dir: 'ltr' }, xp.into + ' / ' + xp.per + ' XP')));
 
-    BOTTOM.forEach(function (k) { nav.appendChild(navLink(NAV_BASE.filter(function (n) { return n[0] === k; })[0])); });
-    nav.appendChild(h('button', { type: 'button', class: 'morebtn', 'data-r': 'more', onclick: openMore }, ic('more'), h('span', { class: 'nt' }, t('nav.more'))));
+    var items = navItems(), bottom = UN.cfg.summaryOnly ? items : NAV_BASE.filter(function (n) { return BOTTOM.indexOf(n[0]) !== -1; });
+    bottom.forEach(function (n) { nav.appendChild(navLink(n)); });
+    if (items.length > bottom.length) nav.appendChild(h('button', { type: 'button', class: 'morebtn', 'data-r': 'more', onclick: openMore }, ic('more'), h('span', { class: 'nt' }, t('nav.more'))));
   }
   // Subject picker: a list with the full subject names, so it still reads clearly with four or more subjects.
   function openSubjects() {
@@ -266,6 +268,8 @@
   function render() {
     clearTimers();
     var r = parse(), fn = UN.routes[r.name] || UN.routes.home;
+    // a subject with summaries only has no dashboard, games or exams: any other page opens its Learn page
+    if (UN.cfg.summaryOnly && ['learn', 'settings', 'subject'].indexOf(r.name) === -1) { location.replace('#/learn'); return; }
     var ex = UN.state.exam;
     if (ex && ex.running && r.name !== 'exam-run') { fn = UN.routes['exam-run']; }
     if (!(ex && ex.running) && r.name === 'exam-run') fn = UN.routes.exams;
@@ -537,32 +541,48 @@
   }
   // Learn page of a subject made of chapter summaries (Internet Research Skills): every chapter with its topics, its
   // conclusion and a button that practises its questions. The chapter blocks are Arabic in both interface languages.
+  // English term and its Arabic equivalent, side by side (chapter summaries written in English)
+  function termTable(rows) {
+    return h('div', { class: 'tlist' }, rows.map(function (r) {
+      return h('div', { class: 'trow' }, h('span', { class: 'te', lang: 'en', dir: 'ltr' }, r[0]), h('span', { class: 'ta', lang: 'ar', dir: 'rtl' }, r[1]));
+    }));
+  }
   function chapterLearn(arg) {
-    var lang = S().lang;
+    var lang = S().lang, en = UN.cfg.chapterLang === 'en', only = UN.cfg.summaryOnly;
+    // English summaries carry a short line in Arabic under the intro, each topic and the chapter summary
+    var gist = function (ar) { return ar ? h('p', { class: 'chgist', lang: 'ar', dir: 'rtl' }, h('b', null, 'بالعربي:'), ' ', ar) : null; };
     var page = h('div', { class: 'page' }, pageHead(t('learn.title'), t('learn.lead')));
-    var revCard = UN.revise ? UN.revise.card() : null; if (revCard) page.appendChild(revCard);
+    var revCard = !only && UN.revise ? UN.revise.card() : null; if (revCard) page.appendChild(revCard);
     if (UN.explainNote) page.appendChild(h('p', { class: 'xnote' }, ic('info'), ' ', smart(UN.explainNote[lang] || UN.explainNote.ar)));
     page.appendChild(h('nav', { class: 'row chnav' }, UN.chapters.map(function (c) { return h('a', { class: 'chipbtn', href: '#/learn/r-' + c.g }, UN.groups[c.g][lang]); })));
     UN.chapters.forEach(function (c) {
       var n = UN.qitems.filter(function (q) { return q.group === c.g; }).length;
-      var sec = h('section', { class: 'chapter', id: 'r-' + c.g, lang: 'ar', dir: 'rtl' }, h('h2', null, c.title));
+      var sec = h('section', { class: 'chapter', id: 'r-' + c.g, lang: en ? 'en' : 'ar', dir: en ? 'ltr' : 'rtl' }, h('h2', null, c.title));
+      if (c.titleAr) sec.appendChild(h('p', { class: 'muted chby', lang: 'ar', dir: 'rtl' }, c.titleAr));
       if (c.by) sec.appendChild(h('p', { class: 'muted chby' }, c.by));
       if (c.intro) sec.appendChild(h('p', null, c.intro));
+      if (c.introAr) sec.appendChild(gist(c.introAr));
       c.topics.forEach(function (tp, k) {
         var d = h('details', { class: 'card res xsec', id: c.g + '-' + (k + 1) });
-        d.appendChild(h('summary', null, h('span', { class: 'rt' }, tp.title), ic('chevron-right', 'caret')));
+        d.appendChild(h('summary', null, h('span', { class: 'rt' }, tp.title, tp.titleAr ? h('small', { class: 'xalt muted', lang: 'ar', dir: 'rtl' }, tp.titleAr) : null), ic('chevron-right', 'caret')));
         if (tp.text) d.appendChild(h('p', null, tp.text));
         if (tp.items) d.appendChild(h('div', { class: 'xitems' }, tp.items.map(function (it) {
-          return h('div', { class: 'xitem' }, h('div', { class: 'xchead' }, h('b', null, it.name)), h('p', null, it.text), it.ex ? h('div', { class: 'quote xtext', dir: 'auto' }, it.ex) : null);
+          return h('div', { class: 'xitem' }, h('div', { class: 'xchead' }, h('b', null, it.name), it.ar ? h('span', { class: 'xar', lang: 'ar', dir: 'rtl' }, it.ar) : null),
+            it.text ? h('p', null, it.text) : null, it.ex ? h('div', { class: 'quote xtext', dir: 'auto' }, it.ex) : null);
         })));
         if (tp.points) d.appendChild(h('ul', { class: 'xpoints' }, tp.points.map(function (p) { return h('li', null, p); })));
+        if (tp.terms) d.appendChild(termTable(tp.terms));
+        if (tp.ar) d.appendChild(gist(tp.ar));
         sec.appendChild(d);
       });
-      if (c.sum) sec.appendChild(h('div', { class: 'tip xremember' }, ic('lightbulb'), h('p', null, h('b', null, 'خلاصة الفصل:'), ' ', c.sum)));
-      sec.appendChild(h('div', { class: 'row' }, h('a', { class: 'btn primary', href: '#/practice/' + c.g }, '🎯 ' + t('ch.practise', { n: n }))));
+      if (c.sum) {
+        var sumP = h('p', null, h('b', null, en ? 'Chapter summary:' : 'خلاصة الفصل:'), ' ', c.sum);
+        sec.appendChild(h('div', { class: 'tip xremember' }, ic('lightbulb'), c.sumAr ? h('div', null, sumP, gist(c.sumAr)) : sumP));
+      }
+      if (n) sec.appendChild(h('div', { class: 'row' }, h('a', { class: 'btn primary', href: '#/practice/' + c.g }, '🎯 ' + t('ch.practise', { n: n }))));
       page.appendChild(sec);
     });
-    page.appendChild(h('section', { class: 'card xpractise' }, h('h2', null, t('da.practise')), h('div', { class: 'row' },
+    if (!only) page.appendChild(h('section', { class: 'card xpractise' }, h('h2', null, t('da.practise')), h('div', { class: 'row' },
       h('a', { class: 'btn primary', href: '#/game/1' }, '🎮 ' + t('game1.name')),
       UN.exam && UN.exam.hasAll() ? h('a', { class: 'btn ghost', href: '#/exam/4' }, '📚 ' + t('exam4.name')) : null,
       h('a', { class: 'btn ghost', href: '#/vocab' }, '📋 ' + t('nav.vocab')))));

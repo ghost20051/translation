@@ -67,6 +67,13 @@
     UN.registerSubject('sci', sci);
   }
 
+  // Subject 7: Sports Translation (chapter summaries only, no questions; content in UN.SP)
+  if (UN.SP && UN.SP.cfg) {
+    var sport = {};
+    FIELDS.forEach(function (f) { sport[f] = UN.SP[f]; });
+    UN.registerSubject('sport', sport);
+  }
+
   UN.useSubject = function (id) {
     var s = UN.subjects[id] || UN.subjects.un;
     FIELDS.forEach(function (f) { UN[f] = s[f]; });
