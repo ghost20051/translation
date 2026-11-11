@@ -223,8 +223,8 @@
           why: s('No links and no shared meaning.', 'لا فيه روابط، ولا فيه معنى يجمع الجمل.') }],
       remember: s('Cohesion helps coherence, but it is not enough: a text can be linked and still make no sense, and a text with no links can still make sense.', 'الـ cohesion بيساعد الـ coherence بس مش كفاية لوحده: ممكن الكلام يبقى مربوط ومع ذلك ملوش معنى، وممكن يبقى من غير روابط وله معنى.') }
   ];
-  D.explainNote = s('These explanations and questions were prepared from standard discourse analysis references, not from your course book. If your lecturer explains something differently, tell us and we will match it.',
-                    'الشرح والأسئلة دي متجهزة من المراجع المعروفة في الـ discourse analysis، مش من كتاب المادة. لو الدكتور بيشرح حاجة بشكل مختلف، قولنا وهنظبطها.');
+  D.explainNote = s('Everything here is AI-generated. If you spot a mistake, tell us so we can fix it.',
+                    'كل المحتوى هنا متولّد بالذكاء الاصطناعي. لو لاحظت أي غلطة، قولنا وهنصلحها.');
 
   /* ---------- settings ---------- */
   var N = D.qitems.length;

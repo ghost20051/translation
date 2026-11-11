@@ -31,8 +31,8 @@
   });
   D.groupLesson = {};
   D.chapters.forEach(function (c) { D.groupLesson[c.g] = s('', c.lesson); });
-  D.explainNote = s('These summaries follow chapters 1 to 4 of the course book, topic by topic. Check the book for any detail.',
-                    'الملخصات دي مكتوبة من الفصول من 1 لـ 4 في كتاب المادة، موضوع موضوع. ارجع للكتاب في أي تفصيلة.');
+  D.explainNote = s('Everything here is AI-generated. If you spot a mistake, tell us so we can fix it.',
+                    'كل المحتوى هنا متولّد بالذكاء الاصطناعي. لو لاحظت أي غلطة، قولنا وهنصلحها.');
 
   /* ---------- settings ---------- */
   var N = D.qitems.length;

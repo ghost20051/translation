@@ -48,7 +48,7 @@
       { id: 'RM5', item: 'RW6', text: 'Business etiquette is…', opts: { a: 'genderless', b: 'traditionally chivalrous', c: 'only for women', d: 'only for tourists' } },
       { id: 'RM6', item: 'RW3', text: 'Which type of tourism needs a visa and a passport?', opts: { a: 'International tourism', b: 'Domestic tourism', c: 'Both are always the same', d: 'Neither of them' } },
       { id: 'RM7', item: 'RW4', text: 'Business tourism includes…', opts: { a: 'meetings, conferences, seminars, exhibitions and trade fairs', b: 'safaris and swimming with dolphins', c: 'hiking and rafting only', d: 'trips to Hajj and Jerusalem' } },
-      { id: 'RM8', item: 'RW2', text: 'Which of these is a benefit of tourism mentioned in the lecture?', opts: { a: 'It is a source of national income and brings in foreign currency', b: 'It lowers the value of the local currency', c: 'It reduces job opportunities', d: 'It stops infrastructure development' } }
+      { id: 'RM8', item: 'RW2', text: 'Which of these is a benefit of tourism?', opts: { a: 'It is a source of national income and brings in foreign currency', b: 'It lowers the value of the local currency', c: 'It reduces job opportunities', d: 'It stops infrastructure development' } }
     ],
     tf: [
       { id: 'RT1', item: 'RW3', text: 'Domestic tourism does not involve crossing international borders.' },

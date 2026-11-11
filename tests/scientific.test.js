@@ -52,7 +52,7 @@ ok('Games and exams use the words: multiple choice both ways, typed answers acce
   assert.deepStrictEqual(UN.cfg.acts, ['flip', 'match1', 'match2', 'speed']);
 });
 
-ok('Texts: each paragraph has its translation, the smoking text uses the lecture translation, no text twice', () => {
+ok('Texts: each paragraph has its translation, the smoking translation is the given one, no text twice', () => {
   const P = UN.reading.passages;
   assert.ok(P.length >= 6);
   assert.strictEqual(new Set(P.map(p => p.id)).size, P.length);
@@ -64,13 +64,12 @@ ok('Texts: each paragraph has its translation, the smoking text uses the lecture
     });
   });
   const smoke = P.find(p => p.id === 'smoke');
-  assert.ok(smoke.lecture && P.filter(p => p.lecture).length === 1);
   assert.strictEqual(smoke.paras[1][1], 'A statistical study released in London on Saturday revealed that 6.3 million people had died in Britain from smoking-related diseases over the past fifty years.');
   assert.strictEqual(smoke.paras[5][1], 'The study added that these deaths reached their peak in the 1960s, when tobacco smoking was responsible for half of all deaths among middle-aged men.');
   const firsts = P.map(p => p.paras[1][0].slice(0, 40)); assert.strictEqual(new Set(firsts).size, firsts.length, 'no duplicate texts');
 });
 
-ok('Slides: every point in English with a simple Arabic translation', () => {
+ok('Key points: every point in English with a simple Arabic translation', () => {
   const S = UN.reading.summaries;
   assert.ok(S.length >= 8);
   S.forEach(sec => { assert.ok(sec.title.en && AR.test(sec.title.ar)); sec.points.forEach(p => assert.ok(p.en && AR.test(p.ar), p.en.slice(0, 40))); });

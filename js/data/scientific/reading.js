@@ -1,7 +1,6 @@
 /*
- * Scientific Translation: the texts with their translations (paragraph by paragraph), and the notes from the slides.
- * Reference material only: no questions are made from the texts. The smoking text uses the translation given in the
- * lecture; the other translations are ours, kept close to the original and in simple words.
+ * Scientific Translation: the texts with their translations (paragraph by paragraph), and the key points.
+ * Reference material only: no questions are made from the texts. Translations are kept close to the original, in simple words.
  */
 (function () {
   var UN = window.UN = window.UN || {};
@@ -10,7 +9,7 @@
 
   X.reading = {
     passages: [
-      { id: 'smoke', dir: 'ar2en', lecture: true,
+      { id: 'smoke', dir: 'ar2en',
         title: s('Smoking Killed 6.3 Million Britons in Fifty Years', 'التدخين قتل 6,3 مليون بريطاني في خمسين سنة'),
         paras: [
           ['التدخين قتل 6,3 مليون بريطانى فى خمسين سنة', 'Smoking Killed 6.3 Million Britons in Fifty Years'],
@@ -84,8 +83,8 @@
            'إذن، فالإطعام عند الحيوانات غير الثدييات ليس جزءًا أساسيًا من رعاية الوالدين، بل تضيفه الحيوانات إلى طرقها في التكاثر لتعطيها ميزة في سعيها طوال حياتها إلى ترك نسل. فأضعف لحظة في حياة أي حيوان هي حين يجد نفسه وحيدًا تمامًا لأول مرة، ويجب عليه أن يبحث عن طعامه ويعتمد على نفسه. والإطعام يؤجل هذه اللحظة حتى يكبر الحيوان الصغير إلى حجم يجعله أقدر على مواجهة الحياة. فالصغار التي يُطعمها آباؤها تستقل في غذائها وقد وصلت إلى نسبة أكبر بكثير من حجمها الكامل عند البلوغ. وفي أثناء ذلك تكون هذه الصغار محمية من تقلّبات الطعام الذي يقل ويكثر ويصعب العثور عليه. وما إن يبدأ نوع من الحيوانات في إطعام صغاره، حتى تصبح الصغار معتمدة اعتمادًا كاملًا على هذا الجهد الإضافي؛ فإذا غاب الأبوان كلاهما، لا تعيش الصغار في الغالب.']
         ] },
       { id: 'chem', dir: 'en2ar',
-        title: s('Chemical Reactions (from the slides)', 'التفاعلات الكيميائية (من السلايدز)'),
-        note: s('Exercise on the slides: read the text and its translation and find examples of naturalization, Arabization and coinage.', 'تمرين في السلايدز: اقرأ النص وترجمته، وطلّع أمثلة على naturalization وArabization وcoinage.'),
+        title: s('Chemical Reactions', 'التفاعلات الكيميائية'),
+        note: s('Exercise: read the text and its translation and find examples of naturalization, Arabization and coinage.', 'تمرين: اقرأ النص وترجمته، وطلّع أمثلة على naturalization وArabization وcoinage.'),
         paras: [
           ['Chemical Reactions', 'التفاعلات الكيميائية'],
           ['A reaction between an acid and a base to form a salt and water as the only products.', 'تفاعل بين حمض وقاعدة يتكوّن منه ملح وماء فقط.'],
@@ -95,7 +94,7 @@
         ] }
     ],
 
-    // the slides, point by point: the slide's English and a simple Arabic translation
+    // the key points: the English and a simple Arabic translation
     summaries: [
       { id: 'def', title: s('Definition of scientific translation', 'تعريف الترجمة العلمية'), points: [
         s('Scientific translation is mainly about translating terms in the fields of science and technology of all kinds, medicine, physics, chemistry, mathematics, computer sciences, etc. from one language into another.', 'الترجمة العلمية هي أساسًا ترجمة المصطلحات في مجالات العلوم والتكنولوجيا بكل أنواعها، مثل الطب والفيزياء والكيمياء والرياضيات وعلوم الحاسب، من لغة إلى لغة أخرى.'),

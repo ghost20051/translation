@@ -549,3 +549,9 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .passage.pairs .pair .trans.hidden { display: none; }
 .passage.pairs .ttl { font-weight: 800; }
 .passage.pairs .bidi { display: block; }
+.passage.pairs .whole { display: grid; gap: 8px; padding-block-start: 10px; border-block-start: 1px solid var(--line); line-height: 1.75; overflow-wrap: anywhere; }
+.passage.pairs .whole.trans { background: var(--primary-soft); border-radius: 10px; padding: 10px 12px; border: 0; }
+.passage.pairs .whole.trans.hidden { display: none; }
+.passage.pairs .whole p { margin: 0; }
+.passage.pairs .whole .ttl { font-weight: 800; }
+.readview { margin-block-end: 4px; }

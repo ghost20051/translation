@@ -82,7 +82,7 @@
       'Natural Translation/Interpreting is the ability to translate or interpret without specialized professional training. It is related to bilingualism because bilingual people may naturally develop the ability to translate between their languages.',
       'Bilingualism + Natural ability − Specialized training.', [['without', 'no '], ['specialized', 'professional training', 'training'], ['bilingual'], ['naturally', 'natural ability', 'natural'], ['translate']]],
     ['bil', 'Discuss the factors that influence proficiency in a second language.',
-      'Second-language proficiency is affected by age of acquisition, motivation, personality, and language exposure. These factors influence how well someone learns another language. The course book also mentions how close the two languages are (proximity of the languages involved).',
+      'Second-language proficiency is affected by age of acquisition, motivation, personality, and language exposure. These factors influence how well someone learns another language. How close the two languages are (proximity of the languages involved) also matters.',
       'Age + Motivation + Personality + Exposure (+ how close the languages are).', [['age'], ['motivation'], ['personality'], ['exposure', 'proximity', 'close']]],
     ['bil', 'Explain the concept of language interference and describe how it may affect bilingual speakers.',
       'Language interference happens when one language influences another. For example, bilingual speakers may use grammar or vocabulary from their native language when speaking a second language.',

@@ -9,6 +9,7 @@
     var R = UN.reading;
     if (!R) return UN.routes.home();
     var tab = (UN.cfg && UN.cfg.readingFirst) || 'sum', lang = S().lang;
+    var view = 'pairs'; try { view = localStorage.getItem('unrev-readview') === 'whole' ? 'whole' : 'pairs'; } catch (e) {}
     var page = h('div', { class: 'page' }, ui.pageHead(t('reading.title'), t('reading.lead')));
     var tabs = h('div', { class: 'tabs', role: 'tablist' }), body = h('div', { class: 'stack' });
     page.appendChild(tabs); page.appendChild(body);
@@ -34,6 +35,9 @@
         return;
       }
       body.appendChild(h('div', { class: 'note' }, ic('info'), ' ', t('reading.note')));
+      if (R.passages.some(function (p) { return p.paras; })) body.appendChild(h('div', { class: 'seg wide readview', role: 'group' }, [['pairs', 'reading.byPara'], ['whole', 'reading.whole']].map(function (x) {
+        return h('button', { type: 'button', class: view === x[0] ? 'on' : '', 'aria-pressed': String(view === x[0]), onclick: function () { view = x[0]; try { localStorage.setItem('unrev-readview', view); } catch (e) {} draw(); } }, t(x[1]));
+      })));
       R.passages.forEach(function (p) {
         if (p.paras) return body.appendChild(pairCard(p));
         var srcLang = p.dir === 'en2ar' ? 'en' : 'ar', trgLang = p.dir === 'en2ar' ? 'ar' : 'en';
@@ -48,7 +52,8 @@
           h('div', { class: 'text' }, L(p.source, srcLang)), btn, trans));
       });
     }
-    // a text as paragraph pairs: each paragraph, then its translation (shown; one button hides them to test yourself)
+    // a text with its translation: paragraph by paragraph (each paragraph, then its translation) or as a whole (the whole
+    // text, then the whole translation). The translation is shown; one button hides it to test yourself.
     function pairCard(p) {
       var srcLang = p.dir === 'en2ar' ? 'en' : 'ar', trgLang = p.dir === 'en2ar' ? 'ar' : 'en', trans = [];
       var btn = h('button', { type: 'button', class: 'btn small ghost' }, ic('languages'), t('reading.hide'));
@@ -58,13 +63,21 @@
         ui.setText(btn, ''); btn.appendChild(ic('languages')); btn.appendChild(document.createTextNode(t(hid ? 'reading.show' : 'reading.hide')));
       });
       var card = h('div', { class: 'card passage pairs' },
-        h('div', { class: 'row between' }, h('b', null, p.title[lang]), h('span', { class: 'row' },
-          p.lecture ? h('span', { class: 'pill good' }, t('reading.lecture')) : null, h('span', { class: 'pill' }, t(p.dir === 'en2ar' ? 'reading.enar' : 'reading.aren')))),
+        h('div', { class: 'row between' }, h('b', null, p.title[lang]), h('span', { class: 'pill' }, t(p.dir === 'en2ar' ? 'reading.enar' : 'reading.aren'))),
         p.note ? h('p', { class: 'muted small' }, p.note[lang]) : null, btn);
+      if (view === 'whole') {
+        var src = h('div', { class: 'whole text' }), tr = h('div', { class: 'whole trans' });
+        p.paras.forEach(function (pair, k) {
+          src.appendChild(h('p', { class: k ? '' : 'ttl' }, L(pair[0], srcLang)));
+          tr.appendChild(h('p', { class: k ? '' : 'ttl' }, L(pair[1], trgLang)));
+        });
+        trans.push(tr); card.appendChild(src); card.appendChild(tr);
+        return card;
+      }
       p.paras.forEach(function (pair, k) {
-        var tr = h('div', { class: 'trans' + (k ? '' : ' ttl') }, L(pair[1], trgLang));
-        trans.push(tr);
-        card.appendChild(h('div', { class: 'pair' }, h('div', { class: 'text' + (k ? '' : ' ttl') }, L(pair[0], srcLang)), tr));
+        var tr1 = h('div', { class: 'trans' + (k ? '' : ' ttl') }, L(pair[1], trgLang));
+        trans.push(tr1);
+        card.appendChild(h('div', { class: 'pair' }, h('div', { class: 'text' + (k ? '' : ' ttl') }, L(pair[0], srcLang)), tr1));
       });
       return card;
     }

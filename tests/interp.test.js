@@ -51,7 +51,7 @@ ok('Answers follow the course book (Q15, Q35, Q36); the question bank answers an
   assert.ok(M(38, 'native') && M(38, 'first') && M(38, 'L1'));
   assert.ok(M(43, 'processes') && M(43, 'mechanisms'));
   assert.ok(M(69, 'lag') && M(69, 'delay'));
-  [15, 35, 36].forEach(i => assert.ok(/course book/i.test(g(i).note), 'Q' + i + ' explains the book'));
+  [15, 35, 36].forEach(i => assert.ok(g(i).note.length > 40 && !/course book|question bank|lecture/i.test(g(i).note), 'Q' + i + ' explains the answer without naming the source'));
   // multiple choice never offers a word that typing would also accept
   for (let k = 0; k < 40; k++) {
     const t35 = UN.gen.make(g(35).id, 'mcq-gap').options.map(o => o.text.toLowerCase());
