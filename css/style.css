@@ -201,6 +201,8 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .overlay { position: fixed; inset: 0; background: rgba(8, 12, 24, .55); backdrop-filter: blur(2px); display: grid; place-items: center; z-index: 80; padding: 16px; } .dialog { max-width: 420px; width: 100%; animation: viewIn .2s; display: flex; flex-direction: column; gap: 16px; }
 .sheet-wrap { align-items: end; padding: 0; } .sheet { width: 100%; max-width: 560px; border-radius: var(--r-lg) var(--r-lg) 0 0; padding: 12px; display: flex; flex-direction: column; gap: 2px; animation: sheetIn .22s var(--ease); } @keyframes sheetIn { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 .sheet-link { font-size: 1rem; padding: 14px 12px; }
+/* a sheet never grows past the visible screen (on phones the browser bars cover part of 100vh, hence dvh where supported): its list scrolls instead */
+.sheet-wrap .sheet { max-height: calc(100vh - 16px); max-height: calc(100dvh - 16px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; } .sheet > * { flex-shrink: 0; }
 
 /* tablet */
 @media (max-width: 1100px) { .cols { grid-template-columns: minmax(0, 1fr); } :root { --side-w: 212px; } .app { padding: 20px 20px 40px; } }
@@ -293,6 +295,13 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .subjrow { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: inherit; font: inherit; text-align: start; cursor: pointer; }
 .subjrow:hover { background: var(--bg); } .subjrow.on { border-color: var(--primary); }
 .subjrow .sjt { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; } .subjrow .sjt b { font-size: 1rem; }
+/* phones: compact rows with a one-line description, so all the subjects fit on one screen */
+@media (max-width: 560px) {
+  .subjsheet h2 { margin: 0 6px 6px; font-size: 1.05rem; }
+  .subjrow { padding: 7px 10px; margin-bottom: 5px; gap: 10px; }
+  .subjrow .art { width: 36px; height: 36px; }
+  .subjrow .sjt small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
 .subjnow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
 .quip { margin-top: 8px; font-size: .92rem; color: var(--muted); font-style: italic; }
 @media (max-width: 560px) { .subjbtn { max-width: 46vw; padding: 6px 8px; font-size: .8rem; } .topbar .logo { display: none; } }
