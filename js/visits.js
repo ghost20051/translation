@@ -16,6 +16,7 @@
   function count() {
     var gc = window.goatcounter, p = path();
     if (!gc || typeof gc.count !== 'function' || p === last) return;
+    if (location.hash.indexOf('#/subject/') === 0) return;   // a short link moves on to its page at once: count that page, not this step
     last = p;
     try { gc.count({ path: p }); } catch (e) { /* counting is optional */ }
   }
