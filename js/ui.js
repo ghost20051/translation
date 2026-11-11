@@ -161,6 +161,13 @@
     UN.store.setSubject(id); UN.useSubject(id);
     UN.state.exam = null; go('#/home');
   }
+  // a direct link to a subject: #/subject/<id> switches to it and opens its Learn page; #/subject/<id>/<page> opens that page
+  UN.routes.subject = function (arg) {
+    var page = String(location.hash.split('/')[3] || '');
+    if (UN.subjects[arg]) { UN.store.setSubject(arg); UN.useSubject(arg); UN.state.exam = null; }
+    setTimeout(function () { location.replace('#/' + (page && page !== 'subject' && UN.routes[page] ? page : 'learn')); }, 0);
+    return h('div', { class: 'page' });
+  };
   function toggleSound() { if (UN.sfx) { UN.sfx.setEnabled(!UN.sfx.enabled()); refreshChrome(); } }
   function setLang(l) { S().lang = l; UN.store.save(); applyLang(); render(); }
   try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (S().theme === 'auto') { applyTheme(); refreshChrome(); } }); } catch (e) { /* older browsers */ }
