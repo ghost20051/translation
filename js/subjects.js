@@ -60,6 +60,13 @@
     UN.registerSubject('web', wr);
   }
 
+  // Subject 6: Scientific Translation (words, and texts with their translations; content in UN.X)
+  if (UN.X && UN.X.cfg) {
+    var sci = {};
+    FIELDS.forEach(function (f) { sci[f] = UN.X[f]; });
+    UN.registerSubject('sci', sci);
+  }
+
   UN.useSubject = function (id) {
     var s = UN.subjects[id] || UN.subjects.un;
     FIELDS.forEach(function (f) { UN[f] = s[f]; });

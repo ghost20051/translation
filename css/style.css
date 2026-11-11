@@ -540,3 +540,12 @@ button.act .pill { position: absolute; inset-block-start: 12px; inset-inline-end
 .chapter > h2 { margin: 0; }
 .chapter .chby { margin: -6px 0 0; }
 .chapter .xitem .quote { font-size: .9rem; }
+
+/* texts with their translation, paragraph by paragraph (Scientific Translation) */
+.passage.pairs { display: grid; gap: 10px; }
+.passage.pairs .pair { display: grid; gap: 6px; padding-block-start: 10px; border-block-start: 1px solid var(--line); }
+.passage.pairs .pair .text, .passage.pairs .pair .trans { line-height: 1.75; overflow-wrap: anywhere; }
+.passage.pairs .pair .trans { color: var(--text); background: var(--primary-soft); border-radius: 10px; padding: 8px 12px; }
+.passage.pairs .pair .trans.hidden { display: none; }
+.passage.pairs .ttl { font-weight: 800; }
+.passage.pairs .bidi { display: block; }

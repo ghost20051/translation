@@ -106,6 +106,18 @@
         el('g', { fill: 'none', stroke: '#7c2d12', 'stroke-width': '2.6' }, [el('rect', { x: '25', y: '29', width: '9', height: '6', rx: '3' }), el('rect', { x: '30', y: '31', width: '9', height: '6', rx: '3' })])
       ]];
     },
+    // Scientific Translation: an atom
+    sci: function (id) {
+      return [[
+        grad(id('bg'), '1', '1', [['0', '#4338ca'], ['1', '#06b6d4']]),
+        grad(id('gloss'), '0', '1', [['0', '#ffffff', '.3'], ['1', '#ffffff', '0']])
+      ], [
+        el('circle', { cx: '32', cy: '32', r: '31', fill: 'url(#' + id('bg') + ')' }),
+        el('path', { d: 'M32 1a31 31 0 0 1 31 31H1A31 31 0 0 1 32 1z', fill: 'url(#' + id('gloss') + ')' }),
+        el('g', { fill: 'none', stroke: '#ffffff', 'stroke-width': '2.4' }, [el('ellipse', { cx: '32', cy: '32', rx: '22', ry: '8.5' }), el('ellipse', { cx: '32', cy: '32', rx: '22', ry: '8.5', transform: 'rotate(60 32 32)' }), el('ellipse', { cx: '32', cy: '32', rx: '22', ry: '8.5', transform: 'rotate(-60 32 32)' })]),
+        el('circle', { cx: '32', cy: '32', r: '4.6', fill: '#fde68a' })
+      ]];
+    },
     // Internet Research Skills: a magnifying glass over a globe (searching the web)
     web: function (id) {
       return [[
@@ -121,7 +133,7 @@
     }
   };
 
-  // name: brand | un | tour | si | disc | web (anything else falls back to the logo)
+  // name: brand | un | tour | si | disc | web | sci (anything else falls back to the logo)
   function make(name, size) {
     var d = DESIGN[name] || DESIGN.brand, uid = ++seq;
     var id = function (k) { return 'art' + uid + k; };
