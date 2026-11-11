@@ -53,6 +53,7 @@ Because the site is public, anyone can read the source, **including the answer k
 - Terms: add a line to the table in `js/data/tourist/terms.js` (`group | English | Arabic variants separated by " / " | other accepted English | short definition`). Everything else (games, exams, lessons) picks it up automatically.
 - Definitions, written questions, answer keys and the question bank: `js/data/tourist/content.js`. Reading page: `js/data/tourist/reading.js`.
 - Run `node tests/tourist.test.js` after changes, and `node tests/make-coverage.js` to refresh `COVERAGE.md`.
+- Before publishing: run every `node tests/*.test.js`, then open the site and run `tests/browser-check.js` in the browser console (how-to at the top of that file). It clicks through every subject, page, game, exam, lesson and text like a student and lists anything broken. Run it at phone width and in both languages.
 
 ## Adding content
 - **Terms:** add an object to `UN.terms` in `js/data/terms.js` (`id` like `T21`, `en`, `ar` list, `group`). Add it to a set in `UN.confusable` if it is easy to confuse. It then appears in every game and exam automatically. Add the id to a resource in `js/data/resources.js` so it shows in the learning center. Add the new file names to `sw.js` only if you add new files.

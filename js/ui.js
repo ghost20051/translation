@@ -541,8 +541,9 @@
   }
   // Learn page of a subject made of chapter summaries (Internet Research Skills): every chapter with its topics, its
   // conclusion and a button that practises its questions. The chapter blocks are Arabic in both interface languages.
-  // English term and its Arabic equivalent, side by side (chapter summaries written in English)
-  function termTable(rows) {
+  // English term and its Arabic equivalent, side by side (chapter summaries written in English).
+  // Not the same as termTable(ids) above, which lists a subject's words from their ids.
+  function pairTable(rows) {
     return h('div', { class: 'tlist' }, rows.map(function (r) {
       return h('div', { class: 'trow' }, h('span', { class: 'te', lang: 'en', dir: 'ltr' }, r[0]), h('span', { class: 'ta', lang: 'ar', dir: 'rtl' }, r[1]));
     }));
@@ -571,7 +572,7 @@
             it.text ? h('p', null, it.text) : null, it.ex ? h('div', { class: 'quote xtext', dir: 'auto' }, it.ex) : null);
         })));
         if (tp.points) d.appendChild(h('ul', { class: 'xpoints' }, tp.points.map(function (p) { return h('li', null, p); })));
-        if (tp.terms) d.appendChild(termTable(tp.terms));
+        if (tp.terms) d.appendChild(pairTable(tp.terms));
         if (tp.ar) d.appendChild(gist(tp.ar));
         sec.appendChild(d);
       });

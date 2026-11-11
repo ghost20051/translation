@@ -1,5 +1,5 @@
 /* Offline cache. Only caches this site's own files; no network calls to anywhere else. */
-var CACHE = 'unrev-v43';
+var CACHE = 'unrev-v44';
 var FILES = [
   './', 'index.html', '404.html', 'manifest.webmanifest', 'icon.svg', 'css/style.css',
   'js/data/terms.js', 'js/data/questions.js', 'js/data/answer-keys.js', 'js/data/resources.js', 'js/data/lessons.js', 'js/data/tourist/terms.js', 'js/data/tourist/content.js', 'js/data/tourist/reading.js', 'js/data/tourist/definitions.js', 'js/data/tourist/help.js', 'js/data/interp/gaps.js', 'js/data/interp/bank.js', 'js/data/interp/videos.js', 'js/data/interp/videos-ar.js', 'js/videos-ui.js', 'js/data/interp/content.js', 'js/data/discourse/content.js', 'js/data/research/ch1.js', 'js/data/research/ch2.js', 'js/data/research/ch3.js', 'js/data/research/ch4.js', 'js/data/research/content.js', 'js/data/scientific/terms.js', 'js/data/scientific/reading.js', 'js/data/scientific/content.js', 'js/data/sports/ch5.js', 'js/data/sports/ch6.js', 'js/data/sports/ch7.js', 'js/data/sports/content.js', 'js/subjects.js', 'js/i18n.js', 'js/i18n-ui.js', 'js/icons.js', 'js/check.js', 'js/storage.js',
